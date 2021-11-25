@@ -1,17 +1,32 @@
-variable "product" {}
+variable "product" {
+  type    = string
+  default = "ccpay"
+}
 
-variable "component" {}
+variable "component" {
+  type    = string
+  default = "notifications-service"
+}
+
+variable "team_name" {
+  type    = string
+  default = "FeesAndPay"
+}
 
 variable "location" {
+  type    = string
   default = "UK South"
 }
 
-variable "env" {}
+variable "env" {
+  type = string
+}
 
-variable "subscription" {}
+variable "subscription" {
+  type = string
+}
 
-variable "deployment_namespace" {}
 
 variable "common_tags" {
-  type = "map"
+  type =  map(string)
 }
