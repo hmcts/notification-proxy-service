@@ -60,7 +60,10 @@ tasks.withType(Test) {
 }
 
 test {
-  failFast = true
+  finalizedBy jacocoTestReport
+  jacoco {
+    destinationFile = file("${project.rootDir}/build/jacoco/test.exec")
+  }
 }
 
 task functional(type: Test) {
@@ -100,7 +103,7 @@ pmd {
 }
 
 jacocoTestReport {
-  executionData(test, integration)
+  executionData(test)
   reports {
     xml.required = true
     csv.required = false
@@ -112,8 +115,10 @@ project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 sonarqube {
   properties {
+    property "sonar.java.coveragePlugin", "jacoco"
     property "sonar.projectName", "Reform :: notifications-service"
     property "sonar.projectKey", "uk.gov.hmcts.reform:notifications-service"
+    property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
   }
 }
