@@ -201,7 +201,7 @@ dependencies {
   smokeTestImplementation sourceSets.test.runtimeClasspath
 }
 
-mainClassName = 'uk.gov.hmcts.reform.notificationsService.Application'
+mainClassName = 'uk.gov.hmcts.reform.notifications.service.Application'
 
 bootJar {
   archiveFileName = "notifications-service.jar"
