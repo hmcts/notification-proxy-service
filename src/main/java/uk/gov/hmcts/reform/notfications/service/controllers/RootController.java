@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.notficationsService.controllers;
+package uk.gov.hmcts.reform.notfications.service.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.SwaggerDefinition;
@@ -13,7 +13,7 @@ import static org.springframework.http.ResponseEntity.ok;
  * Default endpoints per application.
  */
 @RestController
-@Api(tags={"Refund Notifications"})
+@Api(tags = {"Refund Notifications"})
 @SwaggerDefinition(tags = {@Tag(name = "TestController",description = "Refund notifications REST API")})
 public class RootController {
 

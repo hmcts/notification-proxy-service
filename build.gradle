@@ -1,6 +1,6 @@
 plugins {
   id 'application'
-//  id 'checkstyle'
+  id 'checkstyle'
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
@@ -84,11 +84,11 @@ task smoke(type: Test) {
   classpath = sourceSets.smokeTest.runtimeClasspath
 }
 
-//checkstyle {
-//  maxWarnings = 0
-//  toolVersion = '8.29'
-//  getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
-//}
+checkstyle {
+  maxWarnings = 0
+  toolVersion = '8.29'
+  getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
+}
 
 pmd {
   toolVersion = "6.39.0"

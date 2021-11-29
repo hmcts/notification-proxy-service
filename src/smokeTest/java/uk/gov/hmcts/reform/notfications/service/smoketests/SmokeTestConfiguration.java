@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.notficationsService.smoketests;
+package uk.gov.hmcts.reform.notfications.service.smoketests;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
