@@ -1,4 +1,13 @@
 #!groovy
+properties(
+  [
+    [
+      $class       : 'GithubProjectProperty',
+      projectUrlStr: 'https://github.com/hmcts/ccpay-notifications-service'
+    ],
+    pipelineTriggers([[$class: 'GitHubPushTrigger']])
+  ]
+)
 
 @Library("Infrastructure")
 
@@ -6,8 +15,12 @@ def type = "java"
 def product = "ccpay"
 def component = "notifications-service"
 
+def branchesToSync = ['demo', 'ithc', 'perftest']
+
 withPipeline(type, product, component) {
   enableAksStagingDeployment()
   enableSlackNotifications('#cc-payments-tech')
   disableLegacyDeployment()
+  disableLegacyDeploymentOnAAT()
+  syncBranchesWithMaster(branchesToSync)
 }
