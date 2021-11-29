@@ -1,0 +1,13 @@
+#!groovy
+
+@Library("Infrastructure")
+
+def type = "java"
+def product = "ccpay"
+def component = "notifications-service"
+
+withPipeline(type, product, component) {
+  enableAksStagingDeployment()
+  enableSlackNotifications('#cc-payments-tech')
+  disableLegacyDeployment()
+}
