@@ -201,10 +201,14 @@ dependencies {
   smokeTestImplementation sourceSets.test.runtimeClasspath
 }
 
-mainClassName = 'uk.gov.hmcts.reform.notifications.service.Application'
+mainClassName = 'uk.gov.hmcts.reform.notifications.Application'
+
 
 bootJar {
-  archiveFileName = "notifications-service.jar"
+  getArchiveFileName().set(provider {
+    'notifications-service.jar'
+  })
+
 
   manifest {
     attributes('Implementation-Version': project.version.toString())
@@ -219,3 +223,5 @@ rootProject.tasks.named("processSmokeTestResources") {
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
+
+

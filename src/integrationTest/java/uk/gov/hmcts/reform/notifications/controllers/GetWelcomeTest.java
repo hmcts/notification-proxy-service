@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.notfications.service.controllers;
+package uk.gov.hmcts.reform.notifications.controllers;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

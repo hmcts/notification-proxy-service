@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.notfications.service.controllers;
+package uk.gov.hmcts.reform.notifications.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.SwaggerDefinition;

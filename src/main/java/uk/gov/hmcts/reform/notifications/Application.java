@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.notfications.service;
+package uk.gov.hmcts.reform.notifications;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
