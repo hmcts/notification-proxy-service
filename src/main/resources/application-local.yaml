@@ -1,0 +1,63 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: notifications-service
+
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/notifications-service
+    username: notifications
+    password: notifications
+    properties:
+      charSet: UTF-8
+
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  liquibase:
+    enabled: ${SPRING_LIQUIBASE_ENABLED:true}
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: http://localhost:5000/o
+        # Dummy OIDC client required even we are not going to use
+        registration:
+          oidc:
+            client-id: internal
+            client-secret: internal
+
+oidc:
+  audience-list: internal,paybubble,notifications-service
+  issuer: ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}
+
+auth:
+  provider:
+    service:
+      client:
+        baseUrl: http://localhost:8086
+  idam:
+    client:
+      baseUrl: http://localhost:8086
+
+azure:
+  application-insights:
+    instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:}
+idam:
+  api:
+    url: ${IDAM_API_URL:http://localhost:5000}
+  s2s-authorised:
+    services: refunds
+  s2s-auth:
+    url: http://localhost:8085
+    totp_secret: ${OIDC_S2S_SECRET:}
+    microservice: refunds
