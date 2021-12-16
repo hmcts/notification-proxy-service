@@ -80,16 +80,16 @@ data "azurerm_key_vault" "s2s_key_vault" {
   resource_group_name = local.s2s_vault_resource_group
 }
 
-data "azurerm_key_vault_secret" "s2s_secret" {
-  name          = "microservicekey-notifications-service"
-  key_vault_id  = data.azurerm_key_vault.s2s_key_vault.id
-}
+#data "azurerm_key_vault_secret" "s2s_secret" {
+#  name          = "microservicekey-notifications-service"
+#  key_vault_id  = data.azurerm_key_vault.s2s_key_vault.id
+#}
 
-resource "azurerm_key_vault_secret" "notifications_s2s_secret" {
-  name          = "notifications-s2s-secret"
-  value         = data.azurerm_key_vault_secret.s2s_secret.value
-  key_vault_id  = data.azurerm_key_vault.notifications_key_vault.id
-}
+#resource "azurerm_key_vault_secret" "notifications_s2s_secret" {
+#  name          = "notifications-s2s-secret"
+#  value         = data.azurerm_key_vault_secret.s2s_secret.value
+#  key_vault_id  = data.azurerm_key_vault.notifications_key_vault.id
+#}
 
 
 #data "azurerm_key_vault" "notifications_key_vault" {
