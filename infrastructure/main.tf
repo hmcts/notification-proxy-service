@@ -19,10 +19,10 @@ locals {
 #  refund_status_thumbprints_in_quotes_str = join(",", local.refund_status_thumbprints_in_quotes)
 }
 
-data "azurerm_key_vault" "notifications_key_vault" {
-  name = "${local.vaultName}"
-  resource_group_name = join("-", [var.core_product, var.env])
-}
+#data "azurerm_key_vault" "notifications_key_vault" {
+#  name = "${local.vaultName}"
+#  resource_group_name = join("-", [var.core_product, var.env])
+#}
 
 
 // Database Infra
