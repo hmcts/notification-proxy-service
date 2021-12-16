@@ -15,8 +15,8 @@ locals {
   s2s_vault_resource_group    = var.env == "preview" || var.env == "spreview" ? join("-", [local.s2s_rg_prefix, "aat"]) : join("-", [local.s2s_rg_prefix, var.env])
   notifications_service_url = join("", ["http://notifications-service-", var.env, ".service.core-compute-", var.env, ".internal"])
   # list of the thumbprints of the SSL certificates that should be accepted by the refund status API (gateway)
-#  refund_status_thumbprints_in_quotes = formatlist("&quot;%s&quot;", var.refunds_api_gateway_certificate_thumbprints)
-#  refund_status_thumbprints_in_quotes_str = join(",", local.refund_status_thumbprints_in_quotes)
+  notifications_status_thumbprints_in_quotes = formatlist("&quot;%s&quot;", var.notifications_service_gateway_certificate_thumbprints)
+  notifications_status_thumbprints_in_quotes_str = join(",", local.notifications_status_thumbprints_in_quotes)
 }
 
 #data "azurerm_key_vault" "notifications_key_vault" {
@@ -24,6 +24,10 @@ locals {
 #  resource_group_name = join("-", [var.core_product, var.env])
 #}
 
+data "azurerm_key_vault" "notifications_key_vault" {
+  name = "${local.vaultName}"
+  resource_group_name = join("-", [var.core_product, var.env])
+}
 
 // Database Infra
 module "notifications-service-database-v11" {
@@ -105,20 +109,3 @@ data "azurerm_key_vault_secret" "s2s_client_id" {
   name         = "gateway-s2s-client-id"
   key_vault_id = data.azurerm_key_vault.notifications_key_vault.id
 }
-
-#data "azurerm_key_vault" "notifications_key_vault" {
-#  name = "${local.vaultName}"
-#  resource_group_name = join("-", [var.core_product, var.env])
-#}
-
-#resource "azurerm_resource_group" "ccpay" {
-#  name      = join("-", [var.product, var.component, var.env])
-#  location  = var.location
-#  tags      = {
-#    "Deployment Environment"  = var.env
-#    "Team Name"               = var.team_name
-#    "lastUpdated"             = timestamp()
-#  }
-#}
-
-
