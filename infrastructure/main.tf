@@ -95,10 +95,10 @@ resource "azurerm_key_vault_secret" "notifications_s2s_secret" {
   key_vault_id  = data.azurerm_key_vault.notifications_key_vault.id
 }
 
-data "azurerm_key_vault" "notifications_key_vault" {
-  name                = local.vaultName
-  resource_group_name = local.vaultName
-}
+#data "azurerm_key_vault" "notifications_key_vault" {
+#  name                = local.vaultName
+#  resource_group_name = local.vaultName
+#}
 
 data "azurerm_key_vault_secret" "s2s_client_secret" {
   name         = "gateway-s2s-client-secret"
