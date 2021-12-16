@@ -8,19 +8,62 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import uk.gov.hmcts.reform.notifications.Application;
+import com.google.common.base.Predicate;
+
+import springfox.documentation.RequestHandler;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.service.ApiInfo;
+
+
 
 @Configuration
 @EnableSwagger2
 public class SwaggerConfiguration {
 
+/*
+This needs to be uncommented when auth tokens are required to access the endpoints
+ */
+
+//    private List<Parameter> getGlobalOperationParameters() {
+//        return Arrays.asList(
+//            new ParameterBuilder()
+//                .name("Authorization")
+//                .description("User authorization header")
+//                .required(true)
+//                .parameterType("header")
+//                .modelRef(new ModelRef("string"))
+//                .build(),
+//            new ParameterBuilder()
+//                .name("ServiceAuthorization")
+//                .description("Service authorization header")
+//                .required(true)
+//                .parameterType("header")
+//                .modelRef(new ModelRef("string"))
+//                .build());
+//    }
+
+
     @Bean
-    public Docket api() {
+    public Docket NotificationsApi() {
         return new Docket(DocumentationType.SWAGGER_2)
+            .groupName("notifications")
             .useDefaultResponseMessages(false)
+            .apiInfo(paymentApiInfo())
             .select()
-            .apis(RequestHandlerSelectors.basePackage(Application.class.getPackage().getName() + ".controllers"))
+            .apis(packagesLike("uk.gov.hmcts.reform.notifications.controllers"))
             .paths(PathSelectors.any())
             .build();
+    }
+
+    private ApiInfo paymentApiInfo() {
+        return new ApiInfoBuilder()
+            .title("Notifications Service API documentation")
+            .description("Notifications Service documentation")
+            .build();
+    }
+
+    private static Predicate<RequestHandler> packagesLike(final String pkg) {
+        return input -> input.declaringClass().getPackage().getName().equals(pkg);
     }
 
 }
