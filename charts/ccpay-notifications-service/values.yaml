@@ -29,24 +29,3 @@ java:
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
 
-#    PAYMENT_API_URL: "http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-#    LIBERATA_OAUTH2_AUTHORIZE_URL: "https://bpacustomerportal.liberata.com/pba/public/oauth/authorize"
-#    LIBERATA_OAUTH2_TOKEN_URL: "https://bpacustomerportal.liberata.com/pba/public/oauth/token"
-#    LIBERATA_BASE_URL: "https://bpacustomerportal.liberata.com"
-#    REFUND_STATUS_UPDATE_PATH: "/refunds-api/refund"
-#    USER_INFO_SIZE: 300
-#    USER_LAST_MODIFIED_TIME: 720d
-#    REFUND_SERVICE_ACCOUNT_CLIENT_ID: "refunds_api"
-#    REFUND_SERVICE_ACCOUNT_GRANT_TYPE: "password"
-#    REFUND_SERVICE_ACCOUNT_USERNAME: "idam.user.ccpayrefundsapi@hmcts.net"
-#    REFUND_SERVICE_ACCOUNT_SCOPE: "openid profile roles search-user"
-#    REFUND_SERVICE_ACCOUNT_REDIRECT_URI: "http://ccpay-refunds-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback"
-#  Uncomment once the vault containing the app insights key has been set up
-#  keyVaults:
-#    rpe:
-#      secrets:
-#        - name: AppInsightsInstrumentationKey
-#          alias: azure.application-insights.instrumentation-key
-#  environment:
-
-

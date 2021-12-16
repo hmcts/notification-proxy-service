@@ -8,7 +8,7 @@ services:
         - http_proxy
         - https_proxy
         - no_proxy
-    image: hmctspublic.azurecr.io/spring-boot/template
+    image: hmctspublic.azurecr.io/notifications-service/api
     environment:
       # these environment variables are used by java-logging library
       - ROOT_APPENDER
@@ -24,3 +24,15 @@ services:
       - LOGBACK_REQUIRE_ERROR_CODE=false
     ports:
       - $SERVER_PORT:$SERVER_PORT
+
+  ccpay-notifications-service-db:
+    container_name: ccpay-notifications-service-db
+    image: postgres:11-alpine
+    environment:
+      - POSTGRES_USER=notifications
+      - POSTGRES_PASSWORD=notifications
+      - POSTGRES_DB=notifications
+    ports:
+      - 5182:5432
+    volumes:
+      - ccpay-notifications-service-db-data:/var/lib/postgresql/data

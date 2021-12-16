@@ -13,7 +13,7 @@ locals {
   s2s_rg_prefix               = "rpe-service-auth-provider"
   s2s_key_vault_name          = var.env == "preview" || var.env == "spreview" ? join("-", ["s2s", "aat"]) : join("-", ["s2s", var.env])
   s2s_vault_resource_group    = var.env == "preview" || var.env == "spreview" ? join("-", [local.s2s_rg_prefix, "aat"]) : join("-", [local.s2s_rg_prefix, var.env])
-  refunds_api_url = join("", ["http://notifications-service-", var.env, ".service.core-compute-", var.env, ".internal"])
+  notifications_service_url = join("", ["http://notifications-service-", var.env, ".service.core-compute-", var.env, ".internal"])
   # list of the thumbprints of the SSL certificates that should be accepted by the refund status API (gateway)
 #  refund_status_thumbprints_in_quotes = formatlist("&quot;%s&quot;", var.refunds_api_gateway_certificate_thumbprints)
 #  refund_status_thumbprints_in_quotes_str = join(",", local.refund_status_thumbprints_in_quotes)
