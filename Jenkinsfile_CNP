@@ -22,5 +22,6 @@ withPipeline(type, product, component) {
   enableSlackNotifications('#cc-payments-tech')
   disableLegacyDeployment()
   disableLegacyDeploymentOnAAT()
+  enableDbMigration('ccpay')
   syncBranchesWithMaster(branchesToSync)
 }
