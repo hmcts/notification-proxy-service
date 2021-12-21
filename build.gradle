@@ -15,8 +15,8 @@ group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
 
 
-  sourceCompatibility = '11'
-  targetCompatibility = '11'
+sourceCompatibility = '11'
+targetCompatibility = '11'
 
 sourceSets {
   functionalTest {
@@ -115,6 +115,7 @@ project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 def sonarExclusions = [
   '**/model/**',
+  '**/controllers/**',
   '**/config/**'
 ]
 
@@ -177,6 +178,8 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
+  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
+
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0'
 
@@ -201,14 +204,10 @@ dependencies {
   smokeTestImplementation sourceSets.test.runtimeClasspath
 }
 
-mainClassName = 'uk.gov.hmcts.reform.notifications.Application'
-
+mainClassName = 'uk.gov.hmcts.reform.notificationsService.Application'
 
 bootJar {
-  getArchiveFileName().set(provider {
-    'notifications-service.jar'
-  })
-
+  archiveFileName = "notifications-service.jar"
 
   manifest {
     attributes('Implementation-Version': project.version.toString())
@@ -221,7 +220,5 @@ rootProject.tasks.named("processSmokeTestResources") {
 }
 
 wrapper {
-    distributionType = Wrapper.DistributionType.ALL
+  distributionType = Wrapper.DistributionType.ALL
 }
-
-
