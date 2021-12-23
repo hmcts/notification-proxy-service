@@ -8,6 +8,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import uk.gov.hmcts.reform.notifications.util.NotificationType;
+
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -25,7 +27,7 @@ import javax.persistence.InheritanceType;
 @Getter
 @Setter
 @ToString
-@Builder(builderMethodName = "notificationWith")
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)

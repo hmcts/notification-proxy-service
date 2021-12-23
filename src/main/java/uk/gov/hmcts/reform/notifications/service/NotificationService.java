@@ -1,14 +1,12 @@
 package uk.gov.hmcts.reform.notifications.service;
 
+import uk.gov.hmcts.reform.notifications.dtos.request.EmailNotificationRequest;
 import uk.gov.service.notify.NotificationClientException;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
+import uk.gov.service.notify.SendEmailResponse;
 
 public interface NotificationService {
 
-    void sendEmailNotification() throws NotificationClientException;
+    SendEmailResponse sendEmailNotification(EmailNotificationRequest emailNotificationRequest, String templateId) throws NotificationClientException;
 
     void sendLetterNotification() throws NotificationClientException;
 }

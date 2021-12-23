@@ -1,0 +1,125 @@
+databaseChangeLog:
+  - changeSet:
+      id: 100002
+      author: arbab
+      changes:
+        - createTable:
+            tableName: contact_details
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: notification_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_notification_id
+                    references: notification(id)
+              - column:
+                  name: reference
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: notification_type
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: template_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_created
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: date_updated
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: created_by
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+
+  - changeSet:
+      id: 100003
+      author: arbab
+      changes:
+        - dropColumn:
+            columnName: id
+            columns:
+              - column:
+                  name: reference
+            tableName: contact_details
+
+  - changeSet:
+      id: 100004
+      author: arbab
+      changes:
+        - dropColumn:
+            columnName: id
+            columns:
+              - column:
+                  name: notification_type
+              - column:
+                  name: template_id
+            tableName: contact_details
+
+  - changeSet:
+      id: 100005
+      author: arbab
+      changes:
+        - dropColumn:
+            columnName: id
+            columns:
+              - column:
+                  name: date_created
+              - column:
+                  name: date_updated
+              - column:
+                  name: created_by
+            tableName: contact_details
+
+  - changeSet:
+      id: 100006
+      author: arbab
+      changes:
+        - addColumn:
+            tableName: contact_details
+            columns:
+              - column:
+                  name: email
+                  type: varchar
+              - column:
+                  name: address_line
+                  type: varchar
+              - column:
+                  name: county
+                  type: varchar
+              - column:
+                  name: city
+                  type: varchar
+              - column:
+                  name: postcode
+                  type: varchar
+              - column:
+                  name: country
+                  type: varchar
+              - column:
+                  name: date_created
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: date_updated
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: created_by
+                  type: varchar
+                  constraints:
+                    nullable: false

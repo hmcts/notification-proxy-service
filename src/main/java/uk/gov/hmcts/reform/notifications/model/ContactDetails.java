@@ -6,12 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -27,5 +27,39 @@ public class ContactDetails {
     private Integer id;
 
     @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "notification_id", insertable = false, updatable = false)
+    private Notification notification;
+
+
+    @ToString.Exclude
+    private String addressLine;
+
+    @ToString.Exclude
     private String city;
+
+    @ToString.Exclude
+    @Email
+    private String email;
+
+    @ToString.Exclude
+    private String county;
+
+    @ToString.Exclude
+    private String postcode;
+
+    @ToString.Exclude
+    private String country;
+
+    @CreationTimestamp
+    @Column(name = "date_created")
+    private Date dateCreated;
+
+    @UpdateTimestamp
+    @Column(name = "date_updated")
+    private Date dateUpdated;
+
+    @ToString.Exclude
+    @Column(name = "created_by")
+    private String createdBy;
 }

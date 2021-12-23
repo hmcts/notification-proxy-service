@@ -5,13 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import uk.gov.hmcts.reform.notifications.dtos.request.EmailNotificationRequest;
 import uk.gov.hmcts.reform.notifications.service.NotificationService;
 import uk.gov.service.notify.NotificationClientException;
+import uk.gov.service.notify.SendEmailResponse;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -25,15 +25,14 @@ public class NotificationController {
     @Autowired
     private NotificationService notificationService;
 
-    @GetMapping("/emailNotification")
-    public ResponseEntity<String> emailNotification(
+    @PostMapping("/emailNotification")
+    public SendEmailResponse emailNotification(
          @RequestHeader("Authorization") String authorization,
-        @RequestHeader(required = false) MultiValueMap<String, String> headers) throws NotificationClientException {
-        notificationService .sendEmailNotification(
-           );
-        return new ResponseEntity<>(
-            HttpStatus.OK
-        );
+         @RequestHeader(required = false) MultiValueMap<String, String> headers,
+         @RequestParam(required = true) String notficationTemplateId,
+         @Valid @RequestBody EmailNotificationRequest request) throws NotificationClientException {
+        SendEmailResponse sendEmailResponse = notificationService.sendEmailNotification(request, notficationTemplateId);
+        return sendEmailResponse;
     }
 
     @GetMapping("/letterNotification")
@@ -46,5 +45,8 @@ public class NotificationController {
             HttpStatus.OK
         );
     }
+
+//    @PostMapping("/email-notification")
+//    public ResponseEntity<>
 }
 

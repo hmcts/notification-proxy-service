@@ -3,14 +3,16 @@ package uk.gov.hmcts.reform.notifications.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.notifications.dtos.request.EmailNotificationRequest;
+import uk.gov.hmcts.reform.notifications.mapper.EmailNotificationMapper;
+import uk.gov.hmcts.reform.notifications.model.Notification;
+import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientApi;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
-import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,15 +25,25 @@ public class NotificationServiceImpl implements NotificationService {
     @Value("${notify.letter.apiKey}")
     private String notificationApiKeyLetter;
 
+    @Autowired
+    NotificationRepository notificationRepository;
+
+    @Autowired
+    EmailNotificationMapper emailNotificationMapper;
+
     @Override
-    public void sendEmailNotification()
+    public SendEmailResponse sendEmailNotification(EmailNotificationRequest emailNotificationRequest, String templateId)
         throws NotificationClientException {
-        NotificationClientApi notificationemailClient = new NotificationClient(notificationApiKeyEmail);
-        SendEmailResponse sr =  notificationemailClient
-            .sendEmail("8833960c-4ffa-42db-806c-451a68c56e98",
-                       "anshika.nigam@hmcts.net",
-                       createPersonalisation(),
+        NotificationClientApi notificationEmailClient = new NotificationClient(notificationApiKeyEmail);
+        SendEmailResponse sendEmailResponse =  notificationEmailClient
+            .sendEmail(templateId,
+                       emailNotificationRequest.getEmail(),
+                       createPersonalisation(emailNotificationRequest.getName(), emailNotificationRequest.getRefundReference()),
                        String.format("hrs-grant-%s",  UUID.randomUUID()));
+
+        Notification notification = emailNotificationMapper.emailResponseMapper(sendEmailResponse);
+        notificationRepository.save(notification);
+        return sendEmailResponse;
     }
 
     @Override
@@ -54,9 +66,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     }
 
-    private Map<String, Object> createPersonalisation() {
+    private Map<String, Object> createPersonalisation(String name, String refundReferenceNumber) {
 
-        return Map.of("name", "Anshika",
-                      "refnumber", "TestRC1234");
+        return Map.of("name", name,
+                      "refnumber", refundReferenceNumber);
     }
 }

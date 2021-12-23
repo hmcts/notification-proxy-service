@@ -99,12 +99,12 @@ azure:
   application-insights:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:dummy}
 
+
 notify:
   letter.apiKey:
   letter.template:
   email.apiKey:
   email.template:
-    instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:}
 
 idam:
   api:
