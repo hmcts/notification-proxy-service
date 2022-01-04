@@ -8,19 +8,11 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import uk.gov.hmcts.reform.notifications.util.NotificationType;
 
 import java.util.Date;
+import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-
+import javax.persistence.*;
 
 
 @Entity
@@ -30,7 +22,7 @@ import javax.persistence.InheritanceType;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED)
+//@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "notification")
 public class Notification {
     @Id
@@ -59,5 +51,11 @@ public class Notification {
     @ToString.Exclude
     @Column(name = "created_by")
     private String createdBy;
+
+    @ToString.Exclude
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "notification_id", referencedColumnName = "id", nullable = false)
+    private List<ContactDetails> contactDetails;
+
 
 }
