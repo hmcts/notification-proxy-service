@@ -13,18 +13,20 @@ import java.util.List;
 public class EmailNotificationMapper {
 
     public Notification emailResponseMapper(SendEmailResponse sendEmailResponse, RefundNotificationEmailRequest emailNotificationRequest) {
-        List<ContactDetails> contactDetailsList = new ArrayList<>();
-        contactDetailsList.add(ContactDetails.contactDetailsWith()
+        ContactDetails contactDetailsList = ContactDetails.contactDetailsWith()
                                    .email(emailNotificationRequest.getRecipientEmailAddress())
                                    .createdBy("System")
-                                   .build());
-        return Notification.builder()
+                                   .build();
+        Notification notification = Notification.builder()
             .notificationType(emailNotificationRequest.getNotificationType().toString())
             .reference(sendEmailResponse.getReference().get())
             .templateId(sendEmailResponse.getTemplateId().toString())
             .createdBy("System")
             .contactDetails(contactDetailsList)
             .build();
+        contactDetailsList.setNotification(notification);
+        notification.setContactDetails(contactDetailsList);
+        return notification;
     }
 
 }

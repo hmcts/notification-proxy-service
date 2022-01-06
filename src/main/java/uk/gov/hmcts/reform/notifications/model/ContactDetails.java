@@ -27,8 +27,10 @@ public class ContactDetails {
     private Integer id;
 
     @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "notification_id", insertable = false, updatable = false)
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "notification_id", insertable = false, updatable = false)
+    @OneToOne (fetch = FetchType.EAGER)
+    @JoinColumn (name="notification_id")
     private Notification notification;
 
 

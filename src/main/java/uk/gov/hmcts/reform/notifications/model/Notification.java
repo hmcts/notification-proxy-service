@@ -53,9 +53,10 @@ public class Notification {
     private String createdBy;
 
     @ToString.Exclude
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "notification_id", referencedColumnName = "id", nullable = false)
-    private List<ContactDetails> contactDetails;
+//    @OneToMany(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "notification_id", referencedColumnName = "id", nullable = false)
+    @OneToOne(fetch = FetchType.EAGER, mappedBy = "notification", cascade = CascadeType.ALL)
+    private ContactDetails contactDetails;
 
 
 }

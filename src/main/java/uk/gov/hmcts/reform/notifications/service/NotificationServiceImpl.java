@@ -39,16 +39,28 @@ public class NotificationServiceImpl implements NotificationService {
     public SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest)
         throws NotificationClientException {
         NotificationClientApi notificationEmailClient = new NotificationClient(notificationApiKeyEmail);
-        SendEmailResponse sendEmailResponse =  notificationEmailClient
-            .sendEmail(emailNotificationRequest.getTemplateId(),
-                       emailNotificationRequest.getRecipientEmailAddress(),
-                       createEmailPersonalisation(emailNotificationRequest.getPersonalisation()),
-                       emailNotificationRequest.getReference());
+        try {
+            SendEmailResponse sendEmailResponse = notificationEmailClient
+                .sendEmail(
+                    emailNotificationRequest.getTemplateId(),
+                    emailNotificationRequest.getRecipientEmailAddress(),
+                    createEmailPersonalisation(emailNotificationRequest.getPersonalisation()),
+                    emailNotificationRequest.getReference()
+                );
+
 //                       String.format("hrs-grant-%s",  UUID.randomUUID()));
 
-        Notification notification = emailNotificationMapper.emailResponseMapper(sendEmailResponse, emailNotificationRequest);
-        notificationRepository.save(notification);
-        return sendEmailResponse;
+            Notification notification = emailNotificationMapper.emailResponseMapper(
+                sendEmailResponse,
+                emailNotificationRequest
+            );
+            notificationRepository.save(notification);
+
+            return sendEmailResponse;
+        }catch (NotificationClientException e){
+            e.getHttpResult();
+            throw e;
+        }
     }
 
     @Override

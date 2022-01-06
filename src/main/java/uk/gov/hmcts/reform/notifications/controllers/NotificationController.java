@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.notifications.controllers;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -28,13 +32,23 @@ public class NotificationController {
     @Autowired
     private NotificationService notificationService;
 
+    @ApiOperation(value = "Create email notification for a refund", notes = "Create email notification for a refund")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = "Notification email sent successfully"),
+        @ApiResponse(code = 400, message = "Bad request. Notification creation failed"),
+        @ApiResponse(code = 403, message = "AuthError"),
+        @ApiResponse(code = 429, message = "Too Many Requests Error"),
+        @ApiResponse(code = 500, message = "Internal Server Error"),
+        @ApiResponse(code = 504, message = "Unable to connect to notification provider, please try again late")
+    })
     @PostMapping("/emailNotification")
-    public SendEmailResponse emailNotification(
+    public ResponseEntity emailNotification(
 //         @RequestHeader("Authorization") String authorization,
          @RequestHeader(required = false) MultiValueMap<String, String> headers,
          @Valid @RequestBody RefundNotificationEmailRequest request) throws NotificationClientException {
         SendEmailResponse sendEmailResponse = notificationService.sendEmailNotification(request);
-        return sendEmailResponse;
+                return new ResponseEntity<>(
+                    "Notification email sent successfully", HttpStatus.CREATED);
     }
 
     @PostMapping("/letterNotification")

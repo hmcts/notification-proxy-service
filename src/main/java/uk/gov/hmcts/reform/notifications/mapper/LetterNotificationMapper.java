@@ -15,15 +15,14 @@ import java.util.List;
 public class LetterNotificationMapper {
 
     public Notification letterResponseMapper(SendLetterResponse sendLetterResponse, RefundNotificationLetterRequest letterNotificationRequest) {
-        List<ContactDetails> contactDetailsList = new ArrayList<>();
-        contactDetailsList.add(ContactDetails.contactDetailsWith()
+        ContactDetails contactDetailsList = ContactDetails.contactDetailsWith()
                                    .addressLine(letterNotificationRequest.getRecipientPostalAddress().getAddressLine())
                                    .postcode(letterNotificationRequest.getRecipientPostalAddress().getPostalCode())
                                    .county(letterNotificationRequest.getRecipientPostalAddress().getCounty())
                                    .city(letterNotificationRequest.getRecipientPostalAddress().getCity())
                                    .country(letterNotificationRequest.getRecipientPostalAddress().getCountry())
                                    .createdBy("System")
-                                   .build());
+                                   .build();
         return Notification.builder()
             .notificationType(letterNotificationRequest.getNotificationType().toString())
             .reference(sendLetterResponse.getReference().get())
