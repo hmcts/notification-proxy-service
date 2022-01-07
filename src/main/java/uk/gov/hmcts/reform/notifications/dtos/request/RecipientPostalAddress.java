@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Setter
 @Getter
@@ -16,13 +19,23 @@ import lombok.Setter;
 @Builder(builderMethodName = "recipientPostalAddressWith")
 public class RecipientPostalAddress {
 
+    @NotNull(message = "Address line cannot be null")
+    @NotEmpty(message = "Address line cannot be blank")
     private String addressLine;
 
+    @NotNull(message = "City cannot be null")
+    @NotEmpty(message = "City cannot be blank")
     private String city;
 
+    @NotNull(message = "County cannot be null")
+    @NotEmpty(message = "County cannot be blank")
     private String county;
 
+    @NotNull(message = "Country cannot be null")
+    @NotEmpty(message = "Country cannot be blank")
     private String country;
 
+    @NotNull(message = "Postal Code cannot be null")
+    @NotEmpty(message = "Postal Code cannot be blank")
     private String postalCode;
 }

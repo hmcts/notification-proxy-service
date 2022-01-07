@@ -7,6 +7,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Setter
@@ -18,6 +22,8 @@ public class Personalisation {
 
     private String ccdCaseNumber;
 
+    @NotNull(message = "Refund reference cannot be null")
+    @NotEmpty(message = "Refund reference cannot be blank")
     private String refundReference;
 
     private String serviceUrl;

@@ -9,7 +9,7 @@ import uk.gov.service.notify.SendLetterResponse;
 
 public interface NotificationService {
 
-    SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest) throws NotificationClientException;
+    SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest) throws Exception;
 
-    SendLetterResponse sendLetterNotification(RefundNotificationLetterRequest letterNotificationRequest) throws NotificationClientException;
+    SendLetterResponse sendLetterNotification(RefundNotificationLetterRequest letterNotificationRequest) throws Exception;
 }

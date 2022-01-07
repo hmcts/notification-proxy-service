@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.notifications.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.notifications.controllers.ExceptionHandlers;
 import uk.gov.hmcts.reform.notifications.dtos.request.EmailNotificationRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.Personalisation;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
@@ -11,6 +14,7 @@ import uk.gov.hmcts.reform.notifications.mapper.EmailNotificationMapper;
 import uk.gov.hmcts.reform.notifications.mapper.LetterNotificationMapper;
 import uk.gov.hmcts.reform.notifications.model.Notification;
 import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
+import uk.gov.hmcts.reform.notifications.util.GovNotifyExceptionWrapper;
 import uk.gov.service.notify.*;
 
 import java.util.HashMap;
@@ -35,9 +39,12 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired
     LetterNotificationMapper letterNotificationMapper;
 
+    private static final Logger LOG = LoggerFactory.getLogger(ExceptionHandlers.class);
+
     @Override
     public SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest)
-        throws NotificationClientException {
+
+        throws Exception {
         NotificationClientApi notificationEmailClient = new NotificationClient(notificationApiKeyEmail);
         try {
             SendEmailResponse sendEmailResponse = notificationEmailClient
@@ -58,13 +65,14 @@ public class NotificationServiceImpl implements NotificationService {
 
             return sendEmailResponse;
         }catch (NotificationClientException e){
-            e.getHttpResult();
-            throw e;
+            GovNotifyExceptionWrapper exceptionWrapper = new GovNotifyExceptionWrapper();
+            LOG.error(e.getMessage());
+            throw exceptionWrapper.mapGovNotifyEmailException(e);
         }
     }
 
     @Override
-    public SendLetterResponse sendLetterNotification(RefundNotificationLetterRequest letterNotificationRequest) throws NotificationClientException {
+    public SendLetterResponse sendLetterNotification(RefundNotificationLetterRequest letterNotificationRequest) throws Exception {
         NotificationClientApi notificationletterClient = new NotificationClient(notificationApiKeyLetter);
 
 //        Map<String, Object> personalisation = new HashMap<>();
@@ -73,16 +81,24 @@ public class NotificationServiceImpl implements NotificationService {
 //        personalisation.put("address_line_3", "India"); // mandatory address field, must be a real UK postcode
 //        personalisation.put("first_name", "Anshika"); // field from template
 //        personalisation.put("application_date", "2018-01-01"); // field from template
+        try {
+            SendLetterResponse sendLetterResponse = notificationletterClient.sendLetter(
+                letterNotificationRequest.getTemplateId(),
+                createLetterPersonalisation(letterNotificationRequest),
+                letterNotificationRequest.getReference()
+            );
 
-        SendLetterResponse sendLetterResponse = notificationletterClient.sendLetter(
-            letterNotificationRequest.getTemplateId(),
-            createLetterPersonalisation(letterNotificationRequest),
-            letterNotificationRequest.getReference()
-        );
-
-        Notification notification = letterNotificationMapper.letterResponseMapper(sendLetterResponse, letterNotificationRequest);
-        notificationRepository.save(notification);
-        return sendLetterResponse;
+            Notification notification = letterNotificationMapper.letterResponseMapper(
+                sendLetterResponse,
+                letterNotificationRequest
+            );
+            notificationRepository.save(notification);
+            return sendLetterResponse;
+        }catch (NotificationClientException e){
+            GovNotifyExceptionWrapper exceptionWrapper = new GovNotifyExceptionWrapper();
+            LOG.error(e.getMessage());
+            throw exceptionWrapper.mapGovNotifyLetterException(e);
+        }
     }
 
     private Map<String, Object> createEmailPersonalisation(Personalisation personalisation) {

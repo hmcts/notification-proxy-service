@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 
 @Entity
@@ -29,6 +30,7 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotNull(message = "Reference has to be present")
     @ToString.Exclude
     private String reference;
 
@@ -38,6 +40,7 @@ public class Notification {
 
     @ToString.Exclude
     @Column(name = "template_id")
+    @NotNull(message = "Template ID has to be present")
     private String templateId;
 
     @CreationTimestamp
@@ -53,8 +56,6 @@ public class Notification {
     private String createdBy;
 
     @ToString.Exclude
-//    @OneToMany(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "notification_id", referencedColumnName = "id", nullable = false)
     @OneToOne(fetch = FetchType.EAGER, mappedBy = "notification", cascade = CascadeType.ALL)
     private ContactDetails contactDetails;
 

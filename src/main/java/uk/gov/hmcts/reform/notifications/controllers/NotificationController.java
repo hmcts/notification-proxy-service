@@ -32,11 +32,12 @@ public class NotificationController {
     @Autowired
     private NotificationService notificationService;
 
-    @ApiOperation(value = "Create email notification for a refund", notes = "Create email notification for a refund")
+    @ApiOperation(value = "Create a email notification for a refund", notes = "Create email notification for a refund")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = "Notification email sent successfully"),
+        @ApiResponse(code = 201, message = "Notification sent successfully via email"),
         @ApiResponse(code = 400, message = "Bad request. Notification creation failed"),
         @ApiResponse(code = 403, message = "AuthError"),
+        @ApiResponse(code = 422, message = "Invalid Template ID"),
         @ApiResponse(code = 429, message = "Too Many Requests Error"),
         @ApiResponse(code = 500, message = "Internal Server Error"),
         @ApiResponse(code = 504, message = "Unable to connect to notification provider, please try again late")
@@ -45,25 +46,32 @@ public class NotificationController {
     public ResponseEntity emailNotification(
 //         @RequestHeader("Authorization") String authorization,
          @RequestHeader(required = false) MultiValueMap<String, String> headers,
-         @Valid @RequestBody RefundNotificationEmailRequest request) throws NotificationClientException {
+         @Valid @RequestBody RefundNotificationEmailRequest request) throws Exception {
         SendEmailResponse sendEmailResponse = notificationService.sendEmailNotification(request);
                 return new ResponseEntity<>(
-                    "Notification email sent successfully", HttpStatus.CREATED);
+                    "Notification sent successfully via email", HttpStatus.CREATED);
     }
 
+    @ApiOperation(value = "Create a letter notification for a refund", notes = "Create letter notification for a refund")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = "Notification sent successfully via letter"),
+        @ApiResponse(code = 400, message = "Bad request. Notification creation failed"),
+        @ApiResponse(code = 403, message = "AuthError"),
+        @ApiResponse(code = 422, message = "Invalid Template ID"),
+        @ApiResponse(code = 422, message = "Please enter a valid/real postcode"),
+        @ApiResponse(code = 429, message = "Too Many Requests Error"),
+        @ApiResponse(code = 500, message = "Internal Server Error"),
+        @ApiResponse(code = 504, message = "Unable to connect to notification provider, please try again late")
+    })
     @PostMapping("/letterNotification")
-    public SendLetterResponse letterNotification(
+    public ResponseEntity letterNotification(
       //  @RequestHeader("Authorization") String authorization,
         @RequestHeader(required = false) MultiValueMap<String, String> headers,
-        @Valid @RequestBody RefundNotificationLetterRequest request) throws NotificationClientException {
-        return notificationService.sendLetterNotification(request);
-
-//        return new ResponseEntity<>(
-//            HttpStatus.OK
-//        );
+        @Valid @RequestBody RefundNotificationLetterRequest request) throws Exception {
+        SendLetterResponse sendLetterResponse = notificationService.sendLetterNotification(request);
+        return new ResponseEntity<>(
+            "Notification sent successfully via letter", HttpStatus.CREATED);
     }
 
-//    @PostMapping("/email-notification")
-//    public ResponseEntity<>
 }
 

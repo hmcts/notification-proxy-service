@@ -23,12 +23,16 @@ public class LetterNotificationMapper {
                                    .country(letterNotificationRequest.getRecipientPostalAddress().getCountry())
                                    .createdBy("System")
                                    .build();
-        return Notification.builder()
+        Notification notification =  Notification.builder()
             .notificationType(letterNotificationRequest.getNotificationType().toString())
             .reference(sendLetterResponse.getReference().get())
             .templateId(sendLetterResponse.getTemplateId().toString())
             .createdBy("System")
             .contactDetails(contactDetailsList)
             .build();
+
+        contactDetailsList.setNotification(notification);
+        notification.setContactDetails(contactDetailsList);
+        return notification;
     }
 }
