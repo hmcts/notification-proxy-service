@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import uk.gov.hmcts.reform.notifications.dtos.response.ErrorResponse;
 import uk.gov.hmcts.reform.notifications.exceptions.*;
 
 import java.util.LinkedList;
@@ -30,7 +29,6 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
             details.add(error.getDefaultMessage());
         }
         LOG.debug("Validation error", ex);
-        ErrorResponse error = new ErrorResponse("Validation Failed", details);
         return new ResponseEntity<>(details.get(0), HttpStatus.BAD_REQUEST);
     }
 
