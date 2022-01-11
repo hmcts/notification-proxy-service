@@ -120,6 +120,7 @@ project.tasks['sonarqube'].dependsOn jacocoTestReport
 def sonarExclusions = [
   '**/model/**',
   '**/controllers/**',
+  '**/mapper/**',
   '**/config/**'
 ]
 
