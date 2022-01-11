@@ -1,20 +1,23 @@
 package uk.gov.hmcts.reform.notifications.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.notifications.exceptions.*;
 import uk.gov.service.notify.NotificationClientException;
 
 public class GovNotifyExceptionWrapper {
 
-
     GovNotifyErrorMessage govNotifyErrorMessage = new GovNotifyErrorMessage();
 
-    public Exception mapGovNotifyEmailException(NotificationClientException notificationException){
+    final static String INVALID_TEMPLATE_ID_RESPONSE = "template_id is not a valid UUID";
+    final static String INVALID_POSTCODE_RESPONSE_ONE = "Must be a real UK postcode";
+    final static String INVALID_POSTCODE_RESPONSE_TWO = "Last line of address must be a real UK postcode or another country";
+
+
+    public GovNotifyException mapGovNotifyEmailException(NotificationClientException notificationException){
         switch (notificationException.getHttpResult()) {
             case 400:
                 String errorMessage = govNotifyErrorMessage.getErrorMessage(notificationException.getMessage());
 
-                if (errorMessage.equals("template_id is not a valid UUID")) {
+                if (INVALID_TEMPLATE_ID_RESPONSE.equals(errorMessage)) {
                     return new InvalidTemplateId("Invalid Template ID");
                 }else {
                     return new RestrictedApiKeyException("Internal Server Error, restricted API key");
@@ -30,15 +33,15 @@ public class GovNotifyExceptionWrapper {
         }
     }
 
-    public Exception mapGovNotifyLetterException(NotificationClientException notificationException){
+    public GovNotifyException mapGovNotifyLetterException(NotificationClientException notificationException){
         switch (notificationException.getHttpResult()) {
             case 400:
                 String errorMessage = govNotifyErrorMessage.getErrorMessage(notificationException.getMessage());
 
-                if (errorMessage.equals("Must be a real UK postcode") ||
-                    errorMessage.equals("Last line of address must be a real UK postcode or another country")){
+                if (INVALID_POSTCODE_RESPONSE_ONE.equals(errorMessage) ||
+                    INVALID_POSTCODE_RESPONSE_TWO.equals(errorMessage)){
                     return new InvalidAddressException("Please enter a valid/real postcode");
-                }else if (errorMessage.equals("template_id is not a valid UUID")) {
+                }else if (INVALID_TEMPLATE_ID_RESPONSE.equals(errorMessage)) {
                     return new InvalidTemplateId("Invalid Template ID");
                 }else {
                     return new RestrictedApiKeyException("Internal Server Error, restricted API key");

@@ -1,15 +1,11 @@
 package uk.gov.hmcts.reform.notifications.mapper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
 import uk.gov.hmcts.reform.notifications.model.ContactDetails;
 import uk.gov.hmcts.reform.notifications.model.Notification;
-import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class LetterNotificationMapper {

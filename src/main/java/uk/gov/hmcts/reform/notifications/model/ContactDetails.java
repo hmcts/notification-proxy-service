@@ -27,8 +27,6 @@ public class ContactDetails {
     private Integer id;
 
     @ToString.Exclude
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "notification_id", insertable = false, updatable = false)
     @OneToOne (fetch = FetchType.EAGER)
     @JoinColumn (name="notification_id")
     private Notification notification;
@@ -41,7 +39,7 @@ public class ContactDetails {
     private String city;
 
     @ToString.Exclude
-    @Email
+    @Email(message = "Please enter a valid email")
     private String email;
 
     @ToString.Exclude

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.notifications.controllers.ExceptionHandlers;
-import uk.gov.hmcts.reform.notifications.dtos.request.EmailNotificationRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.Personalisation;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
@@ -17,9 +16,7 @@ import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 import uk.gov.hmcts.reform.notifications.util.GovNotifyExceptionWrapper;
 import uk.gov.service.notify.*;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -42,9 +39,7 @@ public class NotificationServiceImpl implements NotificationService {
     private static final Logger LOG = LoggerFactory.getLogger(ExceptionHandlers.class);
 
     @Override
-    public SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest)
-
-        throws Exception {
+    public SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest) {
         NotificationClientApi notificationEmailClient = new NotificationClient(notificationApiKeyEmail);
         try {
             SendEmailResponse sendEmailResponse = notificationEmailClient
@@ -72,7 +67,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public SendLetterResponse sendLetterNotification(RefundNotificationLetterRequest letterNotificationRequest) throws Exception {
+    public SendLetterResponse sendLetterNotification(RefundNotificationLetterRequest letterNotificationRequest) {
         NotificationClientApi notificationletterClient = new NotificationClient(notificationApiKeyLetter);
 
 //        Map<String, Object> personalisation = new HashMap<>();

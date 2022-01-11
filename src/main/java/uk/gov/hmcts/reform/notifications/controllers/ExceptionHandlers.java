@@ -31,7 +31,7 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         }
         LOG.debug("Validation error", ex);
         ErrorResponse error = new ErrorResponse("Validation Failed", details);
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(details.get(0), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({ExceededRequestLimitException.class, InvalidApiKeyException.class, RestrictedApiKeyException.class})
@@ -51,4 +51,6 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         LOG.error(ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
     }
+
+
 }

@@ -10,7 +10,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -23,7 +22,6 @@ import javax.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-//@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "notification")
 public class Notification {
     @Id

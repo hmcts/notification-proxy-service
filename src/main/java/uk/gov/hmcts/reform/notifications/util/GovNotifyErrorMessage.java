@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.notifications.util;
 
-import org.springframework.stereotype.Component;
-
 public class GovNotifyErrorMessage {
 
     //Extracts the error message from the GovNotify Response body

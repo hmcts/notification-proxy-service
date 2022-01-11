@@ -30,7 +30,7 @@ public class RefundNotificationEmailRequest {
 
     @NotNull(message = "Recipient Email Address cannot be null")
     @NotEmpty(message = "Recipient Email Address cannot be blank")
-    @Email
+    @Email(message = "Please enter a valid Email Address")
     private String recipientEmailAddress;
 
     @NotNull(message = "Reference cannot be null")
