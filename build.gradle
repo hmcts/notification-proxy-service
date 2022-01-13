@@ -94,6 +94,7 @@ checkstyle {
   toolVersion = '8.29'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
   checkstyleMain.enabled = false
+  checkstyleTest.enabled = false
 
 }
 

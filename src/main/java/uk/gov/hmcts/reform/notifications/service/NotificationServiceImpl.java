@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.notifications.controllers.ExceptionHandlers;
 import uk.gov.hmcts.reform.notifications.dtos.request.Personalisation;
@@ -20,13 +19,9 @@ import uk.gov.service.notify.*;
 import java.util.Map;
 
 @Service
+@SuppressWarnings("PMD")
 public class NotificationServiceImpl implements NotificationService {
 
-    @Value("${notify.email.apiKey}")
-    private String notificationApiKeyEmail;
-
-    @Value("${notify.letter.apiKey}")
-    private String notificationApiKeyLetter;
 
     @Autowired
     NotificationRepository notificationRepository;

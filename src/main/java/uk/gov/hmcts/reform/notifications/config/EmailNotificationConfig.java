@@ -11,14 +11,14 @@ public class EmailNotificationConfig {
     @Value("${notify.email.apiKey}")
     private String notificationApiKeyEmail;
 
+    @Value("${notify.letter.apiKey}")
+    private String notificationApiKeyLetter;
+
     @Bean("Email")
     public NotificationClientApi notificationEmailClient(){
         return new NotificationClient(notificationApiKeyEmail);
 
     }
-
-    @Value("${notify.letter.apiKey}")
-    private String notificationApiKeyLetter;
 
     @Bean("Letter")
     public NotificationClientApi notificationLetterClient(){
