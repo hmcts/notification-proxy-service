@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.notifications.util;
 
 import uk.gov.hmcts.reform.notifications.exceptions.*;
-import uk.gov.service.notify.NotificationClientException;
 
 public class GovNotifyExceptionWrapper {
 
@@ -12,10 +11,10 @@ public class GovNotifyExceptionWrapper {
     final static String INVALID_POSTCODE_RESPONSE_TWO = "Last line of address must be a real UK postcode or another country";
 
 
-    public GovNotifyException mapGovNotifyEmailException(NotificationClientException notificationException){
-        switch (notificationException.getHttpResult()) {
+    public GovNotifyException mapGovNotifyEmailException(int httpResult, String message){
+        switch (httpResult) {
             case 400:
-                String errorMessage = govNotifyErrorMessage.getErrorMessage(notificationException.getMessage());
+                String errorMessage = govNotifyErrorMessage.getErrorMessage(message);
 
                 if (INVALID_TEMPLATE_ID_RESPONSE.equals(errorMessage)) {
                     return new InvalidTemplateId("Invalid Template ID");
@@ -33,10 +32,10 @@ public class GovNotifyExceptionWrapper {
         }
     }
 
-    public GovNotifyException mapGovNotifyLetterException(NotificationClientException notificationException){
-        switch (notificationException.getHttpResult()) {
+    public GovNotifyException mapGovNotifyLetterException(int httpResult, String message){
+        switch (httpResult) {
             case 400:
-                String errorMessage = govNotifyErrorMessage.getErrorMessage(notificationException.getMessage());
+                String errorMessage = govNotifyErrorMessage.getErrorMessage(message);
 
                 if (INVALID_POSTCODE_RESPONSE_ONE.equals(errorMessage) ||
                     INVALID_POSTCODE_RESPONSE_TWO.equals(errorMessage)){
