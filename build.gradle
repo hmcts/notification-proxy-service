@@ -15,8 +15,8 @@ group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
 
 
-  sourceCompatibility = '11'
-  targetCompatibility = '11'
+sourceCompatibility = '11'
+targetCompatibility = '11'
 
 apply from: 'liquibase.gradle'
 
@@ -94,6 +94,7 @@ checkstyle {
   toolVersion = '8.29'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
   checkstyleMain.enabled = false
+  checkstyleTest.enabled = false
 
 }
 
@@ -119,6 +120,8 @@ project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 def sonarExclusions = [
   '**/model/**',
+  '**/controllers/**',
+  '**/mapper/**',
   '**/config/**'
 ]
 
@@ -181,6 +184,9 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
+  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.6.1'
+
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
 
   implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.6.2'
@@ -197,11 +203,19 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.1'
   implementation 'org.projectlombok:lombok:1.18.18'
 
+  compileOnly 'org.projectlombok:lombok'
+  annotationProcessor 'org.projectlombok:lombok'
+
   testImplementation(platform('org.junit:junit-bom:5.8.1'))
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
+
+  testCompileOnly group :'org.projectlombok', name:'lombok', version:'1.18.12'
+  testAnnotationProcessor group :'org.projectlombok', name:'lombok', version:'1.18.12'
+  testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.15.1'
+
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
@@ -210,16 +224,19 @@ dependencies {
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation sourceSets.test.runtimeClasspath
+
+  smokeTestCompileOnly group :'org.projectlombok', name:'lombok', version:'1.18.12'
+  smokeTestAnnotationProcessor group :'org.projectlombok', name:'lombok', version:'1.18.12'
+
+
+  functionalTestAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+  functionalTestAnnotationProcessor group :'org.projectlombok', name:'lombok', version:'1.18.12'
 }
 
-mainClassName = 'uk.gov.hmcts.reform.notifications.Application'
-
+mainClassName = 'uk.gov.hmcts.reform.notificationsService.Application'
 
 bootJar {
-  getArchiveFileName().set(provider {
-    'notifications-service.jar'
-  })
-
+  archiveFileName = "notifications-service.jar"
 
   manifest {
     attributes('Implementation-Version': project.version.toString())
@@ -232,7 +249,5 @@ rootProject.tasks.named("processSmokeTestResources") {
 }
 
 wrapper {
-    distributionType = Wrapper.DistributionType.ALL
+  distributionType = Wrapper.DistributionType.ALL
 }
-
-

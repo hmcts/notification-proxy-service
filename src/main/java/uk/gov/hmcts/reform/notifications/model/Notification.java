@@ -8,33 +8,27 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 
 @Entity
 @Getter
 @Setter
 @ToString
-@Builder(builderMethodName = "notificationWith")
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "notification")
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotNull(message = "Reference has to be present")
     @ToString.Exclude
     private String reference;
 
@@ -44,6 +38,7 @@ public class Notification {
 
     @ToString.Exclude
     @Column(name = "template_id")
+    @NotNull(message = "Template ID has to be present")
     private String templateId;
 
     @CreationTimestamp
@@ -57,5 +52,10 @@ public class Notification {
     @ToString.Exclude
     @Column(name = "created_by")
     private String createdBy;
+
+    @ToString.Exclude
+    @OneToOne(fetch = FetchType.EAGER, mappedBy = "notification", cascade = CascadeType.ALL)
+    private ContactDetails contactDetails;
+
 
 }
