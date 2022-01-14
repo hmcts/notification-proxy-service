@@ -233,7 +233,7 @@ dependencies {
   functionalTestAnnotationProcessor group :'org.projectlombok', name:'lombok', version:'1.18.12'
 }
 
-mainClassName = 'uk.gov.hmcts.reform.notificationsService.Application'
+mainClassName = 'uk.gov.hmcts.reform.notifications.Application'
 
 bootJar {
   archiveFileName = "notifications-service.jar"
