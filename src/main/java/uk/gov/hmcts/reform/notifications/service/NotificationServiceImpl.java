@@ -17,9 +17,7 @@ import uk.gov.hmcts.reform.notifications.util.GovNotifyExceptionWrapper;
 import uk.gov.service.notify.*;
 
 import java.util.Map;
-
 @Service
-@SuppressWarnings("PMD")
 public class NotificationServiceImpl implements NotificationService {
 
 
@@ -44,7 +42,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest) {
-//        NotificationClientApi notificationEmailClient = new NotificationClient(notificationApiKeyEmail);
         try {
             SendEmailResponse sendEmailResponse = notificationEmailClient
                 .sendEmail(
@@ -60,10 +57,10 @@ public class NotificationServiceImpl implements NotificationService {
             notificationRepository.save(notification);
 
             return sendEmailResponse;
-        }catch (NotificationClientException e){
+        }catch (NotificationClientException exception){
             GovNotifyExceptionWrapper exceptionWrapper = new GovNotifyExceptionWrapper();
-            LOG.error(e.getMessage());
-            throw exceptionWrapper.mapGovNotifyEmailException(e.getHttpResult(), e.getMessage());
+            LOG.error(exception.getMessage());
+            throw exceptionWrapper.mapGovNotifyEmailException(exception);
         }
     }
 
@@ -83,10 +80,10 @@ public class NotificationServiceImpl implements NotificationService {
             );
             notificationRepository.save(notification);
             return sendLetterResponse;
-        }catch (NotificationClientException e){
+        }catch (NotificationClientException exception){
             GovNotifyExceptionWrapper exceptionWrapper = new GovNotifyExceptionWrapper();
-            LOG.error(e.getMessage());
-            throw exceptionWrapper.mapGovNotifyLetterException(e.getHttpResult(), e.getMessage());
+            LOG.error(exception.getMessage());
+            throw exceptionWrapper.mapGovNotifyLetterException(exception);
         }
     }
 

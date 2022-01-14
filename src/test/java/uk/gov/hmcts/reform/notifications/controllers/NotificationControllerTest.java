@@ -165,6 +165,130 @@ public class NotificationControllerTest {
         Assertions.assertEquals("Invalid Template ID",result.getResolvedException().getMessage());
     }
 
+    @Test
+    public void createEmailNotificationReturn500ThrowsInvalidApiKeyException() throws Exception {
+        String errorMessage = "Status code: 403 {\"errors\":[{\"error\":\"BadRequestError\"," +
+            "\"message\":\"Invalid api key\"}],\"status_code\":400}\n";
+        RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .templateId("test")
+            .reference("REF-123")
+            .recipientEmailAddress("test@test.com")
+            .personalisation(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundLagTime(1).serviceMailBox("test@test.com").serviceUrl("test.com").refundReference("test").build())
+            .build();
+
+        Notification notification = Notification.builder().build();
+
+
+        when(notificationEmailClient.sendEmail(any(), any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
+        when(notificationRepository.save(notification)).thenReturn(notification);
+
+        MvcResult result = mockMvc.perform(post("/emailNotification")
+                                               .content(asJsonString(request))
+                                               .header("Authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isInternalServerError())
+            .andReturn();
+
+        Assertions.assertEquals("Internal Server Error, invalid API key",result.getResolvedException().getMessage());
+    }
+
+    @Test
+    public void createEmailNotificationReturn500ThrowsExceededRequestLimitException() throws Exception {
+        String errorMessage = "Status code: 429 {\"errors\":[{\"error\":\"BadRequestError\"," +
+            "\"message\":\"Invalid api key\"}],\"status_code\":400}\n";
+        RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .templateId("test")
+            .reference("REF-123")
+            .recipientEmailAddress("test@test.com")
+            .personalisation(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundLagTime(1).serviceMailBox("test@test.com").serviceUrl("test.com").refundReference("test").build())
+            .build();
+
+        Notification notification = Notification.builder().build();
+
+
+        when(notificationEmailClient.sendEmail(any(), any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
+        when(notificationRepository.save(notification)).thenReturn(notification);
+
+        MvcResult result = mockMvc.perform(post("/emailNotification")
+                                               .content(asJsonString(request))
+                                               .header("Authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isInternalServerError())
+            .andReturn();
+
+        Assertions.assertEquals("Internal Server Error, send limit exceeded",result.getResolvedException().getMessage());
+    }
+
+    @Test
+    public void createEmailNotificationReturn503ThrowsGovNotifyConnectionException() throws Exception {
+        String errorMessage = "Status code: 500 {\"errors\":[{\"error\":\"BadRequestError\"," +
+            "\"message\":\"Invalid api key\"}],\"status_code\":400}\n";
+        RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .templateId("test")
+            .reference("REF-123")
+            .recipientEmailAddress("test@test.com")
+            .personalisation(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundLagTime(1).serviceMailBox("test@test.com").serviceUrl("test.com").refundReference("test").build())
+            .build();
+
+        Notification notification = Notification.builder().build();
+
+
+        when(notificationEmailClient.sendEmail(any(), any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
+        when(notificationRepository.save(notification)).thenReturn(notification);
+
+        MvcResult result = mockMvc.perform(post("/emailNotification")
+                                               .content(asJsonString(request))
+                                               .header("Authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isServiceUnavailable())
+            .andReturn();
+
+        Assertions.assertEquals("Service is not available, please try again",result.getResolvedException().getMessage());
+    }
+
+    @Test
+    public void createEmailNotificationReturn500ThrowsGovNotifyUnmappedException() throws Exception {
+        String errorMessage = "Status code: 503 {\"errors\":[{\"error\":\"BadRequestError\"," +
+            "\"message\":\"Invalid api key\"}],\"status_code\":400}\n";
+        RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .templateId("test")
+            .reference("REF-123")
+            .recipientEmailAddress("test@test.com")
+            .personalisation(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundLagTime(1).serviceMailBox("test@test.com").serviceUrl("test.com").refundReference("test").build())
+            .build();
+
+        Notification notification = Notification.builder().build();
+
+
+        when(notificationEmailClient.sendEmail(any(), any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
+        when(notificationRepository.save(notification)).thenReturn(notification);
+
+        MvcResult result = mockMvc.perform(post("/emailNotification")
+                                               .content(asJsonString(request))
+                                               .header("Authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isInternalServerError())
+            .andReturn();
+
+        Assertions.assertEquals("Internal Server Error",result.getResolvedException().getMessage());
+    }
+
 
     @Test
     public void createLetterNotificationReturnSuccess() throws Exception {
@@ -239,10 +363,13 @@ public class NotificationControllerTest {
                                                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isUnprocessableEntity())
             .andReturn();
+
+        Assertions.assertEquals("Please enter a valid/real postcode",result.getResolvedException().getMessage());
+
     }
 
     @Test
-    public void createLetterNotificationReturn422ThrowInvalidAddresssException2() throws Exception {
+    public void createLetterNotificationReturn422ThrowInvalidAddressException2() throws Exception {
         String errorMessage = "Status code: 400 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"Last line of address must be a real UK postcode or another country\"}],\"status_code\":400}\n";
 
@@ -274,6 +401,9 @@ public class NotificationControllerTest {
                                                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isUnprocessableEntity())
             .andReturn();
+
+        Assertions.assertEquals("Please enter a valid/real postcode",result.getResolvedException().getMessage());
+
     }
 
     @Test
@@ -309,12 +439,53 @@ public class NotificationControllerTest {
                                                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isUnprocessableEntity())
             .andReturn();
+
+        Assertions.assertEquals("Invalid Template ID",result.getResolvedException().getMessage());
+
+    }
+
+    @Test
+    public void createLetterNotificationReturn422ThrowRestrictedApiKeyException() throws Exception {
+        String errorMessage = "Status code: 400 {\"errors\":[{\"error\":\"BadRequestError\"," +
+            "\"message\":\"something else\"}],\"status_code\":400}\n";
+
+        RefundNotificationLetterRequest request = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .templateId("test")
+            .reference("REF-123")
+            .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
+                                        .addressLine("test")
+                                        .city("test")
+                                        .county("test")
+                                        .country("test")
+                                        .postalCode("TE ST1")
+                                        .build())
+            .personalisation(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundLagTime(1).serviceMailBox("test@test.com").serviceUrl("test.com").refundReference("test").build())
+            .build();
+
+        Notification notification = Notification.builder().build();
+
+        when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
+        when(notificationRepository.save(notification)).thenReturn(notification);
+
+        MvcResult result = mockMvc.perform(post("/letterNotification")
+                                               .content(asJsonString(request))
+                                               .header("Authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isInternalServerError())
+            .andReturn();
+
+        Assertions.assertEquals("Internal Server Error, restricted API key",result.getResolvedException().getMessage());
+
     }
 
 
     @Test
     public void createLetterNotificationReturn500ThrowRestrictedApiKeyException() throws Exception {
-        String errorMessage = "Status code: 400 {\"errors\":[{\"error\":\"BadRequestError\"," +
+        String errorMessage = "Status code: 403 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"Incorrect api key\"}],\"status_code\":400}\n";
 
         RefundNotificationLetterRequest request = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
@@ -345,9 +516,122 @@ public class NotificationControllerTest {
                                                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError())
             .andReturn();
+
+        Assertions.assertEquals("Internal Server Error, invalid API key",result.getResolvedException().getMessage());
+
     }
 
+    @Test
+    public void createLetterNotificationReturn500ThrowExceededRequestLimitException() throws Exception {
+        String errorMessage = "Status code: 429 {\"errors\":[{\"error\":\"BadRequestError\"," +
+            "\"message\":\"Incorrect api key\"}],\"status_code\":400}\n";
 
+        RefundNotificationLetterRequest request = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .templateId("test")
+            .reference("REF-123")
+            .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
+                                        .addressLine("test")
+                                        .city("test")
+                                        .county("test")
+                                        .country("test")
+                                        .postalCode("TE ST1")
+                                        .build())
+            .personalisation(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundLagTime(1).serviceMailBox("test@test.com").serviceUrl("test.com").refundReference("test").build())
+            .build();
+
+        Notification notification = Notification.builder().build();
+
+        when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
+        when(notificationRepository.save(notification)).thenReturn(notification);
+
+        MvcResult result = mockMvc.perform(post("/letterNotification")
+                                               .content(asJsonString(request))
+                                               .header("Authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isInternalServerError())
+            .andReturn();
+        Assertions.assertEquals("Internal Server Error, send limit exceeded",result.getResolvedException().getMessage());
+
+    }
+
+    @Test
+    public void createLetterNotificationReturn503ThrowGovNotifyConnectionException() throws Exception {
+        String errorMessage = "Status code: 500 {\"errors\":[{\"error\":\"BadRequestError\"," +
+            "\"message\":\"Incorrect api key\"}],\"status_code\":400}\n";
+
+        RefundNotificationLetterRequest request = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .templateId("test")
+            .reference("REF-123")
+            .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
+                                        .addressLine("test")
+                                        .city("test")
+                                        .county("test")
+                                        .country("test")
+                                        .postalCode("TE ST1")
+                                        .build())
+            .personalisation(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundLagTime(1).serviceMailBox("test@test.com").serviceUrl("test.com").refundReference("test").build())
+            .build();
+
+        Notification notification = Notification.builder().build();
+
+        when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
+        when(notificationRepository.save(notification)).thenReturn(notification);
+
+        MvcResult result = mockMvc.perform(post("/letterNotification")
+                                               .content(asJsonString(request))
+                                               .header("Authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isServiceUnavailable())
+            .andReturn();
+
+        Assertions.assertEquals("Service is not available, please try again",result.getResolvedException().getMessage());
+    }
+
+    @Test
+    public void createLetterNotificationReturn500ThrowGovNotifyUnmappedException() throws Exception {
+        String errorMessage = "Status code: 503 {\"errors\":[{\"error\":\"BadRequestError\"," +
+            "\"message\":\"Incorrect api key\"}],\"status_code\":400}\n";
+
+        RefundNotificationLetterRequest request = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .templateId("test")
+            .reference("REF-123")
+            .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
+                                        .addressLine("test")
+                                        .city("test")
+                                        .county("test")
+                                        .country("test")
+                                        .postalCode("TE ST1")
+                                        .build())
+            .personalisation(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundLagTime(1).serviceMailBox("test@test.com").serviceUrl("test.com").refundReference("test").build())
+            .build();
+
+        Notification notification = Notification.builder().build();
+
+        when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
+        when(notificationRepository.save(notification)).thenReturn(notification);
+
+        MvcResult result = mockMvc.perform(post("/letterNotification")
+                                               .content(asJsonString(request))
+                                               .header("Authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isInternalServerError())
+            .andReturn();
+
+        Assertions.assertEquals("Internal Server Error",result.getResolvedException().getMessage());
+
+    }
 
 
 }
