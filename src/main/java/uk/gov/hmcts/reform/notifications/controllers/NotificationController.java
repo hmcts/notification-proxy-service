@@ -11,6 +11,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
+import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
 import uk.gov.hmcts.reform.notifications.service.NotificationService;
 
 
@@ -35,12 +36,12 @@ public class NotificationController {
         @ApiResponse(code = 500, message = "Internal Server Error"),
         @ApiResponse(code = 504, message = "Unable to connect to notification provider, please try again late")
     })
-    @PostMapping("/emailNotification")
+    @PostMapping("/notifications/email")
     public ResponseEntity emailNotification(
-//         @RequestHeader("Authorization") String authorization,
+         @RequestHeader("Authorization") String authorization,
          @RequestHeader(required = false) MultiValueMap<String, String> headers,
          @Valid @RequestBody RefundNotificationEmailRequest request) {
-            notificationService.sendEmailNotification(request);
+            notificationService.sendEmailNotification(request, headers);
 
         return new ResponseEntity<>(
                     "Notification sent successfully via email", HttpStatus.CREATED);
@@ -57,15 +58,37 @@ public class NotificationController {
         @ApiResponse(code = 500, message = "Internal Server Error"),
         @ApiResponse(code = 504, message = "Unable to connect to notification provider, please try again late")
     })
-    @PostMapping("/letterNotification")
+    @PostMapping("/notifications/letter")
     public ResponseEntity letterNotification(
-      //  @RequestHeader("Authorization") String authorization,
+        @RequestHeader("Authorization") String authorization,
         @RequestHeader(required = false) MultiValueMap<String, String> headers,
         @Valid @RequestBody RefundNotificationLetterRequest request) {
-            notificationService.sendLetterNotification(request);
+            notificationService.sendLetterNotification(request, headers );
         return new ResponseEntity<>(
             "Notification sent successfully via letter", HttpStatus.CREATED);
     }
+
+    @ApiOperation(value = "GET /notifications ", notes = "Get Notification by passing reference")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success"),
+        @ApiResponse(code = 404, message = "Notification list not found"),
+        @ApiResponse(code = 403, message = "AuthError"),
+        @ApiResponse(code = 500, message = "Internal Server Error")
+
+    })
+
+    @GetMapping("/notifications/{reference}")
+    public ResponseEntity<NotificationResponseDto> getNotifications(
+        @RequestHeader("Authorization") String authorization,
+        @RequestHeader(required = false) MultiValueMap<String, String> headers,
+        @PathVariable("reference") String reference) {
+
+        return new ResponseEntity<>(
+            notificationService .getNotification(reference),
+            HttpStatus.OK
+        );
+    }
+
 
 }
 

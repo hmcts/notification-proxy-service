@@ -1,16 +1,25 @@
 package uk.gov.hmcts.reform.notifications.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
+import uk.gov.hmcts.reform.notifications.config.security.idam.IdamService;
 import uk.gov.hmcts.reform.notifications.controllers.ExceptionHandlers;
 import uk.gov.hmcts.reform.notifications.dtos.request.Personalisation;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
+import uk.gov.hmcts.reform.notifications.dtos.response.IdamUserIdResponse;
+import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
+import uk.gov.hmcts.reform.notifications.exceptions.NotificationListEmptyException;
 import uk.gov.hmcts.reform.notifications.mapper.EmailNotificationMapper;
 import uk.gov.hmcts.reform.notifications.mapper.LetterNotificationMapper;
+import uk.gov.hmcts.reform.notifications.mapper.NotificationResponseMapper;
 import uk.gov.hmcts.reform.notifications.model.Notification;
 import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 import uk.gov.hmcts.reform.notifications.util.GovNotifyExceptionWrapper;
@@ -38,11 +47,20 @@ public class NotificationServiceImpl implements NotificationService {
     @Qualifier("Letter")
     private NotificationClientApi notificationLetterClient;
 
+    @Autowired
+    NotificationResponseMapper notificationResponseMapper;
+
+    @Autowired
+    private IdamService idamService;
+
+    private NotificationResponseDto notificationResponseDto;
+
     private static final Logger LOG = LoggerFactory.getLogger(ExceptionHandlers.class);
 
     @Override
-    public SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest) {
+    public SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest, MultiValueMap<String, String> headers) {
         try {
+            IdamUserIdResponse uid = idamService.getUserId(headers);
             SendEmailResponse sendEmailResponse = notificationEmailClient
                 .sendEmail(
                     emailNotificationRequest.getTemplateId(),
@@ -52,7 +70,7 @@ public class NotificationServiceImpl implements NotificationService {
                 );
 
             Notification notification = emailNotificationMapper.emailResponseMapper(
-                emailNotificationRequest
+                emailNotificationRequest, uid
             );
             notificationRepository.save(notification);
 
@@ -65,9 +83,10 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public SendLetterResponse sendLetterNotification(RefundNotificationLetterRequest letterNotificationRequest) {
+    public SendLetterResponse sendLetterNotification(RefundNotificationLetterRequest letterNotificationRequest, MultiValueMap<String, String> headers) {
 
         try {
+            IdamUserIdResponse uid = idamService.getUserId(headers);
             SendLetterResponse sendLetterResponse = notificationLetterClient.sendLetter(
                 letterNotificationRequest.getTemplateId(),
                 createLetterPersonalisation(letterNotificationRequest),
@@ -76,7 +95,8 @@ public class NotificationServiceImpl implements NotificationService {
 
             Notification notification = letterNotificationMapper.letterResponseMapper(
                 sendLetterResponse,
-                letterNotificationRequest
+                letterNotificationRequest,
+                uid
             );
             notificationRepository.save(notification);
             return sendLetterResponse;
@@ -104,5 +124,26 @@ public class NotificationServiceImpl implements NotificationService {
                       "address_line_3", letterNotificationRequest.getRecipientPostalAddress().getPostalCode(),
                       "first_name", "Unknown",
                       "application_date", "2022-01-01");
+    }
+
+    @Override
+    public NotificationResponseDto getNotification(String reference) {
+
+        Optional<List<Notification>> notificationList;
+        notificationList = notificationRepository.findByReference(reference);
+
+        LOG.info("notificationList: {}", notificationList);
+
+        if (notificationList.isPresent() && !notificationList.get().isEmpty()) {
+
+            notificationResponseDto = NotificationResponseDto
+                .buildNotificationListWith()
+                .notifications(notificationList.get().stream().map(notificationResponseMapper::notificationResponse)
+                                   .collect(Collectors.toList()))
+                .build();
+        }else {
+            throw new NotificationListEmptyException("Notification has not been sent for this refund");
+        }
+        return notificationResponseDto;
     }
 }
