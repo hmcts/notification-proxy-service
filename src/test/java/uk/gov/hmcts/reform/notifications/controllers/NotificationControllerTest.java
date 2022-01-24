@@ -1,36 +1,57 @@
 package uk.gov.hmcts.reform.notifications.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.util.UriComponentsBuilder;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.notifications.service.NotificationServiceImplTest;
+import uk.gov.hmcts.reform.notifications.config.security.idam.IdamServiceImpl;
 import uk.gov.hmcts.reform.notifications.dtos.enums.NotificationType;
 import uk.gov.hmcts.reform.notifications.dtos.request.Personalisation;
 import uk.gov.hmcts.reform.notifications.dtos.request.RecipientPostalAddress;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
+import uk.gov.hmcts.reform.notifications.dtos.response.IdamUserIdResponse;
+import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
 import uk.gov.hmcts.reform.notifications.model.Notification;
 import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 import uk.gov.hmcts.reform.notifications.service.NotificationServiceImpl;
 import uk.gov.service.notify.*;
-
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -59,6 +80,42 @@ public class NotificationControllerTest {
     @InjectMocks
     private NotificationController notificationController;
 
+    @Mock
+    private IdamServiceImpl idamService;
+
+    @MockBean
+    @Qualifier("restTemplateIdam")
+    private RestTemplate restTemplateIdam;
+    @Value("${idam.api.url}")
+    private String idamBaseUrl;
+    @Mock
+    private MultiValueMap<String, String> map;
+
+    @MockBean
+    @Qualifier("restTemplatePayment")
+    private RestTemplate restTemplatePayment;
+
+    @MockBean
+    private AuthTokenGenerator authTokenGenerator;
+
+    @MockBean
+    private ClientRegistrationRepository clientRegistrationRepository;
+
+    @MockBean
+    private JwtDecoder jwtDecoder;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private ObjectMapper mapper = new ObjectMapper();
+
+    public static final String GET_REFUND_LIST_CCD_CASE_USER_ID1 = "1f2b7025-0f91-4737-92c6-b7a9baef14c6";
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = webAppContextSetup(webApplicationContext).build();
+    }
+
     private static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
@@ -67,9 +124,30 @@ public class NotificationControllerTest {
         }
     }
 
+    public void mockUserinfoCall(IdamUserIdResponse idamUserIdResponse) {
+        UriComponentsBuilder builderForUserInfo = UriComponentsBuilder.fromUriString(
+            idamBaseUrl + IdamServiceImpl.USERID_ENDPOINT);
+        ResponseEntity<IdamUserIdResponse> responseEntity = new ResponseEntity<>(idamUserIdResponse, HttpStatus.OK);
+        when(restTemplateIdam.exchange(
+            eq(builderForUserInfo.toUriString()),
+            any(HttpMethod.class),
+            any(HttpEntity.class),
+            eq(IdamUserIdResponse.class)
+        )).thenReturn(responseEntity);
+    }
+
+    public static final Supplier<IdamUserIdResponse> idamUserIDResponseSupplier = () -> IdamUserIdResponse.idamUserIdResponseWith()
+        .familyName("mock-Surname")
+        .givenName("mock-ForeName")
+        .name("mock-ForeName mock-Surname")
+        .sub("mockfullname@gmail.com")
+        .roles(List.of("payments-refund", "payments-refund-approver", "refund-admin"))
+        .uid(GET_REFUND_LIST_CCD_CASE_USER_ID1)
+        .build();
 
     @Test
     public void createEmailNotificationReturnSuccess() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .notificationType(NotificationType.EMAIL)
             .templateId("test")
@@ -89,10 +167,9 @@ public class NotificationControllerTest {
         Notification notification = Notification.builder().build();
 
         when(notificationEmailClient.sendEmail(any(), any(), any(), any())).thenReturn(response);
-//        when(notificationClient.sendEmail(any(),any(), any(),any(),any())).thenReturn(response);
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/emailNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/email")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -104,6 +181,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createEmailNotificationReturn500ThrowsRestrictedApiKeyException() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         String errorMessage = "Status code: 400 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"Can\\u2019t send to this recipient using a team-only API key\"}],\"status_code\":400}\n";
         RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
@@ -121,7 +199,7 @@ public class NotificationControllerTest {
         when(notificationEmailClient.sendEmail(any(), any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/emailNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/email")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -136,6 +214,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createEmailNotificationReturn422ThrowsInvalidTemplateId() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         String errorMessage = "Status code: 400 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"template_id is not a valid UUID\"}],\"status_code\":400}\n";
         RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
@@ -153,7 +232,7 @@ public class NotificationControllerTest {
         when(notificationEmailClient.sendEmail(any(), any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/emailNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/email")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -167,6 +246,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createEmailNotificationReturn500ThrowsInvalidApiKeyException() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         String errorMessage = "Status code: 403 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"Invalid api key\"}],\"status_code\":400}\n";
         RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
@@ -184,7 +264,7 @@ public class NotificationControllerTest {
         when(notificationEmailClient.sendEmail(any(), any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/emailNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/email")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -198,6 +278,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createEmailNotificationReturn500ThrowsExceededRequestLimitException() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         String errorMessage = "Status code: 429 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"Invalid api key\"}],\"status_code\":400}\n";
         RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
@@ -215,7 +296,7 @@ public class NotificationControllerTest {
         when(notificationEmailClient.sendEmail(any(), any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/emailNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/email")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -229,6 +310,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createEmailNotificationReturn503ThrowsGovNotifyConnectionException() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         String errorMessage = "Status code: 500 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"Invalid api key\"}],\"status_code\":400}\n";
         RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
@@ -246,7 +328,7 @@ public class NotificationControllerTest {
         when(notificationEmailClient.sendEmail(any(), any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/emailNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/email")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -260,6 +342,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createEmailNotificationReturn500ThrowsGovNotifyUnmappedException() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         String errorMessage = "Status code: 503 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"Invalid api key\"}],\"status_code\":400}\n";
         RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
@@ -277,7 +360,7 @@ public class NotificationControllerTest {
         when(notificationEmailClient.sendEmail(any(), any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/emailNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/email")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -292,6 +375,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createLetterNotificationReturnSuccess() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         RefundNotificationLetterRequest request = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
             .notificationType(NotificationType.EMAIL)
             .templateId("test")
@@ -319,7 +403,7 @@ public class NotificationControllerTest {
 //        when(notificationClient.sendEmail(any(),any(), any(),any(),any())).thenReturn(response);
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/letterNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/letter")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -331,6 +415,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createLetterNotificationReturn422ThrowInvalidAddresssException() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         String errorMessage = "Status code: 400 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"Must be a real UK postcode\"}],\"status_code\":400}\n";
 
@@ -352,10 +437,9 @@ public class NotificationControllerTest {
         Notification notification = Notification.builder().build();
 
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
-//        when(notificationClient.sendEmail(any(),any(), any(),any(),any())).thenReturn(response);
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/letterNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/letter")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -370,6 +454,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createLetterNotificationReturn422ThrowInvalidAddressException2() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         String errorMessage = "Status code: 400 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"Last line of address must be a real UK postcode or another country\"}],\"status_code\":400}\n";
 
@@ -393,7 +478,7 @@ public class NotificationControllerTest {
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/letterNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/letter")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -408,6 +493,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createLetterNotificationReturn422ThrowInvalidTemplateID() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         String errorMessage = "Status code: 400 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"template_id is not a valid UUID\"}],\"status_code\":400}\n";
 
@@ -431,7 +517,7 @@ public class NotificationControllerTest {
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/letterNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/letter")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -446,6 +532,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createLetterNotificationReturn422ThrowRestrictedApiKeyException() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         String errorMessage = "Status code: 400 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"something else\"}],\"status_code\":400}\n";
 
@@ -469,7 +556,7 @@ public class NotificationControllerTest {
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/letterNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/letter")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -485,6 +572,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createLetterNotificationReturn500ThrowRestrictedApiKeyException() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         String errorMessage = "Status code: 403 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"Incorrect api key\"}],\"status_code\":400}\n";
 
@@ -508,7 +596,7 @@ public class NotificationControllerTest {
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/letterNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/letter")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -523,6 +611,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createLetterNotificationReturn500ThrowExceededRequestLimitException() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         String errorMessage = "Status code: 429 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"Incorrect api key\"}],\"status_code\":400}\n";
 
@@ -546,7 +635,7 @@ public class NotificationControllerTest {
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/letterNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/letter")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -560,6 +649,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createLetterNotificationReturn503ThrowGovNotifyConnectionException() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         String errorMessage = "Status code: 500 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"Incorrect api key\"}],\"status_code\":400}\n";
 
@@ -583,7 +673,7 @@ public class NotificationControllerTest {
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/letterNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/letter")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -597,6 +687,7 @@ public class NotificationControllerTest {
 
     @Test
     public void createLetterNotificationReturn500ThrowGovNotifyUnmappedException() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
         String errorMessage = "Status code: 503 {\"errors\":[{\"error\":\"BadRequestError\"," +
             "\"message\":\"Incorrect api key\"}],\"status_code\":400}\n";
 
@@ -620,7 +711,7 @@ public class NotificationControllerTest {
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
 
-        MvcResult result = mockMvc.perform(post("/letterNotification")
+        MvcResult result = mockMvc.perform(post("/notifications/letter")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -633,5 +724,66 @@ public class NotificationControllerTest {
 
     }
 
+    @Test
+    void testGetNotificationListForLetterWhenValidRefundReferenceProvided() throws Exception {
 
+        //mock userinfo call
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
+        when(notificationRepository.findByReference(any()
+        ))
+            .thenReturn(Optional.ofNullable(List.of(
+                NotificationServiceImplTest.letterNotificationListSupplierBasedOnRefundRef.get())));
+
+        MvcResult mvcResult = mockMvc.perform(get("/notifications/RF-123")
+                                                  .header("Authorization", "user")
+                                                  .header("ServiceAuthorization", "Services")
+                                                  .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
+
+        NotificationResponseDto notificationResponseDto = mapper.readValue(
+            mvcResult.getResponse().getContentAsString(), NotificationResponseDto.class
+        );
+        Assertions.assertEquals("LETTER",notificationResponseDto.getNotifications().get(0).getNotificationType());
+    }
+
+    @Test
+    void testGetNotificationListForEmailWhenValidRefundReferenceProvided() throws Exception {
+
+        //mock userinfo call
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
+        when(notificationRepository.findByReference(any()
+        ))
+            .thenReturn(Optional.ofNullable(List.of(
+                NotificationServiceImplTest.emailNotificationListSupplierBasedOnRefundRef.get())));
+
+        MvcResult mvcResult = mockMvc.perform(get("/notifications/RF-124")
+                                                  .header("Authorization", "user")
+                                                  .header("ServiceAuthorization", "Services")
+                                                  .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
+
+        NotificationResponseDto notificationResponseDto = mapper.readValue(
+            mvcResult.getResponse().getContentAsString(), NotificationResponseDto.class
+        );
+        Assertions.assertEquals("EMAIL",notificationResponseDto.getNotifications().get(0).getNotificationType());
+    }
+
+    @Test
+    void returnException404WhenGetNotificationReturnEmptyNotificationList() throws Exception {
+
+        //mock userinfo call
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
+        Optional<List<Notification>> notificationList=Optional.empty();
+        when(notificationRepository.findByReference(any()
+        ))
+            .thenReturn(notificationList);
+
+        MvcResult mvcResult = mockMvc.perform(get("/notifications/RF-124")
+                                                  .header("Authorization", "user")
+                                                  .header("ServiceAuthorization", "Services")
+                                                  .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound()).andReturn();
+
+        Assertions.assertEquals("Notification has not been sent for this refund", mvcResult.getResolvedException().getMessage());
+    }
 }

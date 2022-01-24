@@ -71,7 +71,7 @@ public class NotificationController {
     @ApiOperation(value = "GET /notifications ", notes = "Get Notification by passing reference")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success"),
-        @ApiResponse(code = 404, message = "Notification list not found"),
+        @ApiResponse(code = 404, message = "Notification has not been sent for this refund"),
         @ApiResponse(code = 403, message = "AuthError"),
         @ApiResponse(code = 500, message = "Internal Server Error")
 
