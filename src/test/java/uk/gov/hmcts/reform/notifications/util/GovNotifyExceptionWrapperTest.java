@@ -97,14 +97,4 @@ public class GovNotifyExceptionWrapperTest {
         assertEquals("Internal Server Error", govNotifyException.getMessage());
 
     }
-
-    /*@Test
-    public void testMapGovNotifyLetterExceptionfor400Error() {
-
-        when(notificationClientException.getHttpResult()).thenReturn(400);
-       when(GovNotifyErrorMessage.getErrorMessage(any())).thenReturn("Must be a real UK postcode");
-        GovNotifyException govNotifyException= govNotifyExceptionWrapper.mapGovNotifyLetterException(notificationClientException);
-        assertEquals("Please enter a valid/real postcode", govNotifyException.getMessage());
-
-    }*/
 }
