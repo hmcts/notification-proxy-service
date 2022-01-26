@@ -20,8 +20,6 @@ java:
     S2S_AUTHORISED_SERVICES: refunds_api,ccpay_bubble,xui_webapp
     IDAM_API_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
     LAUNCH_DARKLY_USER_NAME_PREFIX: '{{ .Values.global.environment }}'
-    EMAIL_APIKEY: ccpay-email-apikey
-    LETTER_APIKEY: ccpay-letter-apikey
   keyVaults:
     "ccpay":
       resourceGroup: ccpay
@@ -30,5 +28,13 @@ java:
           alias: POSTGRES_PASSWORD
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
+        - name: notifications-s2s-secret
+          alias: OIDC_S2S_SECRET
+        - name: notifications-email-apikey
+          alias: EMAIL_APIKEY
+        - name: notifications-letter-apikey
+          alias: LETTER_APIKEY
+
+
 
 
