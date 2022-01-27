@@ -71,6 +71,9 @@ security:
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
     - "/search/**"
+    - "/csrf"
+    - "/error"
+    - "/favicon.ico"
 #    hikari:
 #      minimumIdle: 2
 #      maximumPoolSize: 10

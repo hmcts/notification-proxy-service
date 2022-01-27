@@ -19,14 +19,14 @@ import java.util.stream.Collectors;
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
 
 @Component
-public class NotificationsJwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
+public class JwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 
     public static final String TOKEN_NAME = "tokenName";
 
     private final IdamRepository idamRepository;
 
     @Autowired
-    public NotificationsJwtGrantedAuthoritiesConverter(IdamRepository idamRepository) {
+    public JwtGrantedAuthoritiesConverter(IdamRepository idamRepository) {
         this.idamRepository = idamRepository;
     }
 
