@@ -245,6 +245,7 @@ dependencies {
   functionalTestAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
   functionalTestAnnotationProcessor group :'org.projectlombok', name:'lombok', version:'1.18.12'
 }
+apply from: "${rootDir}/cve-resolution-strategy.gradle"
 
 mainClassName = 'uk.gov.hmcts.reform.notifications.Application'
 
