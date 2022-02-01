@@ -15,24 +15,21 @@
     <cve>CVE-2020-10663</cve>
     <cve>CVE-2020-7712</cve>
    </suppress>
+
+
   <suppress until="2022-03-30">
-    <notes>These CVE's are coming from Dhowden tag library and it impacts only MP3/MP4/OGG/FLAC metadata parsing
-      library. Also it is declared as false positive in
-      (https://github.com/jeremylong/DependencyCheck/issues/3043)
-    </notes>
-    <cve>CVE-2021-27568</cve>
-    <cve>CVE-2020-15522</cve>
-    <cve>CVE-2021-28170</cve>
-    <cve>CVE-2021-22096</cve>
-    <cve>CVE-2021-22118</cve>
-    <cve>CVE-2018-1258</cve>
+    <notes><![CDATA[file name: spring-boot-starter-oauth2-client-2.5.5.jar, spring-boot-starter-oauth2-resource-server-2.5.5.jar]]></notes>
     <cve>CVE-2021-22112</cve>
-    <cve>CVE-2021-22044</cve>
-    <cve>CVE-2021-22096</cve>
-    <cve>CVE-2021-22119</cve>
-    <cve>CVE-2021-30640</cve>
-    <cve>CVE-2021-33037</cve>
-    <cve>CVE-2021-41079</cve>
-    <cve>CVE-2021-42340</cve>
   </suppress>
+
+
+  <suppress until="2022-03-30">
+    <notes>The CVE-2018-1258 occurs from spring security libraries, despite the latest versions are used. This is
+      confirmed as false positive
+      and hence it is suppressed (https://github.com/jeremylong/DependencyCheck/issues/2952).
+      see (https://pivotal.io/security/cve-2018-1258)
+    </notes>
+    <cve>CVE-2018-1258</cve>
+  </suppress>
+
 </suppressions>
