@@ -172,7 +172,7 @@ public class NotificationServiceImplTest {
 
     @Test
   public   void throwNotificationListEmptyExceptionWhenNotificationListIsEmpty() {
-        when(notificationRepository.findByReference(anyString())).thenReturn(Optional.empty());
+        when(notificationRepository.findByReferenceOrderByDateUpdatedDesc(anyString())).thenReturn(Optional.empty());
 
         assertThrows(NotificationListEmptyException.class, () -> notificationServiceImpl.
             getNotification(null));
@@ -181,7 +181,7 @@ public class NotificationServiceImplTest {
     @Test
     public void testNotificationListForLetterNotificationForGivenRefundReference() {
 
-        when(notificationRepository.findByReference(anyString())).thenReturn(Optional.ofNullable(List.of(
+        when(notificationRepository.findByReferenceOrderByDateUpdatedDesc(anyString())).thenReturn(Optional.ofNullable(List.of(
             letterNotificationListSupplierBasedOnRefundRef.get())));
 
         NotificationResponseDto notificationListDtoResponse = notificationServiceImpl.getNotification("Notify-123");
@@ -196,7 +196,7 @@ public class NotificationServiceImplTest {
     @Test
    public  void givenEmptyNotificationList_whenGetNotification_thenNotificationListEmptyExceptionIsReceived() {
 
-        when(notificationRepository.findByReference(anyString())).thenReturn(Optional.empty());
+        when(notificationRepository.findByReferenceOrderByDateUpdatedDesc(anyString())).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(
             NotificationListEmptyException.class,
@@ -211,7 +211,7 @@ public class NotificationServiceImplTest {
     @Test
     void testNotificationListForEmailNotificationForGivenRefundReference() {
 
-        when(notificationRepository.findByReference(anyString())).thenReturn(Optional.ofNullable(List.of(
+        when(notificationRepository.findByReferenceOrderByDateUpdatedDesc(anyString())).thenReturn(Optional.ofNullable(List.of(
             emailNotificationListSupplierBasedOnRefundRef.get())));
 
         NotificationResponseDto notificationListDtoResponse = notificationServiceImpl.getNotification("Notify-124");

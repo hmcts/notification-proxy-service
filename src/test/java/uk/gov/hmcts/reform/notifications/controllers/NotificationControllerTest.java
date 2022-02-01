@@ -729,7 +729,7 @@ public class NotificationControllerTest {
 
         //mock userinfo call
         mockUserinfoCall(idamUserIDResponseSupplier.get());
-        when(notificationRepository.findByReference(any()
+        when(notificationRepository.findByReferenceOrderByDateUpdatedDesc(any()
         ))
             .thenReturn(Optional.ofNullable(List.of(
                 NotificationServiceImplTest.letterNotificationListSupplierBasedOnRefundRef.get())));
@@ -751,7 +751,7 @@ public class NotificationControllerTest {
 
         //mock userinfo call
         mockUserinfoCall(idamUserIDResponseSupplier.get());
-        when(notificationRepository.findByReference(any()
+        when(notificationRepository.findByReferenceOrderByDateUpdatedDesc(any()
         ))
             .thenReturn(Optional.ofNullable(List.of(
                 NotificationServiceImplTest.emailNotificationListSupplierBasedOnRefundRef.get())));
@@ -774,7 +774,7 @@ public class NotificationControllerTest {
         //mock userinfo call
         mockUserinfoCall(idamUserIDResponseSupplier.get());
         Optional<List<Notification>> notificationList=Optional.empty();
-        when(notificationRepository.findByReference(any()
+        when(notificationRepository.findByReferenceOrderByDateUpdatedDesc(any()
         ))
             .thenReturn(notificationList);
 

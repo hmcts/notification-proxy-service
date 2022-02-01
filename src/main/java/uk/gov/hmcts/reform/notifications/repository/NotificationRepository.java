@@ -8,6 +8,5 @@ import uk.gov.hmcts.reform.notifications.model.Notification;
 
 @Repository
 public interface NotificationRepository extends CrudRepository<Notification, Integer> {
-
-    Optional<List<Notification>> findByReference(String paymentReference);
+   Optional<List<Notification>> findByReferenceOrderByDateUpdatedDesc(String paymentReference);
 }

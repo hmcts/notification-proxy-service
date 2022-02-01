@@ -130,7 +130,7 @@ public class NotificationServiceImpl implements NotificationService {
     public NotificationResponseDto getNotification(String reference) {
 
         Optional<List<Notification>> notificationList;
-        notificationList = notificationRepository.findByReference(reference);
+        notificationList = notificationRepository.findByReferenceOrderByDateUpdatedDesc(reference);
 
         LOG.info("notificationList: {}", notificationList);
 
