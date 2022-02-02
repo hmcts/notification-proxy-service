@@ -104,9 +104,9 @@ azure:
 
 
 notify:
-  letter.apiKey: ${LETTER_APIKEY:dummy}
+  letter.apiKey: ${LETTER_APIKEY}
   letter.template:
-  email.apiKey: ${EMAIL_APIKEY:dummy}
+  email.apiKey: ${EMAIL_APIKEY}
   email.template:
 
 idam:
