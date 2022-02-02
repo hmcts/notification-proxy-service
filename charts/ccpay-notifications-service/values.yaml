@@ -35,8 +35,3 @@ java:
         - name: notifications-letter-apikey
           alias: LETTER_APIKEY
 
-
-
-
-
-
