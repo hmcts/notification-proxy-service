@@ -73,6 +73,7 @@ public class NotificationServiceImpl implements NotificationService {
                 emailNotificationRequest, uid
             );
             notificationRepository.save(notification);
+            LOG.info("email notification saved successfully.");
 
             return sendEmailResponse;
         }catch (NotificationClientException exception){
