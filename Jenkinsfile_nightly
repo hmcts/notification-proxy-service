@@ -11,4 +11,20 @@ def type = "java"
 def product = "rpe"
 def component = "spring-boot-template"
 
+def secrets = [
+  'ccpay-${env}': [
+    secret('refunds-api-client-secret', 'REFUND_SERVICE_ACCOUNT_CLIENT_SECRET'),
+    secret('refunds-api-user-password', 'REFUND_SERVICE_ACCOUNT_PASSWORD')
+  ]
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [ $class: 'AzureKeyVaultSecret',
+    secretType: 'Secret',
+    name: secretName,
+    version: '',
+    envVariable: envVar
+  ]
+}
+
 withNightlyPipeline(type, product, component) {}
