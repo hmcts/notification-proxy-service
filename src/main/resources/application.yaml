@@ -71,6 +71,9 @@ security:
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
     - "/search/**"
+    - "/csrf"
+    - "/error"
+    - "/favicon.ico"
 #    hikari:
 #      minimumIdle: 2
 #      maximumPoolSize: 10
@@ -82,7 +85,7 @@ security:
 trusted:
   s2s:
     service:
-      names: refunds_api
+      names: refunds_api,ccpay_bubble,xui_webapp
 auth:
   idam:
     client:
@@ -101,9 +104,9 @@ azure:
 
 
 notify:
-  letter.apiKey:
+  letter.apiKey: ${LETTER_APIKEY}
   letter.template:
-  email.apiKey:
+  email.apiKey: ${EMAIL_APIKEY}
   email.template:
 
 idam:

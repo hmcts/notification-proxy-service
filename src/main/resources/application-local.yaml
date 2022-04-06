@@ -67,3 +67,18 @@ notify:
   letter.template:
   email.apiKey:
   email.template:
+security:
+  anonymousPaths:
+    - "/health"
+    - "/health/liveness"
+    - "/health/readiness"
+    - "/actuator/**"
+    - "/loggers/**"
+    - "/swagger-ui.html"
+    - "/swagger-resources/**"
+    - "/v2/api-docs"
+    - "/webjars/springfox-swagger-ui/**"
+    - "/search/**"
+    - "/csrf"
+    - "/error"
+    - "/favicon.ico"

@@ -1,13 +1,17 @@
 package uk.gov.hmcts.reform.notifications.service;
 
+import org.springframework.util.MultiValueMap;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
+import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
 public interface NotificationService {
 
-    SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest);
+    SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest, MultiValueMap<String, String> headers);
 
-    SendLetterResponse sendLetterNotification(RefundNotificationLetterRequest letterNotificationRequest);
+    SendLetterResponse sendLetterNotification(RefundNotificationLetterRequest letterNotificationRequest, MultiValueMap<String, String> headers);
+
+    NotificationResponseDto getNotification(String reference);
 }
