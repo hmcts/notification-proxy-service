@@ -26,8 +26,8 @@ public class RootController {
      *
      * @return Welcome message from the service.
      */
-    @GetMapping("/test")
-    public ResponseEntity<String> welcome() {
-        return ok("Welcome to ccpay-notifications-service");
-    }
+//     @GetMapping("/test")
+//     public ResponseEntity<String> welcome() {
+//         return ok("Welcome to ccpay-notifications-service");
+//     }
 }
