@@ -31,5 +31,14 @@
     </notes>
     <cve>CVE-2018-1258</cve>
   </suppress>
-
+  
+   <suppress until="2022-08-30">
+    <notes>Temporary suppressions
+    </notes>
+    <cve>CVE-2020-36518</cve>
+    <cve>CVE-2022-0839</cve>
+    <cve>CVE-2022-26520</cve>
+    <cve>CVE-2022-21724</cve>
+    <cve>CVE-2022-22965</cve>
+  </suppress>
 </suppressions>
