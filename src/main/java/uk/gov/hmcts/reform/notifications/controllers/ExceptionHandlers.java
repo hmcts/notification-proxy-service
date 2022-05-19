@@ -32,7 +32,8 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(details.get(0), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({ExceededRequestLimitException.class, InvalidApiKeyException.class, RestrictedApiKeyException.class, GovNotifyUnmappedException.class})
+    @ExceptionHandler({ExceededRequestLimitException.class, InvalidApiKeyException.class, RestrictedApiKeyException.class,
+        GovNotifyUnmappedException.class, UserNotFoundException.class})
     public ResponseEntity return500(Exception ex) {
         LOG.error(ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -50,5 +51,15 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
     }
 
+    @ExceptionHandler({NotificationListEmptyException.class})
+    public ResponseEntity return404(Exception ex) {
+        LOG.error(ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 
+    @ExceptionHandler(GatewayTimeoutException.class)
+    public ResponseEntity return504(GatewayTimeoutException ex) {
+        LOG.error(ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.GATEWAY_TIMEOUT);
+    }
 }

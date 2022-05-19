@@ -15,4 +15,30 @@
     <cve>CVE-2020-10663</cve>
     <cve>CVE-2020-7712</cve>
    </suppress>
+
+
+  <suppress until="2022-08-30">
+    <notes><![CDATA[file name: spring-boot-starter-oauth2-client-2.5.5.jar, spring-boot-starter-oauth2-resource-server-2.5.5.jar]]></notes>
+    <cve>CVE-2021-22112</cve>
+  </suppress>
+
+
+  <suppress until="2022-08-30">
+    <notes>The CVE-2018-1258 occurs from spring security libraries, despite the latest versions are used. This is
+      confirmed as false positive
+      and hence it is suppressed (https://github.com/jeremylong/DependencyCheck/issues/2952).
+      see (https://pivotal.io/security/cve-2018-1258)
+    </notes>
+    <cve>CVE-2018-1258</cve>
+  </suppress>
+  
+   <suppress until="2022-08-30">
+    <notes>Temporary suppressions
+    </notes>
+    <cve>CVE-2020-36518</cve>
+    <cve>CVE-2022-0839</cve>
+    <cve>CVE-2022-26520</cve>
+    <cve>CVE-2022-21724</cve>
+    <cve>CVE-2022-22965</cve>
+  </suppress>
 </suppressions>
