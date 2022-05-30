@@ -57,7 +57,7 @@ withPipeline(type, product, component) {
       reportFiles          : "index.html",
       reportName           : "Preview Functional Tests",
       alwaysLinkToLastBuild: true,
-      reportName           : "CCPAY Refunds PREVIEW API Functional Test Report"
+      reportName           : "CCPAY NOTIFICATIONS SERVICE PREVIEW API Functional Test Report"
     ]
 
     publishHTML target: [
@@ -68,7 +68,7 @@ withPipeline(type, product, component) {
       reportFiles          : "index.html",
       reportName           : "Preview Functional Tests",
       alwaysLinkToLastBuild: true,
-      reportName           : "CCPAY Refunds PREVIEW API Functional Test Sereneity Report"
+      reportName           : "CCPAY NOTIFICATIONS SERVICE PREVIEW API Functional Test Sereneity Report"
     ]
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
   }
@@ -77,7 +77,7 @@ withPipeline(type, product, component) {
     publishHTML target: [
       reportDir            : "target/site/serenity/",
       reportFiles          : "index.html",
-      reportName           : "CCPAY Refunds AAT Functional Tests",
+      reportName           : "CCPAY NOTIFICATIONS SERVICE AAT Functional Tests",
       alwaysLinkToLastBuild: true
     ]
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
