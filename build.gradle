@@ -85,11 +85,8 @@ test {
 task functional(type: Test) {
   description = "Runs functional tests"
   group = "Verification"
-  include "uk/gov/hmcts/reform/notifications/functional/**"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
-  enableAssertions = true
-  scanForTestClasses = true
 }
 
 functional.finalizedBy(aggregate)
