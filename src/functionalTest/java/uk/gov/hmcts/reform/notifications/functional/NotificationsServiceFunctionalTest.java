@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 @ActiveProfiles({"functional", "liberataMock"})
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
-@Ignore("Ignoring the test cases for the purpose of Pre-implementation plan")
 public class NotificationsServiceFunctionalTest {
 
     @Value("${notification.email-to-reply}")
@@ -112,6 +111,7 @@ public class NotificationsServiceFunctionalTest {
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
      }
 
+    @Test
     public void send_letter_notification_request() {
 
         RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
