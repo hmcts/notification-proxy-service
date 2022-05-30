@@ -49,6 +49,12 @@ public class TestConfigProperties {
     @Value("${payments.account.fake.account.number}")
     public String fakeAccountNumber;
 
+    @Value("${idam.paybubble.client.id}")
+    public String idamPayBubbleClientID;
+
+    @Value("${idam.paybubble.client.secret}")
+    public String idamPayBubbleClientSecret;
+
 
 }
 
