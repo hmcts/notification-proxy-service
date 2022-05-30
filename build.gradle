@@ -162,6 +162,8 @@ sonarqube {
 
 pmdFunctionalTest.enabled(false);
 
+checkstyleFunctionalTest.enabled(false)
+
 // before committing a change, make sure task still works
 dependencyUpdates {
   def isNonStable = { String version ->
