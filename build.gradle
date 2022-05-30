@@ -82,9 +82,13 @@ test {
 task functional(type: Test) {
   description = "Runs functional tests"
   group = "Verification"
+  include "uk/gov/hmcts/reform/notifications/functional/**"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
+  enableAssertions = true
+  scanForTestClasses = true
 }
+
 
 task integration(type: Test) {
   description = "Runs integration tests"
@@ -284,8 +288,6 @@ dependencies {
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
-
-  functionalTestImplementation sourceSets.main.runtimeClasspath
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation sourceSets.test.runtimeClasspath
