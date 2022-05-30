@@ -118,7 +118,7 @@ public class IdamService {
                                                                                password,
                                                                                SCOPES_SEARCH_USER,
                                                                                GRANT_TYPE,
-                                                                               testConfig.getIdamPayBubbleClientId(),
+                                                                               testConfig.getIdamPayBubbleClientID(),
                                                                                testConfig.getIdamPayBubbleClientSecret(),
                                                                                testConfig.getOauth2().getRedirectUrl());
 
