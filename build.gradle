@@ -113,6 +113,7 @@ checkstyle {
 
 }
 
+
 pmd {
   toolVersion = "6.39.0"
   sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
@@ -158,6 +159,8 @@ sonarqube {
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
   }
 }
+
+pmdFunctionalTest.enabled(false);
 
 // before committing a change, make sure task still works
 dependencyUpdates {
