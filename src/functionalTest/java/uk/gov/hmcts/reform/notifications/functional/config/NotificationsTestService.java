@@ -25,7 +25,7 @@ public class NotificationsTestService {
             .baseUri(baseUri)
             .body(request)
             .when()
-            .post("/emailNotification");
+            .post("/notifications/email");
     }
 
     public Response postLetterNotification(final String userToken,
@@ -37,7 +37,18 @@ public class NotificationsTestService {
             .baseUri(baseUri)
             .body(request)
             .when()
-            .post("/letterNotification");
+            .post("/notifications/letter");
+    }
+
+    public Response getNotification(final String userToken,
+                                          final String serviceToken,
+                                          final String baseUri,
+                                          final String reference) {
+        return givenWithAuthHeaders(userToken, serviceToken)
+            .contentType(ContentType.JSON)
+            .baseUri(baseUri)
+            .when()
+            .get("/notifications/{"+reference+"}");
     }
 
     public RequestSpecification givenWithAuthHeaders(final String userToken, final String serviceToken) {
