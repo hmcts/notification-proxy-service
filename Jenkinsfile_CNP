@@ -15,6 +15,27 @@ def type = "java"
 def product = "ccpay"
 def component = "notifications-service"
 
+def secrets = [
+  'ccpay-${env}': [
+    secret('refunds-api-client-secret', 'REFUND_SERVICE_ACCOUNT_CLIENT_SECRET'),
+    secret('refunds-api-user-password', 'REFUND_SERVICE_ACCOUNT_PASSWORD'),
+    secret('refunds-s2s-secret', 'OIDC_S2S_SECRET'),
+    secret('notifications-letter-template-id', 'NOTIFICATION_LETTER_TEMPLATE_ID'),
+    secret('notifications-email-template-id', 'NOTIFICATION_EMAIL_TEMPLATE_ID'),
+    secret('paybubble-idam-client-secret','IDAM_PAYBUBBLE_CLIENT_SECRET')
+
+  ]
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [ $class: 'AzureKeyVaultSecret',
+    secretType: 'Secret',
+    name: secretName,
+    version: '',
+    envVariable: envVar
+  ]
+}
+
 def branchesToSync = ['demo', 'ithc', 'perftest']
 
 withPipeline(type, product, component) {
@@ -24,4 +45,41 @@ withPipeline(type, product, component) {
   disableLegacyDeploymentOnAAT()
   enableDbMigration('ccpay')
   syncBranchesWithMaster(branchesToSync)
+
+
+  after('functionalTest:preview') {
+
+    publishHTML target: [
+      reportDir            : "build/reports/tests/functional",
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportFiles          : "index.html",
+      reportName           : "Preview Functional Tests",
+      alwaysLinkToLastBuild: true,
+      reportName           : "CCPAY NOTIFICATIONS SERVICE PREVIEW API Functional Test Report"
+    ]
+
+    publishHTML target: [
+      reportDir            : "target/site/serenity/",
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportFiles          : "index.html",
+      reportName           : "Preview Functional Tests",
+      alwaysLinkToLastBuild: true,
+      reportName           : "CCPAY NOTIFICATIONS SERVICE PREVIEW API Functional Test Sereneity Report"
+    ]
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+  }
+
+  after('functionalTest:aat') {
+    publishHTML target: [
+      reportDir            : "target/site/serenity/",
+      reportFiles          : "index.html",
+      reportName           : "CCPAY NOTIFICATIONS SERVICE AAT Functional Tests",
+      alwaysLinkToLastBuild: true
+    ]
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+  }
 }
