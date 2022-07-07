@@ -6,15 +6,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
-@ComponentScan("uk.gov.hmcts.reform.notifications.smoketests")
-@PropertySource("application.properties")
 @RunWith(SpringRunner.class)
 @Slf4j
 public class SmokeTestConfiguration {
@@ -28,13 +26,18 @@ public class SmokeTestConfiguration {
     }
 
     @Test
-    public void shouldReturnChannels() {
+    void healthCheck() {
+        log.info("TEST - healthCheck() started");
         given()
             .relaxedHTTPSValidation()
             .header(CONTENT_TYPE, "application/json")
             .when()
-            .get("/refdata/channels")
+            .get("/health")
             .then()
-            .statusCode(200);
+            .statusCode(200)
+            .body(
+                "status", equalTo("UP"));
+        assertFalse(testUrl.isEmpty(), "Sample Test for the template....");
+        log.info("TEST - healthCheck() finished");
     }
 }
