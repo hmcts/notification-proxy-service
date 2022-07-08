@@ -104,15 +104,9 @@ task integration(type: Test) {
 
 task smoke(type: Test) {
   description = "Runs Smoke Tests"
-  useJUnitPlatform();
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
   classpath = sourceSets.smokeTest.runtimeClasspath
   testLogging.showStandardStreams = true
-}
-
-task smokeTest(type: Test, description: 'Runs the smoke tests', group: 'Verification') {
-  testClassesDirs = sourceSets.smokeTest.output.classesDirs
-  classpath = sourceSets.smokeTest.runtimeClasspath
 }
 
 checkstyle {
@@ -121,7 +115,6 @@ checkstyle {
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
   checkstyleMain.enabled = false
   checkstyleTest.enabled = false
-
 }
 
 

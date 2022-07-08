@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.notifications.smoketests;
 import io.restassured.RestAssured;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -26,7 +26,7 @@ public class SmokeTestConfiguration {
     }
 
     @Test
-    void healthCheck() {
+    public void healthCheck() {
         log.info("TEST - healthCheck() started");
         given()
             .relaxedHTTPSValidation()
