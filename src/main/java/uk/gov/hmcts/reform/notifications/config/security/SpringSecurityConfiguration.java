@@ -56,8 +56,16 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring()
-            .antMatchers(anonymousPaths.toArray(new String[0]));
+        //web.ignoring()
+        //    .antMatchers(anonymousPaths.toArray(new String[0]));
+        web.ignoring().antMatchers("/swagger-ui.html",
+                                   "/webjars/springfox-swagger-ui/**",
+                                   "/swagger-resources/**",
+                                   "/v2/**",
+                                   "/health",
+                                   "/health/liveness",
+                                   "/health/readiness",
+                                   "/info");
     }
 
     @Inject
