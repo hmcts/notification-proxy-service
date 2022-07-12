@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.notifications.functional;
 
 
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.http.HttpStatus;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.notifications.dtos.enums.NotificationType;
 import uk.gov.hmcts.reform.notifications.dtos.request.Personalisation;
 import uk.gov.hmcts.reform.notifications.dtos.request.RecipientPostalAddress;
@@ -31,7 +33,9 @@ import static org.hamcrest.Matchers.equalTo;
 import java.util.regex.Pattern;
 
 @ActiveProfiles({"functional", "liberataMock"})
+@ContextConfiguration(classes = TestContextConfiguration.class)
 @RunWith(SpringIntegrationSerenityRunner.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
 public class NotificationsServiceFunctionalTest {
 
@@ -69,7 +73,7 @@ public class NotificationsServiceFunctionalTest {
     private static final Pattern
         REFUNDS_REGEX_PATTERN = Pattern.compile("^(RF)-([0-9]{4})-([0-9-]{4})-([0-9-]{4})-([0-9-]{4})$");
 
-    @Before
+    @BeforeAll
     public void setUp() throws Exception {
 
         RestAssured.baseURI = testConfigProperties.baseTestUrl;

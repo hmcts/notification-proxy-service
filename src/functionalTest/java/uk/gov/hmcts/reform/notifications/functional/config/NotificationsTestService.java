@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
 
@@ -12,6 +13,7 @@ import java.util.Map;
 import javax.inject.Named;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+@Component
 public class NotificationsTestService {
 
     private final Map<String, String> authHeaders = new HashMap<>();
