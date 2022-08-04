@@ -49,9 +49,9 @@ auth:
       baseUrl: https://idam-api.aat.platform.hmcts.net
 test:
   url :
-    refunds : ${TEST_URL:http://localhost:8080}
+    notification : ${TEST_URL:http://localhost:8080}
+    refunds : ${TEST_URL_REFUND:http://ccpay-refunds-api-pr-211.service.core-compute-preview.internal}
     payments : ${TEST_URL_PAYMENT:http://payment-api-pr-1089.service.core-compute-preview.internal}
-    notification : ${TEST_URL_NOTIFICATION:http://payment-api-pr-1089.service.core-compute-preview.internal}
   user:
     password: ${REFUND_SERVICE_ACCOUNT_PASSWORD}
 
@@ -80,6 +80,7 @@ s2s:
     refunds:
       name: ${S2S_SERVICE_NAME_REFUNDS_API:refunds_api}
       secret: ${OIDC_S2S_SECRET}
+
 azure:
   application-insights:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:}

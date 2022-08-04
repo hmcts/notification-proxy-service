@@ -142,7 +142,7 @@ public class IdamService {
 
 
     public ValidUser createUserAuthToken(String email) {
-        String accessToken = authenticateUser(email, testConfig.getRefundsUserPassword());
+        String accessToken = authenticateUser(email, testConfig.getTestUserPassword());
         return new ValidUser(email, accessToken);
     }
 
