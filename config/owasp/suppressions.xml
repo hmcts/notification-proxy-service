@@ -81,4 +81,12 @@
     </notes>
     <cve>CVE-2022-31197</cve>
   </suppress>
+  <suppress until="2022-09-30">
+    <notes>The CVE-2018-1258 occurs from spring security libraries, despite the latest versions are used. This is
+      confirmed as false positive
+      and hence it is suppressed (https://github.com/jeremylong/DependencyCheck/issues/2952).
+      see (https://pivotal.io/security/cve-2018-1258)
+    </notes>
+    <cve>CVE-2018-1258</cve>
+  </suppress>
 </suppressions>
