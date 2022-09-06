@@ -59,6 +59,7 @@
      <cve>CVE-2018-11039</cve>
      <cve>CVE-2022-34305</cve>
      <cve>CVE-2021-22112</cve>
+     <cve>CVE-2022-25857</cve>
   </suppress>
 
   <suppress until="2022-09-30">
