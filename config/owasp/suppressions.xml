@@ -84,4 +84,14 @@
     <notes>Spring security core upgraded needed</notes>
     <cve>CVE-2022-22978</cve>
   </suppress>
+  <suppress>
+    <notes>Spring security needs update to version 5.5.* or greater (major release)</notes>
+    <cve>CVE-2022-31690</cve>
+    <cve>CVE-2022-31692</cve>
+  </suppress>
+  <suppress>
+    <notes>Jackson Databind needs update to version 2.13.* or greater (major release)</notes>
+    <cve>CVE-2022-42003</cve>
+    <cve>CVE-2022-42004</cve>
+  </suppress>
 </suppressions>
