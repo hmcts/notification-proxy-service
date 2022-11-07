@@ -123,3 +123,46 @@ databaseChangeLog:
                   type: varchar
                   constraints:
                     nullable: false
+
+  - changeSet:
+      id: 100008
+      author: abdul
+      changes:
+        - createTable:
+            tableName: service_contact
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: service_name
+                  type: varchar(255)
+              - column:
+                  name: service_mailbox
+                  type: varchar(255)
+
+  - changeSet:
+      id: 100008-1
+      author: abdul
+      changes:
+        - sql:
+            splitStatements: true
+            sql: >
+              INSERT INTO service_contact (service_name)
+                VALUES
+                  ('Digital Bar'),
+                  ('Family Public Law'),
+                  ('Specified Money Claims'),
+                  ('Adoption'),
+                  ('Immigration and Asylum Appeals'),
+                  ('Civil Money Claims'),
+                  ('Finrem'),
+                  ('Divorce'),
+                  ('Financial Remedy'),
+                  ('Civil'),
+                  ('Family Private Law'),
+                  ('Probate');
