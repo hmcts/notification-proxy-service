@@ -44,6 +44,6 @@ public class RefundNotificationLetterRequest {
     @Valid
     private RecipientPostalAddress recipientPostalAddress;
 
-    private String ServiceName;
+    private String serviceName;
 
 }

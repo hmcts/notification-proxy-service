@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uk.gov.hmcts.reform.notifications.model.ContactDetails;
 
 @Builder(builderMethodName = "buildNotificationTemplatePreviewWith")
 @AllArgsConstructor

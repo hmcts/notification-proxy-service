@@ -39,11 +39,20 @@ public class NotificationTemplateResponseMapper {
             .templateId(templatePreview.getId().toString())
             .templateType(templatePreview.getTemplateType())
             .from(toFromMapper(docPreviewRequest))
-            .html(templatePreview.getHtml().isPresent() ? templatePreview.getHtml().get() : null)
+            .html(toHtmlMapper(templatePreview))
             .recipientContact(toContactMapper(docPreviewRequest))
             .subject(templatePreview.getSubject().get())
             .body(templatePreview.getBody())
             .build();
+    }
+
+    private String toHtmlMapper(TemplatePreview templatePreview){
+
+        String html = null;
+        if(templatePreview.getHtml().isPresent()){
+            html = templatePreview.getHtml().get();
+        }
+        return html;
     }
 
     private RecipientContact toContactMapper(DocPreviewRequest docPreviewRequest) {
@@ -57,7 +66,7 @@ public class NotificationTemplateResponseMapper {
     private String toEmailMapper(DocPreviewRequest docPreviewReques) {
 
         String email = null;
-        if(docPreviewReques.getNotificationType().name().equalsIgnoreCase(EMAIL)) {
+        if(EMAIL.equalsIgnoreCase(docPreviewReques.getNotificationType().name())) {
 
             email = docPreviewReques.getRecipientEmailAddress();
 
@@ -69,7 +78,7 @@ public class NotificationTemplateResponseMapper {
     private MailAddress toMailMapper(DocPreviewRequest docPreviewReques) {
 
         MailAddress recipientMailAddress = null;
-        if(docPreviewReques.getNotificationType().name().equalsIgnoreCase(LETTER)) {
+        if(LETTER.equalsIgnoreCase(docPreviewReques.getNotificationType().name())) {
 
             recipientMailAddress = MailAddress.buildRecipientMailAddressWith()
                 .addressLine(docPreviewReques.getRecipientPostalAddress().getAddressLine())
@@ -94,7 +103,7 @@ public class NotificationTemplateResponseMapper {
     private String toFromEmailMapper(DocPreviewRequest docPreviewReques) {
 
         String email = null;
-        if(docPreviewReques.getNotificationType().name().equalsIgnoreCase(EMAIL)) {
+        if(EMAIL.equalsIgnoreCase(docPreviewReques.getNotificationType().name())) {
 
             email = notifyTemplateFromEmail;
 
@@ -106,7 +115,7 @@ public class NotificationTemplateResponseMapper {
     private MailAddress toFromMailMapper(DocPreviewRequest docPreviewReques) {
 
         MailAddress fromMailAddress = null;
-        if(docPreviewReques.getNotificationType().name().equalsIgnoreCase(LETTER)) {
+        if(LETTER.equalsIgnoreCase(docPreviewReques.getNotificationType().name())) {
 
             fromMailAddress = MailAddress.buildRecipientMailAddressWith()
                 .addressLine(notifyTemplateFromMailAddressLine)

@@ -81,6 +81,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     private static final String SEND_REFUND = "SendRefund";
 
+    private static final String EMAIL = "EMAIL";
+
     private static final Pattern
         REFUNDS_REGEX_PATTERN = Pattern.compile("^(RF)-([0-9]{4})-([0-9-]{4})-([0-9-]{4})-([0-9-]{4})$");
 
@@ -214,7 +216,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         try {
 
-            if(docPreviewRequest.getNotificationType().name().equalsIgnoreCase("EMAIL")) {
+            if(EMAIL.equalsIgnoreCase(docPreviewRequest.getNotificationType().name())) {
 
                 templatePreview = notificationEmailClient
                     .generateTemplatePreview(templeteId,
@@ -243,13 +245,13 @@ public class NotificationServiceImpl implements NotificationService {
         if (null != docPreviewRequest.getNotificationType()) {
 
             if (REFUND_WHEN_CONTACTED.equals(instructionType)) {
-                if ("EMAIL".equalsIgnoreCase(docPreviewRequest.getNotificationType().name())) {
+                if (EMAIL.equalsIgnoreCase(docPreviewRequest.getNotificationType().name())) {
                     templateId = chequePoCashEmailTemplateId;
                 } else {
                     templateId = chequePoCashLetterTemplateId;
                 }
             } else {
-                if ("EMAIL".equalsIgnoreCase(docPreviewRequest.getNotificationType().name())) {
+                if (EMAIL.equalsIgnoreCase(docPreviewRequest.getNotificationType().name())) {
                     templateId = cardPbaEmailTemplateId;
                 } else {
                     templateId = cardPbaLetterTemplateId;
