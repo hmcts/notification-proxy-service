@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.notifications.dtos.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import java.math.BigDecimal;
+import liquibase.pro.packaged.S;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,13 +23,9 @@ public class Personalisation {
 
     private String ccdCaseNumber;
 
-    @NotNull(message = "Refund reference cannot be null")
-    @NotEmpty(message = "Refund reference cannot be blank")
     private String refundReference;
 
-    private String serviceUrl;
+    private BigDecimal refundAmount;
 
-    private String serviceMailBox;
-
-    private int refundLagTime;
+    private String refundReason;
 }

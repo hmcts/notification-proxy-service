@@ -76,3 +76,19 @@ azure:
   application-insights:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:}
 
+notify:
+  template:
+    cheque-po-cash:
+      letter: test1
+      email: test2
+    card-pba:
+      letter: test3
+      email: test4
+    from-details:
+      email: HM Courts and Tribunals Registrations <hm.courts.and.tribunals.registrations@notifications.service.gov.uk>
+      mail:
+        address-line: ABC
+        county: london
+        country: UK
+        city: london
+        post-code: 123 436

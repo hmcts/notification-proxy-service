@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
@@ -42,12 +43,14 @@ import uk.gov.hmcts.reform.notifications.mapper.LetterNotificationMapper;
 import uk.gov.hmcts.reform.notifications.mapper.NotificationResponseMapper;
 import uk.gov.hmcts.reform.notifications.model.ContactDetails;
 import uk.gov.hmcts.reform.notifications.model.Notification;
+import uk.gov.hmcts.reform.notifications.model.ServiceContact;
 import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import uk.gov.hmcts.reform.notifications.repository.ServiceContactRepository;
 import uk.gov.service.notify.NotificationClientApi;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
@@ -104,6 +107,9 @@ public class NotificationServiceImplTest {
 
     @Mock
     private MultiValueMap<String, String> map;
+
+    @Mock
+    private ServiceContactRepository serviceContactRepository;
 
     public static final String GET_REFUND_LIST_CCD_CASE_USER_ID1 = "1f2b7025-0f91-4737-92c6-b7a9baef14c6";
 
@@ -232,8 +238,10 @@ public class NotificationServiceImplTest {
             .reference("REF-123")
             .recipientEmailAddress("test@test.com")
             .personalisation(
-                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundLagTime(1).serviceMailBox("test@test.com").serviceUrl("test.com").refundReference("test").build())
+                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
 
         SendEmailResponse response = new SendEmailResponse("{\"content\":{\"body\":\"Hello Unknown, your reference is string\\r\\n\\r\\nRefund Approved\\" +
                                                                "r\\n\\r\\nThanks\",\"from_email\":\"test@gov.uk\",\"subject\":" +
@@ -272,8 +280,10 @@ public class NotificationServiceImplTest {
                                         .postalCode("TE ST1")
                                         .build())
             .personalisation(
-                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundLagTime(1).serviceMailBox("test@test.com").serviceUrl("test.com").refundReference("test").build())
+                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
 
         SendLetterResponse response = new SendLetterResponse("{\"content\":{\"body\":\"Hello Unknown\\r\\n\\r\\nRefund Approved on 2022-01-01\"," +
                                                                  "\"subject\":\"Refund Notification\"},\"id\":\"0f101e0-6ab8-4a83-8ebd-124d648dd282\"," +
@@ -313,8 +323,11 @@ public class NotificationServiceImplTest {
                                         .postalCode("TE ST1")
                                         .build())
             .personalisation(
-                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundLagTime(1).serviceMailBox("test@test.com").serviceUrl("test.com").refundReference("test").build())
+                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+
 
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         assertThrows(InvalidAddressException.class, () -> notificationServiceImpl.sendLetterNotification(request, any()
@@ -339,8 +352,11 @@ public class NotificationServiceImplTest {
                                         .postalCode("TE ST1")
                                         .build())
             .personalisation(
-                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundLagTime(1).serviceMailBox("test@test.com").serviceUrl("test.com").refundReference("test").build())
+                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+
 
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         assertThrows(InvalidTemplateId.class, () -> notificationServiceImpl.sendLetterNotification(request, any()
@@ -359,8 +375,11 @@ public class NotificationServiceImplTest {
             .reference("REF-123")
             .recipientEmailAddress("test@test.com")
             .personalisation(
-                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundLagTime(1).serviceMailBox("test@test.com").serviceUrl("test.com").refundReference("test").build())
+                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+
 
         when(notificationEmailClient.sendEmail(any(), any(),any(),any())).thenThrow(new NotificationClientException(errorMessage));
         assertThrows(InvalidApiKeyException.class, () -> notificationServiceImpl.sendEmailNotification(request, any()

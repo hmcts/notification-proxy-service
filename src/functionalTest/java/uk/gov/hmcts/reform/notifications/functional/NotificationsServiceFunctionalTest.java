@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.notifications.functional;
 
 
+import java.math.BigDecimal;
 import org.springframework.http.HttpStatus;
 
 import io.restassured.RestAssured;
@@ -95,12 +96,8 @@ public class NotificationsServiceFunctionalTest {
             .reference("Functional Test")
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
-            .personalisation(Personalisation.personalisationRequestWith()
-                                 .ccdCaseNumber("1234567890123456")
-                                 .refundReference("Functional Test")
-                                 .serviceMailBox(serviceMailBox)
-                                 .serviceUrl(serviceUrl)
-                                 .build())
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
 
         final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
@@ -126,12 +123,8 @@ public class NotificationsServiceFunctionalTest {
                                         .build())
             .reference("test reference")
             .notificationType(NotificationType.LETTER)
-            .personalisation(Personalisation.personalisationRequestWith()
-                                 .ccdCaseNumber("1234567890123456")
-                                 .refundReference("test reference")
-                                 .serviceMailBox(serviceMailBox)
-                                 .serviceUrl(serviceUrl)
-                                 .build())
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
 
         final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
@@ -152,12 +145,8 @@ public class NotificationsServiceFunctionalTest {
             .reference("Functional Test")
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
-            .personalisation(Personalisation.personalisationRequestWith()
-                                 .ccdCaseNumber("1234567890123456")
-                                 .refundReference("Functional Test")
-                                 .serviceMailBox(serviceMailBox)
-                                 .serviceUrl(serviceUrl)
-                                 .build())
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
 
         final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
@@ -183,12 +172,8 @@ public class NotificationsServiceFunctionalTest {
                                         .build())
             .reference("test reference")
             .notificationType(NotificationType.LETTER)
-            .personalisation(Personalisation.personalisationRequestWith()
-                                 .ccdCaseNumber("1234567890123456")
-                                 .refundReference("test reference")
-                                 .serviceMailBox(serviceMailBox)
-                                 .serviceUrl(serviceUrl)
-                                 .build())
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
 
         final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
@@ -210,12 +195,8 @@ public class NotificationsServiceFunctionalTest {
             .reference("RF-MULTI-TEST")
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
-            .personalisation(Personalisation.personalisationRequestWith()
-                                 .ccdCaseNumber("1234567890123456")
-                                 .refundReference("Functional Test")
-                                 .serviceMailBox(serviceMailBox)
-                                 .serviceUrl(serviceUrl)
-                                 .build())
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
 
         final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
@@ -258,12 +239,8 @@ public class NotificationsServiceFunctionalTest {
             .reference("RF-MULTI-TEST2")
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
-            .personalisation(Personalisation.personalisationRequestWith()
-                                 .ccdCaseNumber("1234567890123456")
-                                 .refundReference("Functional Test")
-                                 .serviceMailBox(serviceMailBox)
-                                 .serviceUrl(serviceUrl)
-                                 .build())
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
 
         final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
@@ -280,12 +257,8 @@ public class NotificationsServiceFunctionalTest {
             .reference("RF-MULTI-TEST2")
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
-            .personalisation(Personalisation.personalisationRequestWith()
-                                 .ccdCaseNumber("1234567890123456")
-                                 .refundReference("Functional Test")
-                                 .serviceMailBox(serviceMailBox)
-                                 .serviceUrl(serviceUrl)
-                                 .build())
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
 
         final Response responseNotificationEmail2 = notificationsTestServicel.postEmailNotification(
@@ -326,12 +299,8 @@ public class NotificationsServiceFunctionalTest {
                                         .build())
             .reference("test reference")
             .notificationType(NotificationType.LETTER)
-            .personalisation(Personalisation.personalisationRequestWith()
-                                 .ccdCaseNumber("1234567890123456")
-                                 .refundReference("test reference")
-                                 .serviceMailBox(serviceMailBox)
-                                 .serviceUrl(serviceUrl)
-                                 .build())
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
 
         final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
@@ -353,12 +322,8 @@ public class NotificationsServiceFunctionalTest {
                                         .build())
             .reference("ReSendLetter")
             .notificationType(NotificationType.LETTER)
-            .personalisation(Personalisation.personalisationRequestWith()
-                                 .ccdCaseNumber("1234567890123456")
-                                 .refundReference("test reference")
-                                 .serviceMailBox(serviceMailBox)
-                                 .serviceUrl(serviceUrl)
-                                 .build())
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
 
         final Response responseNotificationLetter2 = notificationsTestServicel.postLetterNotification(

@@ -47,4 +47,6 @@ public class RefundNotificationEmailRequest {
     @Valid
     private Personalisation personalisation;
 
+    private String serviceName;
+
 }

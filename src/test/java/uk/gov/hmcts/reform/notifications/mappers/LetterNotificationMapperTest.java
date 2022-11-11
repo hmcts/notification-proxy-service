@@ -71,8 +71,8 @@ public class LetterNotificationMapperTest {
 
         return Personalisation.personalisationRequestWith()
             .ccdCaseNumber("1111222233334444")
-            .refundLagTime(2)
-            .serviceMailBox("test@hmcts.net")
+           // .refundLagTime(2)
+           // .serviceMailBox("test@hmcts.net")
             .refundReference("REF-123")
             .build();
     }
