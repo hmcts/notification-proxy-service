@@ -12,12 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.notifications.dtos.request.DocPreviewRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
-import uk.gov.hmcts.reform.notifications.dtos.request.TempletePreviewRequest;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
 import uk.gov.hmcts.reform.notifications.service.NotificationService;
-import uk.gov.service.notify.Template;
-import uk.gov.service.notify.TemplatePreview;
 
 
 import javax.validation.Valid;

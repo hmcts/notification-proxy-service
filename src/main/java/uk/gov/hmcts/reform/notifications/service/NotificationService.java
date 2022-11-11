@@ -4,13 +4,10 @@ import org.springframework.util.MultiValueMap;
 import uk.gov.hmcts.reform.notifications.dtos.request.DocPreviewRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
-import uk.gov.hmcts.reform.notifications.dtos.request.TempletePreviewRequest;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
-import uk.gov.service.notify.Template;
-import uk.gov.service.notify.TemplatePreview;
 
 public interface NotificationService {
 
