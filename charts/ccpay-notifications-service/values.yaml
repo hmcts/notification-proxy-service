@@ -44,8 +44,6 @@ java:
           alias: NOTIFICATION_LETTER_TEMPLATE_ID
         - name: notifications-email-template-id
           alias: NOTIFICATION_EMAIL_TEMPLATE_ID
-
-
         - name: notifications-letter-cheque-po-cash-template-id
           alias: NOTIFICATIONS_LETTER_CHEQUE_PO_CASH_TEMPLATE_ID
         - name: notifications-email-cheque-po-cash-template-id
