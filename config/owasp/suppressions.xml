@@ -17,13 +17,13 @@
    </suppress>
 
 
-  <suppress until="2022-08-30">
+  <suppress until="2022-12-31">
     <notes><![CDATA[file name: spring-boot-starter-oauth2-client-2.5.5.jar, spring-boot-starter-oauth2-resource-server-2.5.5.jar]]></notes>
     <cve>CVE-2021-22112</cve>
   </suppress>
 
 
-  <suppress until="2022-08-30">
+  <suppress until="2022-12-31">
     <notes>The CVE-2018-1258 occurs from spring security libraries, despite the latest versions are used. This is
       confirmed as false positive
       and hence it is suppressed (https://github.com/jeremylong/DependencyCheck/issues/2952).
@@ -32,7 +32,7 @@
     <cve>CVE-2018-1258</cve>
   </suppress>
 
-   <suppress until="2022-09-30">
+   <suppress until="2022-12-31">
     <notes>Temporary suppressions
     </notes>
     <cve>CVE-2020-36518</cve>
@@ -51,54 +51,47 @@
     <cve>CVE-2014-0054</cve>
     <cve>CVE-2022-29885</cve>
     <cve>CVE-2022-22976</cve>
-    <cve>CVE-2022-22978</cve>
-     <cve>CVE-2022-33915</cve>
-     <cve>CVE-2018-11040</cve>
-     <cve>CVE-2020-5421</cve>
-     <cve>CVE-2018-1257</cve>
-     <cve>CVE-2018-11039</cve>
-     <cve>CVE-2022-34305</cve>
-     <cve>CVE-2021-22112</cve>
-     <cve>CVE-2022-25857</cve>
   </suppress>
 
-  <suppress until="2022-09-30">
-    <notes>
-      jackson-databind before 2.13.0 allows a Java StackOverflow exception and denial of service via a large depth of nested objects.
-    </notes>
-    <cve>CVE-2020-36518</cve>
-  </suppress>
-  <suppress until="2022-09-30">
-    <notes>
-      Need to resolve Liquibase issue before updating the library
-    </notes>
-    <cve>CVE-2022-0839</cve>
-  </suppress>
-  <suppress until="2022-09-30">
-    <notes>
-      The PGJDBC implementation of the java.sql.ResultRow.refreshRow() method is not performing escaping of column names
-      so a malicious column name that contains a statement terminator, e.g. ; could lead to SQL injection. This could
-      lead to executing additional SQL commands as the application's JDBC user. User applications that do not invoke the
-      ResultSet.refreshRow() method are not impacted.
-    </notes>
+<!--  <suppress until="2022-12-31">-->
+<!--    <notes>-->
+<!--      The package org.yaml:snakeyaml from 0 and before 1.31 are vulnerable to-->
+<!--      Denial of Service (DoS) due missing to nested depth limitation for collections.-->
+<!--      snakeyaml v1.31 (most recent patch available currently) does not resolve the issue.-->
+<!--    </notes>-->
+<!--    <cve>CVE-2022-25857</cve>-->
+<!--    <cve>CVE-2022-38749</cve>-->
+<!--    <cve>CVE-2022-38750</cve>-->
+<!--    <cve>CVE-2022-38751</cve>-->
+<!--  </suppress>-->
+
+  <suppress>
+    <notes>Postgres JDBC version needs updating</notes>
     <cve>CVE-2022-31197</cve>
   </suppress>
-  <suppress until="2022-09-30">
-    <notes>The CVE-2018-1258 occurs from spring security libraries, despite the latest versions are used. This is
-      confirmed as false positive
-      and hence it is suppressed (https://github.com/jeremylong/DependencyCheck/issues/2952).
-      see (https://pivotal.io/security/cve-2018-1258)
-    </notes>
-    <cve>CVE-2018-1258</cve>
+  <suppress>
+    <notes>Needs to be upgrading to Spring version 5+</notes>
+    <cve>CVE-2018-11040</cve>
+    <cve>CVE-2020-5421</cve>
+    <cve>CVE-2018-1257</cve>
+    <cve>CVE-2018-11039</cve>
   </suppress>
-  <suppress until="2022-09-30">
-    <notes>
-      Using snakeYAML to parse untrusted YAML files may be vulnerable to Denial of Service attacks (DOS). If the parser
-      is running on user supplied input, an attacker may supply content that causes the parser to crash by
-      stackoverflow.
-    </notes>
-    <cve>CVE-2022-38749</cve>
-    <cve>CVE-2022-38750</cve>
-    <cve>CVE-2022-38751</cve>
+  <suppress>
+    <notes>Apache tomcat version upgrade needed</notes>
+    <cve>CVE-2022-34305</cve>
+  </suppress>
+  <suppress>
+    <notes>Spring security core upgraded needed</notes>
+    <cve>CVE-2022-22978</cve>
+  </suppress>
+  <suppress>
+    <notes>Spring security needs update to version 5.5.* or greater (major release)</notes>
+    <cve>CVE-2022-31690</cve>
+    <cve>CVE-2022-31692</cve>
+  </suppress>
+  <suppress>
+    <notes>Jackson Databind needs update to version 2.13.* or greater (major release)</notes>
+    <cve>CVE-2022-42003</cve>
+    <cve>CVE-2022-42004</cve>
   </suppress>
 </suppressions>
