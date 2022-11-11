@@ -214,6 +214,8 @@ public class NotificationServiceImpl implements NotificationService {
         Optional<ServiceContact> serviceContact = serviceContactRepository.findByServiceName(docPreviewRequest.getServiceName());
         String templeteId = getTemplate(docPreviewRequest, instructionType);
 
+        LOG.info(templeteId);
+
         try {
 
             if(EMAIL.equalsIgnoreCase(docPreviewRequest.getNotificationType().name())) {
