@@ -166,3 +166,47 @@ databaseChangeLog:
                   ('Civil'),
                   ('Family Private Law'),
                   ('Probate');
+
+  - changeSet:
+      id: 100009
+      author: Ranjeet
+      changes:
+        - sql:
+            splitStatements: true
+            sql: >
+              UPDATE service_contact SET
+                service_mailbox = 'digital@justice.gov.uk'
+                WHERE service_name = 'Digital Bar';
+              UPDATE service_contact SET
+                service_mailbox = 'family@justice.gov.uk'
+                WHERE service_name = 'Family Public Law';
+              UPDATE service_contact SET
+                service_mailbox = 'specified@justice.gov.uk'
+                WHERE service_name = 'Specified Money Claims';
+              UPDATE service_contact SET
+                service_mailbox = 'adoption@justice.gov.uk'
+                WHERE service_name = 'Adoption';
+              UPDATE service_contact SET
+                service_mailbox = 'immigration@justice.gov.uk'
+                WHERE service_name = 'Immigration and Asylum Appeals';
+              UPDATE service_contact SET
+                service_mailbox = 'cmc@justice.gov.uk'
+                WHERE service_name = 'Civil Money Claims';
+              UPDATE service_contact SET
+                service_mailbox = 'finrem@justice.gov.uk'
+                WHERE service_name = 'Finrem';
+              UPDATE service_contact SET
+                service_mailbox = 'divorce@justice.gov.uk'
+                WHERE service_name = 'Divorce';
+              UPDATE service_contact SET
+                service_mailbox = 'financial@justice.gov.uk'
+                WHERE service_name = 'Financial Remedy';
+              UPDATE service_contact SET
+                service_mailbox = 'civil@justice.gov.uk'
+                WHERE service_name = 'Civil';
+              UPDATE service_contact SET
+                service_mailbox = 'family@justice.gov.uk'
+                WHERE service_name = 'Family Private Law';
+              UPDATE service_contact SET
+                service_mailbox = 'probate@justice.gov.uk'
+                WHERE service_name = 'Probate';

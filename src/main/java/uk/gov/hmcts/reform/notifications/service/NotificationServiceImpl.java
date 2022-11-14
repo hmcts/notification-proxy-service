@@ -107,7 +107,8 @@ public class NotificationServiceImpl implements NotificationService {
                 .sendEmail(
                     emailNotificationRequest.getTemplateId(),
                     emailNotificationRequest.getRecipientEmailAddress(),
-                    createEmailPersonalisation(emailNotificationRequest.getPersonalisation(), serviceContact.get().getServiceMailbox()),
+                    createEmailPersonalisation(emailNotificationRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
+                                               emailNotificationRequest.getPersonalisation().getRefundReference()),
                     emailNotificationRequest.getReference()
                 );
 
@@ -133,7 +134,8 @@ public class NotificationServiceImpl implements NotificationService {
             IdamUserIdResponse uid = idamService.getUserId(headers);
             SendLetterResponse sendLetterResponse = notificationLetterClient.sendLetter(
                 letterNotificationRequest.getTemplateId(),
-                createLetterPersonalisation(letterNotificationRequest.getRecipientPostalAddress(),letterNotificationRequest.getPersonalisation(),serviceContact.get().getServiceMailbox()),
+                createLetterPersonalisation(letterNotificationRequest.getRecipientPostalAddress(),letterNotificationRequest.getPersonalisation(),serviceContact.get().getServiceMailbox(),
+                                            letterNotificationRequest.getPersonalisation().getRefundReference()          ),
                 letterNotificationRequest.getReference()
             );
 
@@ -151,23 +153,23 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private Map<String, Object> createEmailPersonalisation(Personalisation personalisation, String serviceMailBox) {
+    private Map<String, Object> createEmailPersonalisation(Personalisation personalisation, String serviceMailBox, String refundRef) {
 
-        return Map.of("refundReference",REFUNDS_REGEX_PATTERN.matcher(personalisation.getRefundReference()).matches() ? personalisation.getRefundReference() : "RF-****-****-****-****",
+        return Map.of("refundReference", refundRef,
                       "ccdCaseNumber", personalisation.getCcdCaseNumber(),
                       "serviceMailbox", serviceMailBox,
                       "refundAmount", personalisation.getRefundAmount(),
                       "reason", personalisation.getRefundReason());
     }
 
-    private Map<String, Object> createLetterPersonalisation(RecipientPostalAddress recipientPostalAddress, Personalisation personalisation, String serviceMailBox) {
+    private Map<String, Object> createLetterPersonalisation(RecipientPostalAddress recipientPostalAddress, Personalisation personalisation, String serviceMailBox,String refundRef) {
 
         return Map.of("address_line_1", recipientPostalAddress.getAddressLine(),
                       "address_line_2", recipientPostalAddress.getCity(),
                       "address_line_3",recipientPostalAddress.getCounty(),
                       "address_line_4",recipientPostalAddress.getCountry(),
                       "address_line_5", recipientPostalAddress.getPostalCode(),
-                      "refundReference", REFUNDS_REGEX_PATTERN.matcher(personalisation.getRefundReference()).matches() ? personalisation.getRefundReference() : "RF-****-****-****-****",
+                      "refundReference", refundRef,
                       "ccdCaseNumber", personalisation.getCcdCaseNumber(),
                       "serviceMailbox", serviceMailBox,
                       "refundAmount", personalisation.getRefundAmount(),
@@ -200,7 +202,7 @@ public class NotificationServiceImpl implements NotificationService {
         TemplatePreview templatePreview;
         NotificationTemplatePreviewResponse notificationTemplatePreviewResponse;
         String instructionType = null;
-
+        String refundRef = "RF-****-****-****-****";
         if (docPreviewRequest.getPaymentMethod() != null) {
 
             if (BULK_SCAN.equals(docPreviewRequest.getPaymentChannel()) && (CASH.equals(docPreviewRequest.getPaymentMethod())
@@ -214,22 +216,20 @@ public class NotificationServiceImpl implements NotificationService {
         Optional<ServiceContact> serviceContact = serviceContactRepository.findByServiceName(docPreviewRequest.getServiceName());
         String templeteId = getTemplate(docPreviewRequest, instructionType);
 
-        LOG.info(templeteId);
-
         try {
 
             if(EMAIL.equalsIgnoreCase(docPreviewRequest.getNotificationType().name())) {
 
                 templatePreview = notificationEmailClient
                     .generateTemplatePreview(templeteId,
-                                             createEmailPersonalisation(docPreviewRequest.getPersonalisation(), serviceContact.get().getServiceMailbox()));
-
-            } else{
+                                             createEmailPersonalisation(docPreviewRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
+                                                                        refundRef));
+            } else {
 
                 templatePreview = notificationLetterClient
                     .generateTemplatePreview(templeteId,
-                                             createLetterPersonalisation(docPreviewRequest.getRecipientPostalAddress(),docPreviewRequest.getPersonalisation(), serviceContact.get().getServiceMailbox()));
-
+                                             createLetterPersonalisation(docPreviewRequest.getRecipientPostalAddress(),docPreviewRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
+                                                                         refundRef));
             }
 
          notificationTemplatePreviewResponse = notificationTemplateResponseMapper.notificationPreviewResponse(templatePreview,docPreviewRequest);

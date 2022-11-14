@@ -5,6 +5,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.notifications.dtos.request.DocPreviewRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
 
@@ -52,5 +53,18 @@ public class NotificationsTestService {
         return RestAssured.given()
             .header(AUTHORIZATION, userToken)
             .header("ServiceAuthorization", serviceToken);
+    }
+
+
+    public Response getLetterTemplateNotification(final String userToken,
+                                           final String serviceToken,
+                                           final String baseUri,
+                                           final DocPreviewRequest request) {
+        return givenWithAuthHeaders(userToken, serviceToken)
+            .contentType(ContentType.JSON)
+            .body(request)
+            .baseUri(baseUri)
+            .when()
+            .post("/doc-preview");
     }
 }

@@ -47,6 +47,8 @@ public class RefundNotificationEmailRequest {
     @Valid
     private Personalisation personalisation;
 
+    @NotNull(message = "service Name cannot be null")
+    @NotEmpty(message = "Service cannot be blank")
     private String serviceName;
 
 }
