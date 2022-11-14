@@ -83,9 +83,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     private static final String EMAIL = "EMAIL";
 
-    private static final Pattern
-        REFUNDS_REGEX_PATTERN = Pattern.compile("^(RF)-([0-9]{4})-([0-9-]{4})-([0-9-]{4})-([0-9-]{4})$");
-
     @Value("${notify.template.cheque-po-cash.letter}")
     private String chequePoCashLetterTemplateId;
 
