@@ -53,6 +53,18 @@ public class NotificationsServiceFunctionalTest {
     @Value("${notify.email.template}")
     private String emailTemplateId;
 
+    @Value("${notify.template.cheque-po-cash.letter}")
+    private String chequePoCashLetterTemplateId;
+
+    @Value("${notify.template.cheque-po-cash.email}")
+    private String chequePoCashEmailTemplateId;
+
+    @Value("${notify.template.card-pba.letter}")
+    private String cardPbaLetterTemplateId;
+
+    @Value("${notify.template.card-pba.email}")
+    private String cardPbaEmailTemplateId;
+
     @Autowired
     private TestConfigProperties testConfigProperties;
 
@@ -270,8 +282,9 @@ public class NotificationsServiceFunctionalTest {
             request
         );
 
-        NotificationTemplatePreviewResponse refundListDtoResponse = responseNotificationLetter.getBody().as(NotificationTemplatePreviewResponse.class);
-        assertThat(refundListDtoResponse.getTemplateType().equals("letter"));
+        NotificationTemplatePreviewResponse notificationTemplatePreviewResponse = responseNotificationLetter.getBody().as(NotificationTemplatePreviewResponse.class);
+        assertThat(notificationTemplatePreviewResponse.getTemplateType().equals("letter"));
+        assertThat(notificationTemplatePreviewResponse.getTemplateId().equals(cardPbaLetterTemplateId));
     }
 
     @Test
@@ -297,8 +310,9 @@ public class NotificationsServiceFunctionalTest {
             request
         );
 
-        NotificationTemplatePreviewResponse refundListDtoResponse = responseNotificationLetter.getBody().as(NotificationTemplatePreviewResponse.class);
-        assertThat(refundListDtoResponse.getTemplateType().equals("letter"));
+        NotificationTemplatePreviewResponse notificationTemplatePreviewResponse = responseNotificationLetter.getBody().as(NotificationTemplatePreviewResponse.class);
+        assertThat(notificationTemplatePreviewResponse.getTemplateType().equals("letter"));
+        assertThat(notificationTemplatePreviewResponse.getTemplateId().equals(chequePoCashLetterTemplateId));
     }
 
     @Test
@@ -322,8 +336,9 @@ public class NotificationsServiceFunctionalTest {
             request
         );
 
-        NotificationTemplatePreviewResponse refundListDtoResponse = responseNotificationLetter.getBody().as(NotificationTemplatePreviewResponse.class);
-        assertThat(refundListDtoResponse.getTemplateType().equals("email"));
+        NotificationTemplatePreviewResponse notificationTemplatePreviewResponse = responseNotificationLetter.getBody().as(NotificationTemplatePreviewResponse.class);
+        assertThat(notificationTemplatePreviewResponse.getTemplateType().equals("email"));
+        assertThat(notificationTemplatePreviewResponse.getTemplateId().equals(cardPbaEmailTemplateId));
     }
 
     @Test
@@ -347,8 +362,9 @@ public class NotificationsServiceFunctionalTest {
             request
         );
 
-        NotificationTemplatePreviewResponse refundListDtoResponse = responseNotificationLetter.getBody().as(NotificationTemplatePreviewResponse.class);
-        assertThat(refundListDtoResponse.getTemplateType().equals("email"));
+        NotificationTemplatePreviewResponse notificationTemplatePreviewResponse = responseNotificationLetter.getBody().as(NotificationTemplatePreviewResponse.class);
+        assertThat(notificationTemplatePreviewResponse.getTemplateType().equals("email"));
+        assertThat(notificationTemplatePreviewResponse.getTemplateId().equals(chequePoCashEmailTemplateId));
     }
 
 }
