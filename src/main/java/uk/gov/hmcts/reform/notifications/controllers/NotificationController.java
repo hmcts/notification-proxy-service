@@ -92,7 +92,7 @@ public class NotificationController {
         );
     }
 
-    @ApiOperation(value = "POST /notifications/preview ", notes = "Preview Notification by passing reference")
+    @ApiOperation(value = "POST /doc-preview ", notes = "Preview Notification by passing personalisation")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success"),
         @ApiResponse(code = 403, message = "AuthError"),
