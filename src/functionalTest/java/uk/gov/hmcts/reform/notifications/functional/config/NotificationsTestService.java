@@ -56,7 +56,7 @@ public class NotificationsTestService {
     }
 
 
-    public Response getLetterTemplateNotification(final String userToken,
+    public Response getTemplateNotificationPreview(final String userToken,
                                            final String serviceToken,
                                            final String baseUri,
                                            final DocPreviewRequest request) {

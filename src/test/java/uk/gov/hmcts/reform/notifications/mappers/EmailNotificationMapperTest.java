@@ -54,8 +54,6 @@ public class EmailNotificationMapperTest {
 
         return Personalisation.personalisationRequestWith()
             .ccdCaseNumber("1111222233334444")
-          //  .refundLagTime(2)
-            //.serviceMailBox(EMAIL)
             .refundReference("REF-123")
             .build();
     }

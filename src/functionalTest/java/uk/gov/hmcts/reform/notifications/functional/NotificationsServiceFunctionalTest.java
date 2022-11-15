@@ -275,7 +275,7 @@ public class NotificationsServiceFunctionalTest {
                                         .county("london").country("UK").city("london").build())
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.getLetterTemplateNotification(
+        final Response responseNotificationLetter = notificationsTestServicel.getTemplateNotificationPreview(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -303,7 +303,7 @@ public class NotificationsServiceFunctionalTest {
                                         .county("london").country("UK").city("london").build())
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.getLetterTemplateNotification(
+        final Response responseNotificationLetter = notificationsTestServicel.getTemplateNotificationPreview(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -329,7 +329,7 @@ public class NotificationsServiceFunctionalTest {
             .paymentMethod("card")
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.getLetterTemplateNotification(
+        final Response responseNotificationLetter = notificationsTestServicel.getTemplateNotificationPreview(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -355,7 +355,7 @@ public class NotificationsServiceFunctionalTest {
             .paymentMethod("cash")
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.getLetterTemplateNotification(
+        final Response responseNotificationLetter = notificationsTestServicel.getTemplateNotificationPreview(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,

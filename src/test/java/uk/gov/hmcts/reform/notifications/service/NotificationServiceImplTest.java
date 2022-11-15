@@ -238,7 +238,7 @@ public class NotificationServiceImplTest {
             .reference("REF-123")
             .recipientEmailAddress("test@test.com")
             .personalisation(
-                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("1600162727220633").refundReference("RF-1234-1234-1234-1234").refundAmount(
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
@@ -323,7 +323,7 @@ public class NotificationServiceImplTest {
                                         .postalCode("TE ST1")
                                         .build())
             .personalisation(
-                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("1600162727220633").refundReference("RF-1234-1234-1234-1234").refundAmount(
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
@@ -352,7 +352,7 @@ public class NotificationServiceImplTest {
                                         .postalCode("TE ST1")
                                         .build())
             .personalisation(
-                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("1600162727220633").refundReference("RF-1234-1234-1234-1234").refundAmount(
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
@@ -375,7 +375,7 @@ public class NotificationServiceImplTest {
             .reference("REF-123")
             .recipientEmailAddress("test@test.com")
             .personalisation(
-                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("1600162727220633").refundReference("RF-1234-1234-1234-1234").refundAmount(
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
