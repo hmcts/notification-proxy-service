@@ -22,12 +22,7 @@ import uk.gov.hmcts.reform.notifications.dtos.enums.NotificationType;
 public class DocPreviewRequest {
 
     private String paymentReference;
-
-    @NotNull(message = "Payment method cannot be null")
-    @NotEmpty(message = "Payment method cannot be blank")
     private String paymentMethod;
-    @NotNull(message = "Payment channel cannot be null")
-    @NotEmpty(message = "Payment channel cannot be blank")
     private String paymentChannel;
     @NotNull(message = "Service name cannot be null")
     @NotEmpty(message = "Service name  cannot be blank")
