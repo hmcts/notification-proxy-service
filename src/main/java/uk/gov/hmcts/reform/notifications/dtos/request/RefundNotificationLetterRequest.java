@@ -44,4 +44,8 @@ public class RefundNotificationLetterRequest {
     @Valid
     private RecipientPostalAddress recipientPostalAddress;
 
+    @NotNull(message = "Service Name cannot be null")
+    @NotEmpty(message = "Service name cannot be blank")
+    private String serviceName;
+
 }

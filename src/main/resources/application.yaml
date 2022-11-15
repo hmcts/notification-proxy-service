@@ -108,6 +108,21 @@ notify:
   letter.template:
   email.apiKey: ${EMAIL_APIKEY}
   email.template:
+  template:
+    cheque-po-cash:
+      letter: ${NOTIFICATIONS_LETTER_CHEQUE_PO_CASH_TEMPLATE_ID:}
+      email: ${NOTIFICATIONS_EMAIL_CHEQUE_PO_CASH_TEMPLATE_ID:}
+    card-pba:
+      letter: ${NOTIFICATION_LETTER_CARD_PBA_TEMPLATE_ID:}
+      email: ${NOTIFICATION_EMAIL_CARD_PBA_TEMPLATE_ID:}
+    from-details:
+      email: HM Courts and Tribunals Registrations <hm.courts.and.tribunals.registrations@notifications.service.gov.uk>
+      mail:
+        address-line: ABC
+        county: london
+        country: UK
+        city: london
+        post-code: 123 436
 
 idam:
   api:
