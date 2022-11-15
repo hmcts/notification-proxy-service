@@ -24,8 +24,6 @@ public class DocPreviewRequest {
     private String paymentReference;
     private String paymentMethod;
     private String paymentChannel;
-    @NotNull(message = "Service name cannot be null")
-    @NotEmpty(message = "Service name  cannot be blank")
     private String serviceName;
 
     @Valid
