@@ -106,6 +106,7 @@ task smoke(type: Test) {
   description = "Runs Smoke Tests"
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
   classpath = sourceSets.smokeTest.runtimeClasspath
+  testLogging.showStandardStreams = true
 }
 
 checkstyle {
@@ -193,7 +194,7 @@ dependencyCheck {
   }
 }
 
-dependencyManagement {
+dependencyManagement {classpath = sourceSets.smokeTest.runtimeClasspath
   dependencies {
     dependency group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.68'
     // CVE-2018-10237 - Unbounded memory allocation
