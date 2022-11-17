@@ -113,7 +113,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     public static final String CONTENT_TYPE = "content-type";
 
-//    @Qualifier("restTemplatePayment")
+    @Qualifier("restTemplatePayment")
     @Autowired()
     private RestTemplate restTemplatePayment;
 
