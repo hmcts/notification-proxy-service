@@ -293,6 +293,7 @@ public class NotificationServiceImpl implements NotificationService {
                                                           String paymentReference) {
         ResponseEntity<PaymentDto> paymentResponse = null;
         try {
+            LOG.info("insidefetchPaymentGroupResponse paymentResponse");
             paymentResponse = fetchPaymentDataFromPayhub(headers, paymentReference);
             LOG.info("paymentResponse != null: {}", paymentResponse != null);
 
@@ -309,22 +310,10 @@ public class NotificationServiceImpl implements NotificationService {
         return paymentResponse.getBody();
     }
 
-    private HttpEntity<String> getHeadersEntity(MultiValueMap<String, String> headers) {
-        return new HttpEntity<>(getFormatedHeaders(headers));
-    }
-
-    private MultiValueMap<String, String> getFormatedHeaders(MultiValueMap<String, String> headers) {
-        List<String> authtoken = headers.get("authorization");
-        List<String> servauthtoken = Arrays.asList(authTokenGenerator.generate());
-        MultiValueMap<String, String> inputHeaders = new LinkedMultiValueMap<>();
-        inputHeaders.put(CONTENT_TYPE, headers.get(CONTENT_TYPE));
-        inputHeaders.put("Authorization", authtoken);
-        inputHeaders.put("ServiceAuthorization", servauthtoken);
-        return inputHeaders;
-    }
-
     private ResponseEntity<PaymentDto> fetchPaymentDataFromPayhub(MultiValueMap<String, String> headers,
+
                                                                                  String paymentReference) {
+        LOG.info("inside fetchPaymentDataFromPayhub");
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(
             new StringBuilder(paymentApiUrl).append("/payments/").append(paymentReference)
                 .toString());
@@ -334,6 +323,25 @@ public class NotificationServiceImpl implements NotificationService {
                 builder.toUriString(),
                 HttpMethod.GET,
                 getHeadersEntity(headers), PaymentDto.class);
+    }
+
+    private HttpEntity<String> getHeadersEntity(MultiValueMap<String, String> headers) {
+        return new HttpEntity<>(getFormatedHeaders(headers));
+    }
+
+    private MultiValueMap<String, String> getFormatedHeaders(MultiValueMap<String, String> headers) {
+        List<String> authtoken = headers.get("authorization");
+        LOG.info("Authorization genrate1");
+        List<String> servauthtoken = Arrays.asList(authTokenGenerator.generate());
+        LOG.info("Authorization genrate2");
+        MultiValueMap<String, String> inputHeaders = new LinkedMultiValueMap<>();
+        inputHeaders.put(CONTENT_TYPE, headers.get(CONTENT_TYPE));
+        inputHeaders.put("Authorization", authtoken);
+        inputHeaders.put("ServiceAuthorization", servauthtoken);
+        LOG.info("Authorization {}", inputHeaders.get("Authorization").get(0));
+        LOG.info("ServiceAuthorization {}", inputHeaders.get("ServiceAuthorization").get(0));
+
+        return inputHeaders;
     }
 
     private String getInstructionType(String paymentChannel, String paymentMethod) {
