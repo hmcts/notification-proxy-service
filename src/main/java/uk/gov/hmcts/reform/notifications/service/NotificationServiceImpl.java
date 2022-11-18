@@ -229,10 +229,10 @@ public class NotificationServiceImpl implements NotificationService {
         String refundRef = "RF-****-****-****-****";
 
         if (null == docPreviewRequest.getPaymentChannel() || docPreviewRequest.getPaymentChannel().equalsIgnoreCase("string") || null == docPreviewRequest.getPaymentMethod() || docPreviewRequest.getPaymentMethod().equalsIgnoreCase("string") ) {
-
             paymentResponse = fetchPaymentGroupResponse(headers,docPreviewRequest.getPaymentReference());
             instructionType = getInstructionType(paymentResponse.getChannel(),paymentResponse.getMethod());
             serviceContact = serviceContactRepository.findByServiceName(paymentResponse.getServiceName());
+            docPreviewRequest.setPersonalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(paymentResponse.getCcdCaseNumber()).build());
         }
         else {
 
