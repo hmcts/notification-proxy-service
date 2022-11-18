@@ -231,7 +231,7 @@ public class NotificationServiceImpl implements NotificationService {
         PaymentDto paymentResponse;
         Optional<ServiceContact> serviceContact;
         String refundRef = "RF-****-****-****-****";
-        String ccdCaseNumber = null;
+        String ccdCaseNumber;
 
         if (null == docPreviewRequest.getPaymentChannel() || docPreviewRequest.getPaymentChannel().equalsIgnoreCase("string") || null == docPreviewRequest.getPaymentMethod() || docPreviewRequest.getPaymentMethod().equalsIgnoreCase("string") ) {
             paymentResponse = fetchPaymentGroupResponse(headers,docPreviewRequest.getPaymentReference());
