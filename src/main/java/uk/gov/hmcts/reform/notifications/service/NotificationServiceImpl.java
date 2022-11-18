@@ -130,7 +130,8 @@ public class NotificationServiceImpl implements NotificationService {
                     emailNotificationRequest.getTemplateId(),
                     emailNotificationRequest.getRecipientEmailAddress(),
                     createEmailPersonalisation(emailNotificationRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
-                                               emailNotificationRequest.getPersonalisation().getRefundReference()),
+                                               emailNotificationRequest.getPersonalisation().getRefundReference(),
+                                               emailNotificationRequest.getPersonalisation().getCcdCaseNumber()),
                     emailNotificationRequest.getReference()
                 );
 
@@ -157,7 +158,8 @@ public class NotificationServiceImpl implements NotificationService {
             SendLetterResponse sendLetterResponse = notificationLetterClient.sendLetter(
                 letterNotificationRequest.getTemplateId(),
                 createLetterPersonalisation(letterNotificationRequest.getRecipientPostalAddress(),letterNotificationRequest.getPersonalisation(),serviceContact.get().getServiceMailbox(),
-                                            letterNotificationRequest.getPersonalisation().getRefundReference()          ),
+                                            letterNotificationRequest.getPersonalisation().getRefundReference(),
+                                            letterNotificationRequest.getPersonalisation().getCcdCaseNumber()),
                 letterNotificationRequest.getReference()
             );
 
@@ -175,16 +177,18 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private Map<String, Object> createEmailPersonalisation(Personalisation personalisation, String serviceMailBox, String refundRef) {
+    private Map<String, Object> createEmailPersonalisation(Personalisation personalisation, String serviceMailBox,
+                                                           String refundRef, String ccdCaseNumber) {
 
         return Map.of("refundReference", refundRef,
-                      "ccdCaseNumber", personalisation.getCcdCaseNumber(),
+                      "ccdCaseNumber", ccdCaseNumber,
                       "serviceMailbox", serviceMailBox,
                       "refundAmount", personalisation.getRefundAmount(),
                       "reason", personalisation.getRefundReason());
     }
 
-    private Map<String, Object> createLetterPersonalisation(RecipientPostalAddress recipientPostalAddress, Personalisation personalisation, String serviceMailBox,String refundRef) {
+    private Map<String, Object> createLetterPersonalisation(RecipientPostalAddress recipientPostalAddress, Personalisation personalisation, String serviceMailBox,
+                                                            String refundRef, String ccdCaseNumber) {
 
         return Map.of("address_line_1", recipientPostalAddress.getAddressLine(),
                       "address_line_2", recipientPostalAddress.getCity(),
@@ -192,7 +196,7 @@ public class NotificationServiceImpl implements NotificationService {
                       "address_line_4",recipientPostalAddress.getCountry(),
                       "address_line_5", recipientPostalAddress.getPostalCode(),
                       "refundReference", refundRef,
-                      "ccdCaseNumber", personalisation.getCcdCaseNumber(),
+                      "ccdCaseNumber", ccdCaseNumber,
                       "serviceMailbox", serviceMailBox,
                       "refundAmount", personalisation.getRefundAmount(),
                       "reason", personalisation.getRefundReason());
@@ -227,17 +231,19 @@ public class NotificationServiceImpl implements NotificationService {
         PaymentDto paymentResponse;
         Optional<ServiceContact> serviceContact;
         String refundRef = "RF-****-****-****-****";
+        String ccdCaseNumber = null;
 
         if (null == docPreviewRequest.getPaymentChannel() || docPreviewRequest.getPaymentChannel().equalsIgnoreCase("string") || null == docPreviewRequest.getPaymentMethod() || docPreviewRequest.getPaymentMethod().equalsIgnoreCase("string") ) {
             paymentResponse = fetchPaymentGroupResponse(headers,docPreviewRequest.getPaymentReference());
             instructionType = getInstructionType(paymentResponse.getChannel(),paymentResponse.getMethod());
             serviceContact = serviceContactRepository.findByServiceName(paymentResponse.getServiceName());
-            docPreviewRequest.setPersonalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(paymentResponse.getCcdCaseNumber()).build());
+            ccdCaseNumber = paymentResponse.getCcdCaseNumber();
         }
         else {
 
             instructionType = getInstructionType(docPreviewRequest.getPaymentChannel(),docPreviewRequest.getPaymentMethod());
             serviceContact = serviceContactRepository.findByServiceName(docPreviewRequest.getServiceName());
+            ccdCaseNumber = docPreviewRequest.getPersonalisation().getCcdCaseNumber();
         }
 
         String templeteId = getTemplate(docPreviewRequest, instructionType);
@@ -249,13 +255,13 @@ public class NotificationServiceImpl implements NotificationService {
                 templatePreview = notificationEmailClient
                     .generateTemplatePreview(templeteId,
                                              createEmailPersonalisation(docPreviewRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
-                                                                        refundRef));
+                                                                        refundRef, ccdCaseNumber));
             } else {
 
                 templatePreview = notificationLetterClient
                     .generateTemplatePreview(templeteId,
                                              createLetterPersonalisation(docPreviewRequest.getRecipientPostalAddress(),docPreviewRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
-                                                                         refundRef));
+                                                                         refundRef,  ccdCaseNumber));
             }
 
          notificationTemplatePreviewResponse = notificationTemplateResponseMapper.notificationPreviewResponse(templatePreview,docPreviewRequest);
