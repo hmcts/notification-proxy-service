@@ -131,6 +131,53 @@ public class NotificationsServiceFunctionalTest {
      }
 
     @Test
+    public void sendEmailNotificationRequestWithReasonUnableToApplyRefundToCard() {
+
+        sendEmailNotificationRequest();
+        RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
+            .templateId(emailTemplateId)
+            .reference("FunctionalTest1")
+            .emailReplyToId(emailReplyToId)
+            .notificationType(NotificationType.EMAIL)
+            .serviceName("Probate")
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
+            .build();
+
+        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl,
+            refundNotificationEmailRequest
+        );
+        assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+    }
+
+    @Test
+    public void sendLetterNotificationRequestWithReasonUnableToApplyRefundToCard() {
+
+        sendLetterNotificationRequest();
+        RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
+            .templateId(letterTemplateId)
+            .reference("FunctionalTest2")
+            .notificationType(NotificationType.LETTER)
+            .serviceName("Probate")
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
+
+            .build();
+
+        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            refundNotificationLetterRequest
+        );
+        assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @Test
     public void sendLetterNotificationRequest() {
 
         RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()

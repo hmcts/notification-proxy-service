@@ -12,12 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import uk.gov.hmcts.reform.notifications.config.security.idam.IdamService;
 import uk.gov.hmcts.reform.notifications.controllers.ExceptionHandlers;
+import uk.gov.hmcts.reform.notifications.dtos.enums.NotificationType;
 import uk.gov.hmcts.reform.notifications.dtos.request.DocPreviewRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.Personalisation;
 import uk.gov.hmcts.reform.notifications.dtos.request.RecipientPostalAddress;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
 import uk.gov.hmcts.reform.notifications.dtos.response.IdamUserIdResponse;
+import uk.gov.hmcts.reform.notifications.dtos.response.NotificationDto;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
 import uk.gov.hmcts.reform.notifications.exceptions.NotificationListEmptyException;
@@ -82,6 +84,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     private static final String EMAIL = "EMAIL";
 
+    private static final String REFUND_REJECT_REASON ="Unable to apply refund to Card";
+
     @Value("${notify.template.cheque-po-cash.letter}")
     private String chequePoCashLetterTemplateId;
 
@@ -94,6 +98,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Value("${notify.template.card-pba.email}")
     private String cardPbaEmailTemplateId;
 
+
+
     @Override
     public SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest, MultiValueMap<String, String> headers) {
         try {
@@ -102,7 +108,7 @@ public class NotificationServiceImpl implements NotificationService {
             SendEmailResponse sendEmailResponse = notificationEmailClient
                 .sendEmail(
                     emailNotificationRequest.getTemplateId(),
-                    emailNotificationRequest.getRecipientEmailAddress(),
+                    getRecipientEmailAddressForRefundWhenContacted(emailNotificationRequest),
                     createEmailPersonalisation(emailNotificationRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
                                                emailNotificationRequest.getPersonalisation().getRefundReference()),
                     emailNotificationRequest.getReference()
@@ -122,6 +128,43 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    private String getRecipientEmailAddressForRefundWhenContacted(
+        RefundNotificationEmailRequest emailNotificationRequest) {
+
+        String email = emailNotificationRequest.getRecipientEmailAddress();
+        if(null == email &&
+            REFUND_REJECT_REASON.equals(emailNotificationRequest.getPersonalisation().getRefundReason())) {
+
+            NotificationResponseDto notificationResponseDto = getNotification(emailNotificationRequest.getReference());
+            NotificationDto notificationDto = notificationResponseDto.getNotifications().stream()
+                .filter(n -> NotificationType.EMAIL.equals(n.getNotificationType())).findFirst().get();
+            email = notificationDto.getContactDetails().getEmail();
+        }
+        return email;
+    }
+
+    private RecipientPostalAddress getRecipientContactAddressForRefundWhenContacted(
+        RefundNotificationLetterRequest letterNotificationRequest) {
+
+        RecipientPostalAddress recipientPostalAddress = letterNotificationRequest.getRecipientPostalAddress();
+
+        if(REFUND_REJECT_REASON.equals(letterNotificationRequest.getPersonalisation().getRefundReason())) {
+
+            NotificationResponseDto notificationResponseDto = getNotification(letterNotificationRequest.getReference());
+            NotificationDto notificationDto = notificationResponseDto.getNotifications().stream()
+                .filter(n -> NotificationType.LETTER.equals(n.getNotificationType())).findFirst().get();
+
+            recipientPostalAddress = RecipientPostalAddress.recipientPostalAddressWith()
+                                    .addressLine(notificationDto.getContactDetails().getAddressLine())
+                                    .city(notificationDto.getContactDetails().getCity())
+                                    .county(notificationDto.getContactDetails().getCountry())
+                                    .country(notificationDto.getContactDetails().getCounty())
+                                    .postalCode(notificationDto.getContactDetails().getPostalCode())
+                                    .build();
+        }
+        return recipientPostalAddress;
+    }
+
     @Override
     public SendLetterResponse sendLetterNotification(RefundNotificationLetterRequest letterNotificationRequest, MultiValueMap<String, String> headers) {
 
@@ -130,7 +173,8 @@ public class NotificationServiceImpl implements NotificationService {
             IdamUserIdResponse uid = idamService.getUserId(headers);
             SendLetterResponse sendLetterResponse = notificationLetterClient.sendLetter(
                 letterNotificationRequest.getTemplateId(),
-                createLetterPersonalisation(letterNotificationRequest.getRecipientPostalAddress(),letterNotificationRequest.getPersonalisation(),serviceContact.get().getServiceMailbox(),
+                createLetterPersonalisation(getRecipientContactAddressForRefundWhenContacted(letterNotificationRequest),
+                                            letterNotificationRequest.getPersonalisation(),serviceContact.get().getServiceMailbox(),
                                             letterNotificationRequest.getPersonalisation().getRefundReference()          ),
                 letterNotificationRequest.getReference()
             );
