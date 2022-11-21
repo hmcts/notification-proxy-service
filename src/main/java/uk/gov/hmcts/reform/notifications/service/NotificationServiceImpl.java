@@ -138,6 +138,8 @@ public class NotificationServiceImpl implements NotificationService {
             NotificationResponseDto notificationResponseDto = getNotification(emailNotificationRequest.getReference());
             NotificationDto notificationDto = notificationResponseDto.getNotifications().stream()
                 .filter(n -> NotificationType.EMAIL.equals(n.getNotificationType())).findFirst().get();
+            LOG.info(" notificationDto string : " + notificationDto.toString());
+            LOG.info(" Emnail id : " + notificationDto.getContactDetails().getEmail());
             email = notificationDto.getContactDetails().getEmail();
         }
         return email;
@@ -154,6 +156,8 @@ public class NotificationServiceImpl implements NotificationService {
             NotificationDto notificationDto = notificationResponseDto.getNotifications().stream()
                 .filter(n -> NotificationType.LETTER.equals(n.getNotificationType())).findFirst().get();
 
+            LOG.info(" notificationDto string : " + notificationDto.toString());
+
             recipientPostalAddress = RecipientPostalAddress.recipientPostalAddressWith()
                                     .addressLine(notificationDto.getContactDetails().getAddressLine())
                                     .city(notificationDto.getContactDetails().getCity())
@@ -161,6 +165,8 @@ public class NotificationServiceImpl implements NotificationService {
                                     .country(notificationDto.getContactDetails().getCounty())
                                     .postalCode(notificationDto.getContactDetails().getPostalCode())
                                     .build();
+
+            LOG.info(" Recipient addreess : " + recipientPostalAddress.toString());
         }
         return recipientPostalAddress;
     }

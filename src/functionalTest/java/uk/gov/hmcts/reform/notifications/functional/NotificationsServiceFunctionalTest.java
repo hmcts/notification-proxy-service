@@ -137,7 +137,6 @@ public class NotificationsServiceFunctionalTest {
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
             .reference("FunctionalTest1")
-            .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
@@ -151,6 +150,18 @@ public class NotificationsServiceFunctionalTest {
             refundNotificationEmailRequest
         );
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        final Response responseNotification = notificationsTestServicel.getNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            REFERENCE
+        );
+
+        assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Map<String,String>> getNotificationsResponse =  responseNotification.getBody().jsonPath().getList("notifications");
+        assertThat(getNotificationsResponse.size()).isGreaterThanOrEqualTo(1);
 
     }
 
