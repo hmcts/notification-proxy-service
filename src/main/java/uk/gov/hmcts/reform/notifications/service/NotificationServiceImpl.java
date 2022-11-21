@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.notifications.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +37,6 @@ import uk.gov.hmcts.reform.notifications.repository.ServiceContactRepository;
 import uk.gov.hmcts.reform.notifications.util.GovNotifyExceptionWrapper;
 import uk.gov.service.notify.*;
 
-import java.util.Map;
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
@@ -99,10 +101,11 @@ public class NotificationServiceImpl implements NotificationService {
     private String cardPbaEmailTemplateId;
 
 
-
     @Override
     public SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest, MultiValueMap<String, String> headers) {
         try {
+
+            validateRecipientEmailAddress(emailNotificationRequest);
             Optional<ServiceContact> serviceContact = serviceContactRepository.findByServiceName(emailNotificationRequest.getServiceName());
             IdamUserIdResponse uid = idamService.getUserId(headers);
             SendEmailResponse sendEmailResponse = notificationEmailClient
@@ -307,5 +310,14 @@ public class NotificationServiceImpl implements NotificationService {
             }
         }
         return templateId;
+    }
+
+    private void validateRecipientEmailAddress(RefundNotificationEmailRequest emailNotificationRequest) throws NotificationClientException {
+        if(!REFUND_REJECT_REASON.equalsIgnoreCase(emailNotificationRequest.getPersonalisation().getRefundReason())
+            && ( null == emailNotificationRequest.getRecipientEmailAddress()
+            ||  emailNotificationRequest.getRecipientEmailAddress().isEmpty())) {
+            LOG.error("Recipient Email Address cannot be null or blank");
+            throw new NotificationClientException("Recipient Email Address cannot be null or blank");
+        }
     }
 }
