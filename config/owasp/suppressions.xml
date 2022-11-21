@@ -84,6 +84,27 @@
     <notes>Spring security core upgraded needed</notes>
     <cve>CVE-2022-22978</cve>
   </suppress>
+
+  <suppress>
+    <notes>Postgres JDBC version needs updating</notes>
+    <cve>CVE-2022-31197</cve>
+  </suppress>
+  <suppress>
+    <notes>Needs to be upgrading to Spring version 5+</notes>
+    <cve>CVE-2018-11040</cve>
+    <cve>CVE-2020-5421</cve>
+    <cve>CVE-2018-1257</cve>
+    <cve>CVE-2018-11039</cve>
+  </suppress>
+  <suppress>
+    <notes>Apache tomcat version upgrade needed</notes>
+    <cve>CVE-2022-34305</cve>
+  </suppress>
+  <suppress>
+    <notes>Spring security core upgraded needed</notes>
+    <cve>CVE-2022-22978</cve>
+  </suppress>
+
   <suppress>
     <notes>Spring security needs update to version 5.5.* or greater (major release)</notes>
     <cve>CVE-2022-31690</cve>
