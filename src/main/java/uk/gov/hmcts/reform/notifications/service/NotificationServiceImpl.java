@@ -149,6 +149,7 @@ public class NotificationServiceImpl implements NotificationService {
                 LOG.info(" notificationDto string : " + notification.toString());
                 LOG.info(" Email id : " + notification.getContactDetails().getEmail());
                 email = notification.getContactDetails().getEmail();
+                emailNotificationRequest.setRecipientEmailAddress(email);
             }
         }
         return email;
@@ -168,9 +169,6 @@ public class NotificationServiceImpl implements NotificationService {
 
             if (notificationList.isPresent() && !notificationList.get().isEmpty()) {
                 Notification notification = notificationList.get().stream().findAny().get();
-               /* Notification notification = notificationList.get().stream()
-                    .filter(n -> NotificationType.LETTER.equals(n.getNotificationType()))
-                    .collect(Collectors.toList()).get(0);*/
                 LOG.info(" notification string : " + notification.toString());
                 recipientPostalAddress = RecipientPostalAddress.recipientPostalAddressWith()
                     .addressLine(notification.getContactDetails().getAddressLine())
@@ -179,7 +177,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .country(notification.getContactDetails().getCounty())
                     .postalCode(notification.getContactDetails().getPostcode())
                     .build();
-
+                letterNotificationRequest.setRecipientPostalAddress(recipientPostalAddress);
                 LOG.info(" Recipient address : " + recipientPostalAddress.toString());
             }
         }
