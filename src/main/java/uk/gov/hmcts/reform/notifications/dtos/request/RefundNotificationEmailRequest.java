@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.notifications.dtos.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,15 +9,20 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.notifications.dtos.enums.NotificationType;
 
 import javax.validation.Valid;
+import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonInclude(NON_NULL)
 @Setter
 @Getter
 @AllArgsConstructor
@@ -28,8 +34,7 @@ public class RefundNotificationEmailRequest {
     @NotEmpty(message = "Template ID cannot be blank")
     private String templateId;
 
-    @NotNull(message = "Recipient Email Address cannot be null")
-    @NotEmpty(message = "Recipient Email Address cannot be blank")
+    @NotNull
     @Email(message = "Please enter a valid Email Address")
     private String recipientEmailAddress;
 
@@ -51,4 +56,8 @@ public class RefundNotificationEmailRequest {
     @NotEmpty(message = "Service cannot be blank")
     private String serviceName;
 
+    @AssertFalse(message = "Recipient Email Address cannot be null or blank")
+    private boolean isRecipientEmailAddressNotEmpty() {
+        return !"Unable to apply refund to Card".equalsIgnoreCase(personalisation.getRefundReason()) && StringUtils.isBlank(recipientEmailAddress);
+    }
 }
