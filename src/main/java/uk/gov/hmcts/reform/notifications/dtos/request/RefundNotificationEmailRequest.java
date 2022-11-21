@@ -34,7 +34,6 @@ public class RefundNotificationEmailRequest {
     @NotEmpty(message = "Template ID cannot be blank")
     private String templateId;
 
-    @NotNull
     @Email(message = "Please enter a valid Email Address")
     private String recipientEmailAddress;
 
@@ -56,8 +55,4 @@ public class RefundNotificationEmailRequest {
     @NotEmpty(message = "Service cannot be blank")
     private String serviceName;
 
-    @AssertFalse(message = "Recipient Email Address cannot be null or blank")
-    private boolean isRecipientEmailAddressNotEmpty() {
-        return !"Unable to apply refund to Card".equalsIgnoreCase(personalisation.getRefundReason()) && StringUtils.isBlank(recipientEmailAddress);
-    }
 }
