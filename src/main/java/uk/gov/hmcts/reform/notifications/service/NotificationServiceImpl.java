@@ -6,23 +6,20 @@ import java.util.stream.Collectors;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.hmcts.reform.notifications.config.security.idam.IdamService;
 import uk.gov.hmcts.reform.notifications.controllers.ExceptionHandlers;
-import uk.gov.hmcts.reform.notifications.dtos.enums.NotificationType;
-import uk.gov.hmcts.reform.notifications.dtos.request.DocPreviewRequest;
-import uk.gov.hmcts.reform.notifications.dtos.request.Personalisation;
-import uk.gov.hmcts.reform.notifications.dtos.request.RecipientPostalAddress;
-import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
-import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
+import uk.gov.hmcts.reform.notifications.dtos.request.*;
 import uk.gov.hmcts.reform.notifications.dtos.response.IdamUserIdResponse;
-import uk.gov.hmcts.reform.notifications.dtos.response.NotificationDto;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
 import uk.gov.hmcts.reform.notifications.exceptions.NotificationListEmptyException;
@@ -86,6 +83,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     private static final String EMAIL = "EMAIL";
 
+    private static final String LETTER = "LETTER";
+
     private static final String REFUND_REJECT_REASON ="Unable to apply refund to Card";
 
     @Value("${notify.template.cheque-po-cash.letter}")
@@ -138,12 +137,19 @@ public class NotificationServiceImpl implements NotificationService {
         if(null == email &&
             REFUND_REJECT_REASON.equals(emailNotificationRequest.getPersonalisation().getRefundReason())) {
 
-            NotificationResponseDto notificationResponseDto = getNotification(emailNotificationRequest.getReference());
-            NotificationDto notificationDto = notificationResponseDto.getNotifications().stream()
-                .filter(n -> NotificationType.EMAIL.equals(n.getNotificationType())).findFirst().get();
-            LOG.info(" notificationDto string : " + notificationDto.toString());
-            LOG.info(" Emnail id : " + notificationDto.getContactDetails().getEmail());
-            email = notificationDto.getContactDetails().getEmail();
+            //NotificationResponseDto notificationResponseDto = getNotification(emailNotificationRequest.getReference());
+            Optional<List<Notification>> notificationList;
+            notificationList = notificationRepository.findByReferenceAndNotificationTypeOrderByDateUpdatedDesc(
+                emailNotificationRequest.getReference(), EMAIL);
+            LOG.info("notificationList: {}", notificationList);
+
+            if (notificationList.isPresent() && !notificationList.get().isEmpty()) {
+
+                Notification notification = notificationList.get().stream().findAny().get();
+                LOG.info(" notificationDto string : " + notification.toString());
+                LOG.info(" Email id : " + notification.getContactDetails().getEmail());
+                email = notification.getContactDetails().getEmail();
+            }
         }
         return email;
     }
@@ -155,21 +161,27 @@ public class NotificationServiceImpl implements NotificationService {
 
         if(REFUND_REJECT_REASON.equals(letterNotificationRequest.getPersonalisation().getRefundReason())) {
 
-            NotificationResponseDto notificationResponseDto = getNotification(letterNotificationRequest.getReference());
-            NotificationDto notificationDto = notificationResponseDto.getNotifications().stream()
-                .filter(n -> NotificationType.LETTER.equals(n.getNotificationType())).findFirst().get();
+            Optional<List<Notification>> notificationList;
+            notificationList = notificationRepository.findByReferenceAndNotificationTypeOrderByDateUpdatedDesc(
+                letterNotificationRequest.getReference(), LETTER);
+            LOG.info("notificationList: {}", notificationList);
 
-            LOG.info(" notificationDto string : " + notificationDto.toString());
+            if (notificationList.isPresent() && !notificationList.get().isEmpty()) {
+                Notification notification = notificationList.get().stream().findAny().get();
+               /* Notification notification = notificationList.get().stream()
+                    .filter(n -> NotificationType.LETTER.equals(n.getNotificationType()))
+                    .collect(Collectors.toList()).get(0);*/
+                LOG.info(" notification string : " + notification.toString());
+                recipientPostalAddress = RecipientPostalAddress.recipientPostalAddressWith()
+                    .addressLine(notification.getContactDetails().getAddressLine())
+                    .city(notification.getContactDetails().getCity())
+                    .county(notification.getContactDetails().getCountry())
+                    .country(notification.getContactDetails().getCounty())
+                    .postalCode(notification.getContactDetails().getPostcode())
+                    .build();
 
-            recipientPostalAddress = RecipientPostalAddress.recipientPostalAddressWith()
-                                    .addressLine(notificationDto.getContactDetails().getAddressLine())
-                                    .city(notificationDto.getContactDetails().getCity())
-                                    .county(notificationDto.getContactDetails().getCountry())
-                                    .country(notificationDto.getContactDetails().getCounty())
-                                    .postalCode(notificationDto.getContactDetails().getPostalCode())
-                                    .build();
-
-            LOG.info(" Recipient addreess : " + recipientPostalAddress.toString());
+                LOG.info(" Recipient address : " + recipientPostalAddress.toString());
+            }
         }
         return recipientPostalAddress;
     }
@@ -178,6 +190,7 @@ public class NotificationServiceImpl implements NotificationService {
     public SendLetterResponse sendLetterNotification(RefundNotificationLetterRequest letterNotificationRequest, MultiValueMap<String, String> headers) {
 
         try {
+            validateRecipientPostalAddress(letterNotificationRequest);
             Optional<ServiceContact> serviceContact = serviceContactRepository.findByServiceName(letterNotificationRequest.getServiceName());
             IdamUserIdResponse uid = idamService.getUserId(headers);
             SendLetterResponse sendLetterResponse = notificationLetterClient.sendLetter(
@@ -312,12 +325,30 @@ public class NotificationServiceImpl implements NotificationService {
         return templateId;
     }
 
-    private void validateRecipientEmailAddress(RefundNotificationEmailRequest emailNotificationRequest) throws NotificationClientException {
+    private void validateRecipientEmailAddress(RefundNotificationEmailRequest emailNotificationRequest) {
         if(!REFUND_REJECT_REASON.equalsIgnoreCase(emailNotificationRequest.getPersonalisation().getRefundReason())
             && ( null == emailNotificationRequest.getRecipientEmailAddress()
             ||  emailNotificationRequest.getRecipientEmailAddress().isEmpty())) {
             LOG.error("Recipient Email Address cannot be null or blank");
-            throw new NotificationClientException("Recipient Email Address cannot be null or blank");
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "Recipient Email Address cannot be null or blank");
         }
     }
+
+    private void validateRecipientPostalAddress(RefundNotificationLetterRequest letterlNotificationRequest) {
+        if(!REFUND_REJECT_REASON.equalsIgnoreCase(letterlNotificationRequest.getPersonalisation().getRefundReason())
+            && ( null == letterlNotificationRequest.getRecipientPostalAddress()
+            || !validAddress(letterlNotificationRequest.getRecipientPostalAddress()))) {
+            LOG.error("Recipient postal Address cannot be null or blank");
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "Recipient postal Address cannot be null or blank");
+        }
+    }
+
+    private boolean validAddress(RecipientPostalAddress address){
+        return !( StringUtils.isBlank(address.getPostalCode()) || StringUtils.isBlank(address.getAddressLine())
+            || StringUtils.isBlank(address.getCity()) || StringUtils.isBlank(address.getCountry())
+            || StringUtils.isBlank(address.getCounty()) );
+    }
+
 }
