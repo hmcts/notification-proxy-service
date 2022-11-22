@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.notifications.functional.config.TestConfigProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -100,7 +101,7 @@ public class NotificationsServiceFunctionalTest {
                 idamService.createUserWithSearchScope("idam.user.ccpayrefundsapi@hmcts.net").getAuthorisationToken();
 
             serviceTokenPayBubble =
-                s2sTokenService.getS2sToken("refunds_api", testConfigProperties.s2sRefundsApi);
+                s2sTokenService.getS2sToken("ccpay_bubble", testConfigProperties.s2sPayBubble);
 
             isTokensInitialized = true;
 
@@ -139,8 +140,12 @@ public class NotificationsServiceFunctionalTest {
             .reference("FunctionalTest1")
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
-            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+            .personalisation(Personalisation.personalisationRequestWith()
+                                 .ccdCaseNumber(CCD_CASE_NUMBER)
+                                 .refundReference("RF-1234-1234-1234-1234")
+                                 .refundAmount(BigDecimal.valueOf(10))
+                                 .refundReason("Unable to apply refund to Card")
+                                 .build())
             .build();
 
         final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
@@ -155,14 +160,15 @@ public class NotificationsServiceFunctionalTest {
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
-            REFERENCE
+            "FunctionalTest1"
         );
 
         assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<Map<String,String>> getNotificationsResponse =  responseNotification.getBody().jsonPath().getList("notifications");
-        assertThat(getNotificationsResponse.size()).isGreaterThanOrEqualTo(1);
-
+        List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
+        assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
+        Map contactDetails = (Map) notificationList.get(0).get("contact_details");
+        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
     }
 
     @Test
@@ -174,8 +180,12 @@ public class NotificationsServiceFunctionalTest {
             .reference("FunctionalTest2")
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
-            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+            .personalisation(Personalisation.personalisationRequestWith()
+                                 .ccdCaseNumber(CCD_CASE_NUMBER)
+                                 .refundReference("RF-1234-1234-1234-1234")
+                                 .refundAmount(BigDecimal.valueOf(10))
+                                 .refundReason("Unable to apply refund to Card")
+                                 .build())
 
             .build();
 
@@ -186,6 +196,21 @@ public class NotificationsServiceFunctionalTest {
             refundNotificationLetterRequest
         );
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        final Response responseNotification = notificationsTestServicel.getNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            "FunctionalTest2"
+        );
+
+        assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
+        assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
+        Map contactDetails = (Map) notificationList.get(0).get("contact_details");
+        assertThat(contactDetails.get("postal_code")).isEqualTo("SW1H 9AJ");
+        assertThat(contactDetails.get("address_line")).isEqualTo("102 Petty France");
     }
 
     @Test

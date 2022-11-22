@@ -135,7 +135,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         String email = emailNotificationRequest.getRecipientEmailAddress();
         if(null == email &&
-            REFUND_REJECT_REASON.equals(emailNotificationRequest.getPersonalisation().getRefundReason())) {
+            REFUND_REJECT_REASON.equalsIgnoreCase(emailNotificationRequest.getPersonalisation().getRefundReason())) {
 
             //NotificationResponseDto notificationResponseDto = getNotification(emailNotificationRequest.getReference());
             Optional<List<Notification>> notificationList;
@@ -160,7 +160,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         RecipientPostalAddress recipientPostalAddress = letterNotificationRequest.getRecipientPostalAddress();
 
-        if(REFUND_REJECT_REASON.equals(letterNotificationRequest.getPersonalisation().getRefundReason())) {
+        if(REFUND_REJECT_REASON.equalsIgnoreCase(letterNotificationRequest.getPersonalisation().getRefundReason())) {
 
             Optional<List<Notification>> notificationList;
             notificationList = notificationRepository.findByReferenceAndNotificationTypeOrderByDateUpdatedDesc(

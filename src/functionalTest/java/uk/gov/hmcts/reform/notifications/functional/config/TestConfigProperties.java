@@ -25,6 +25,9 @@ public class TestConfigProperties {
     @Value("${s2s.service.refunds.secret}")
     public String s2sRefundsApi;
 
+    @Value("${s2s.service.paybubble.secret}")
+    public String s2sPayBubble;
+
     @Value("${idam.api.url}")
     public String idamApiUrl;
 
