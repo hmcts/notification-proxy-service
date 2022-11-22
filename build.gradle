@@ -142,8 +142,7 @@ def sonarExclusions = [
   '**/model/**',
   '**/controllers/**',
   '**/mapper/**',
-  '**/config/**',
-  '**/service/**'
+  '**/config/**'
 ]
 
 sonarqube {

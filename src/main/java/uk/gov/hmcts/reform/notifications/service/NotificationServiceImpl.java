@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.notifications.dtos.response.IdamUserIdResponse;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
 import uk.gov.hmcts.reform.notifications.dtos.response.PaymentDto;
+import uk.gov.hmcts.reform.notifications.exceptions.DocPreviewBadRequestException;
 import uk.gov.hmcts.reform.notifications.exceptions.NotificationListEmptyException;
 import uk.gov.hmcts.reform.notifications.exceptions.PaymentReferenceNotFoundException;
 import uk.gov.hmcts.reform.notifications.exceptions.PaymentServerException;
@@ -47,7 +48,7 @@ import uk.gov.service.notify.*;
 
 import java.util.Map;
 @Service
-@SuppressWarnings({"PMD.TooManyFields", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.TooManyFields", "PMD.ExcessiveImports","PMD.GodClass"})
 public class NotificationServiceImpl implements NotificationService {
 
 
@@ -119,6 +120,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     private AuthTokenGenerator authTokenGenerator;
+
+    private static final String STRING = "string";
 
     @Override
     public SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest, MultiValueMap<String, String> headers) {
@@ -233,14 +236,14 @@ public class NotificationServiceImpl implements NotificationService {
         String refundRef = "RF-****-****-****-****";
         String ccdCaseNumber;
 
-        if (null == docPreviewRequest.getPaymentChannel() || docPreviewRequest.getPaymentChannel().equalsIgnoreCase("string") || null == docPreviewRequest.getPaymentMethod() || docPreviewRequest.getPaymentMethod().equalsIgnoreCase("string") ) {
+        if (null == docPreviewRequest.getPaymentChannel() || docPreviewRequest.getPaymentChannel().equalsIgnoreCase(STRING) || null == docPreviewRequest.getPaymentMethod() || docPreviewRequest.getPaymentMethod().equalsIgnoreCase(STRING) ) {
+            validateIfPaymentReferenceExist(docPreviewRequest);
             paymentResponse = fetchPaymentGroupResponse(headers,docPreviewRequest.getPaymentReference());
             instructionType = getInstructionType(paymentResponse.getChannel(),paymentResponse.getMethod());
             serviceContact = serviceContactRepository.findByServiceName(paymentResponse.getServiceName());
             ccdCaseNumber = paymentResponse.getCcdCaseNumber();
-        }
-        else {
-
+        } else {
+            validateIfPaymentReferenceNotExist(docPreviewRequest);
             instructionType = getInstructionType(docPreviewRequest.getPaymentChannel(),docPreviewRequest.getPaymentMethod());
             serviceContact = serviceContactRepository.findByServiceName(docPreviewRequest.getServiceName());
             ccdCaseNumber = docPreviewRequest.getPersonalisation().getCcdCaseNumber();
@@ -299,9 +302,7 @@ public class NotificationServiceImpl implements NotificationService {
                                                           String paymentReference) {
         ResponseEntity<PaymentDto> paymentResponse = null;
         try {
-            LOG.info("insidefetchPaymentGroupResponse paymentResponse");
             paymentResponse = fetchPaymentDataFromPayhub(headers, paymentReference);
-            LOG.info("paymentResponse != null: {}", paymentResponse != null);
 
         } catch (HttpClientErrorException e) {
             LOG.error(e.getMessage());
@@ -312,14 +313,12 @@ public class NotificationServiceImpl implements NotificationService {
             LOG.error(e.getMessage());
             throw new PaymentServerException("Payment Server Exception", e);
         }
-        LOG.info("payment body {}", paymentResponse.getBody());
         return paymentResponse.getBody();
     }
 
     private ResponseEntity<PaymentDto> fetchPaymentDataFromPayhub(MultiValueMap<String, String> headers,
 
                                                                                  String paymentReference) {
-        LOG.info("inside fetchPaymentDataFromPayhub");
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(
             new StringBuilder(paymentApiUrl).append("/payments/").append(paymentReference)
                 .toString());
@@ -337,16 +336,11 @@ public class NotificationServiceImpl implements NotificationService {
 
     private MultiValueMap<String, String> getFormatedHeaders(MultiValueMap<String, String> headers) {
         List<String> authtoken = headers.get("authorization");
-        LOG.info("Authorization genrate1");
         List<String> servauthtoken = Arrays.asList(authTokenGenerator.generate());
-        LOG.info("Authorization genrate2");
         MultiValueMap<String, String> inputHeaders = new LinkedMultiValueMap<>();
         inputHeaders.put(CONTENT_TYPE, headers.get(CONTENT_TYPE));
         inputHeaders.put("Authorization", authtoken);
         inputHeaders.put("ServiceAuthorization", servauthtoken);
-        LOG.info("Authorization {}", inputHeaders.get("Authorization").get(0));
-        LOG.info("ServiceAuthorization {}", inputHeaders.get("ServiceAuthorization").get(0));
-
         return inputHeaders;
     }
 
@@ -361,6 +355,28 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         return instructionType;
-
     }
+
+    private void validateIfPaymentReferenceExist(DocPreviewRequest docPreviewRequest){
+
+        if(null == docPreviewRequest.getPaymentReference() || docPreviewRequest.getPaymentReference().equalsIgnoreCase(STRING)){
+
+          throw new DocPreviewBadRequestException("Payment reference cannot be null");
+        }
+    }
+
+    private void validateIfPaymentReferenceNotExist(DocPreviewRequest docPreviewRequest) {
+
+        if (null == docPreviewRequest.getPaymentChannel() || docPreviewRequest.getPaymentChannel()
+            .equalsIgnoreCase(STRING) ||
+            null == docPreviewRequest.getPaymentMethod() || docPreviewRequest.getPaymentMethod()
+            .equalsIgnoreCase(STRING) ||
+            null == docPreviewRequest.getServiceName() || docPreviewRequest.getServiceName()
+            .equalsIgnoreCase(STRING)) {
+
+            throw new DocPreviewBadRequestException("Payment channel, payment method, service name  cannot be null");
+
+        }
+    }
+
 }
