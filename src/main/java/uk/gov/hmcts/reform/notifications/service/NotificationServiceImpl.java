@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.notifications.mapper.NotificationResponseMapper;
 import uk.gov.hmcts.reform.notifications.mapper.NotificationTemplateResponseMapper;
 import uk.gov.hmcts.reform.notifications.model.Notification;
 import uk.gov.hmcts.reform.notifications.model.ServiceContact;
+import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
 import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 import uk.gov.hmcts.reform.notifications.repository.ServiceContactRepository;
 import uk.gov.hmcts.reform.notifications.util.GovNotifyExceptionWrapper;
@@ -36,7 +37,6 @@ import uk.gov.service.notify.*;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
-
 
     @Autowired
     NotificationRepository notificationRepository;
@@ -103,10 +103,26 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest, MultiValueMap<String, String> headers) {
         try {
-
+            LOG.info("sendEmailNotification -->" +emailNotificationRequest.toString());
             validateRecipientEmailAddress(emailNotificationRequest);
             Optional<ServiceContact> serviceContact = serviceContactRepository.findByServiceName(emailNotificationRequest.getServiceName());
             IdamUserIdResponse uid = idamService.getUserId(headers);
+
+            TemplatePreviewDto templatePreviewDto = emailNotificationRequest.getTemplatePreview();
+
+            if (templatePreviewDto == null) {
+                TemplatePreview templatePreview = notificationEmailClient
+                    .generateTemplatePreview(
+                        emailNotificationRequest.getTemplateId(),
+                        createEmailPersonalisation(
+                            emailNotificationRequest.getPersonalisation(),
+                            serviceContact.get().getServiceMailbox(),
+                            emailNotificationRequest.getPersonalisation().getRefundReference()
+                        )
+                    );
+                templatePreviewDto = buildTemplatePreviewDTO(templatePreview);
+            }
+
             SendEmailResponse sendEmailResponse = notificationEmailClient
                 .sendEmail(
                     emailNotificationRequest.getTemplateId(),
@@ -119,6 +135,8 @@ public class NotificationServiceImpl implements NotificationService {
             Notification notification = emailNotificationMapper.emailResponseMapper(
                 emailNotificationRequest, uid
             );
+
+            notification.setTemplatePreview(templatePreviewDto);
             notificationRepository.save(notification);
             LOG.info("email notification saved successfully.");
 
@@ -191,6 +209,23 @@ public class NotificationServiceImpl implements NotificationService {
             validateRecipientPostalAddress(letterNotificationRequest);
             Optional<ServiceContact> serviceContact = serviceContactRepository.findByServiceName(letterNotificationRequest.getServiceName());
             IdamUserIdResponse uid = idamService.getUserId(headers);
+
+            TemplatePreviewDto templatePreviewDto = letterNotificationRequest.getTemplatePreview();
+
+            if (templatePreviewDto == null) {
+                TemplatePreview templatePreview = notificationLetterClient
+                    .generateTemplatePreview(
+                        letterNotificationRequest.getTemplateId(),
+                        createLetterPersonalisation(
+                            letterNotificationRequest.getRecipientPostalAddress(),
+                            letterNotificationRequest.getPersonalisation(),
+                            serviceContact.get().getServiceMailbox(),
+                            letterNotificationRequest.getPersonalisation().getRefundReason()
+                        )
+                    );
+                templatePreviewDto = buildTemplatePreviewDTO(templatePreview);
+            }
+
             SendLetterResponse sendLetterResponse = notificationLetterClient.sendLetter(
                 letterNotificationRequest.getTemplateId(),
                 createLetterPersonalisation(getRecipientContactAddressForRefundWhenContacted(letterNotificationRequest),
@@ -204,6 +239,7 @@ public class NotificationServiceImpl implements NotificationService {
                 letterNotificationRequest,
                 uid
             );
+            notification.setTemplatePreview(templatePreviewDto);
             notificationRepository.save(notification);
             return sendLetterResponse;
         }catch (NotificationClientException exception){
@@ -343,10 +379,21 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private boolean validAddress(RecipientPostalAddress address){
+    private boolean validAddress(RecipientPostalAddress address) {
         return !( StringUtils.isBlank(address.getPostalCode()) || StringUtils.isBlank(address.getAddressLine())
             || StringUtils.isBlank(address.getCity()) || StringUtils.isBlank(address.getCountry())
             || StringUtils.isBlank(address.getCounty()) );
+    }
+
+    private TemplatePreviewDto buildTemplatePreviewDTO(TemplatePreview templatePreview) {
+        return TemplatePreviewDto.templatePreviewDtoWith()
+            .id(templatePreview.getId())
+            .templateType(templatePreview.getTemplateType())
+            .version(templatePreview.getVersion())
+            .body(templatePreview.getBody())
+            .subject(templatePreview.getSubject().get())
+            .html(templatePreview.getHtml().get())
+            .build();
     }
 
 }

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.notifications.dtos.enums.NotificationType;
+import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
@@ -53,4 +54,5 @@ public class RefundNotificationEmailRequest {
     @NotEmpty(message = "Service cannot be blank")
     private String serviceName;
 
+    private TemplatePreviewDto templatePreview;
 }

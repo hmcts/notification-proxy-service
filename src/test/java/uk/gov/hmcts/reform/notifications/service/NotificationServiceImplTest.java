@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 
@@ -51,13 +51,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import uk.gov.hmcts.reform.notifications.repository.ServiceContactRepository;
-import uk.gov.service.notify.NotificationClientApi;
-import uk.gov.service.notify.NotificationClientException;
-import uk.gov.service.notify.SendEmailResponse;
-import uk.gov.service.notify.SendLetterResponse;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import uk.gov.service.notify.*;
 
 @ActiveProfiles({"local", "test"})
 @SpringBootTest(webEnvironment = MOCK)
@@ -252,6 +246,16 @@ public class NotificationServiceImplTest {
                                                                ",\"version\":1},\"uri\":\"https://api.notifications.service.gov.uk\"}\n");
         Notification notification = Notification.builder().build();
 
+        TemplatePreview templatePreview = new TemplatePreview("{                                                             "+
+                                                           "\"id\": \"1222960c-4ffa-42db-806c-451a68c56e09\","+
+                                                           "\"type\": \"email\","+
+                                                           "\"version\": 11,"+
+                                                           "\"body\": \"Dear Sir/Madam\","+
+                                                           "\"subject\": \"HMCTS refund request approved\","+
+                                                           "\"html\": \"Dear Sir/Madam\","+
+                                                           "}");
+        when(notificationEmailClient.generateTemplatePreview(any(), anyMap())).thenReturn(templatePreview);
+
         when(notificationEmailClient.sendEmail(any(), any(), any(), any())).thenReturn(response);
         when(emailNotificationMapper.emailResponseMapper(any(),any())).thenReturn(notification);
         when(notificationRepository.save(notification)).thenReturn(notification);
@@ -293,6 +297,16 @@ public class NotificationServiceImplTest {
                                                                  "\"version\":1},\"uri\":\"https://api.notifications.service\"}\n");
         Notification notification = Notification.builder().build();
 
+        TemplatePreview templatePreview = new TemplatePreview("{                                                             "+
+                                                                  "\"id\": \"1222960c-4ffa-42db-806c-451a68c56e09\","+
+                                                                  "\"type\": \"email\","+
+                                                                  "\"version\": 11,"+
+                                                                  "\"body\": \"Dear Sir/Madam\","+
+                                                                  "\"subject\": \"HMCTS refund request approved\","+
+                                                                  "\"html\": \"Dear Sir/Madam\","+
+                                                                  "}");
+        when(notificationLetterClient.generateTemplatePreview(any(), anyMap())).thenReturn(templatePreview);
+
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenReturn(response);
         when(letterNotificationMapper.letterResponseMapper(any(),any(),any())).thenReturn(notification);
         when(notificationRepository.save(notification)).thenReturn(notification);
@@ -328,6 +342,15 @@ public class NotificationServiceImplTest {
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
 
+        TemplatePreview templatePreview = new TemplatePreview("{                                                             "+
+                                                                  "\"id\": \"1222960c-4ffa-42db-806c-451a68c56e09\","+
+                                                                  "\"type\": \"email\","+
+                                                                  "\"version\": 11,"+
+                                                                  "\"body\": \"Dear Sir/Madam\","+
+                                                                  "\"subject\": \"HMCTS refund request approved\","+
+                                                                  "\"html\": \"Dear Sir/Madam\","+
+                                                                  "}");
+        when(notificationLetterClient.generateTemplatePreview(any(), anyMap())).thenReturn(templatePreview);
 
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         assertThrows(InvalidAddressException.class, () -> notificationServiceImpl.sendLetterNotification(request, any()
@@ -357,6 +380,15 @@ public class NotificationServiceImplTest {
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
 
+        TemplatePreview templatePreview = new TemplatePreview("{                                                             "+
+                                                                  "\"id\": \"1222960c-4ffa-42db-806c-451a68c56e09\","+
+                                                                  "\"type\": \"email\","+
+                                                                  "\"version\": 11,"+
+                                                                  "\"body\": \"Dear Sir/Madam\","+
+                                                                  "\"subject\": \"HMCTS refund request approved\","+
+                                                                  "\"html\": \"Dear Sir/Madam\","+
+                                                                  "}");
+        when(notificationLetterClient.generateTemplatePreview(any(), anyMap())).thenReturn(templatePreview);
 
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         assertThrows(InvalidTemplateId.class, () -> notificationServiceImpl.sendLetterNotification(request, any()
@@ -380,6 +412,15 @@ public class NotificationServiceImplTest {
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
 
+        TemplatePreview templatePreview = new TemplatePreview("{                                                             "+
+                                                                  "\"id\": \"1222960c-4ffa-42db-806c-451a68c56e09\","+
+                                                                  "\"type\": \"email\","+
+                                                                  "\"version\": 11,"+
+                                                                  "\"body\": \"Dear Sir/Madam\","+
+                                                                  "\"subject\": \"HMCTS refund request approved\","+
+                                                                  "\"html\": \"Dear Sir/Madam\","+
+                                                                  "}");
+        when(notificationEmailClient.generateTemplatePreview(any(), anyMap())).thenReturn(templatePreview);
 
         when(notificationEmailClient.sendEmail(any(), any(),any(),any())).thenThrow(new NotificationClientException(errorMessage));
         assertThrows(InvalidApiKeyException.class, () -> notificationServiceImpl.sendEmailNotification(request, any()
