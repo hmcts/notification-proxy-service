@@ -10,8 +10,6 @@ management:
         include: health, info, prometheus
 
 #If you use a database then uncomment below lines and update db properties accordingly
-server:
-  port: 8087
 spring:
   application:
     name: notifications-service
@@ -21,9 +19,9 @@ spring:
     import: "optional:configtree:/mnt/secrets/ccpay/"
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/notifications
-    username: notifications
-    password: notifications
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_NAME:notifications}${POSTGRES_CONNECTION_OPTIONS:}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
     properties:
       charSet: UTF-8
     tomcat:
@@ -47,11 +45,11 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: ${ISSUER_URI:https://idam-web-public.aat.platform.hmcts.net/o}
+            issuer-uri: ${ISSUER_URI}
         # Dummy OIDC client required even we are not going to use
         registration:
           oidc:
-            client-id: ${OIDC_CLIENT_ID:paybubble}
+            client-id: ${OIDC_CLIENT_ID}
             client-secret: ${OIDC_CLIENT_SECRET}
   jpa:
     properties:
@@ -95,10 +93,10 @@ auth:
   provider:
     service:
       client:
-        baseUrl: ${AUTH_PROVIDER_SERVICE_CLIENT_BASEURL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
+        baseUrl: ${AUTH_PROVIDER_SERVICE_CLIENT_BASEURL}
 oidc:
-  audience-list: ${OIDC_AUDIENCE_LIST:refunds_api}
-  issuer: ${OIDC_ISSUER:https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts}
+  audience-list: ${OIDC_AUDIENCE_LIST}
+  issuer: ${OIDC_ISSUER}
 
 azure:
   application-insights:
@@ -106,9 +104,9 @@ azure:
 
 
 notify:
-  letter.apiKey: ${LETTER_APIKEY:testingnotification-ff5a9c4f-efd8-4553-9c18-80ab45d578ce-b00802b8-ef78-4be4-bb60-12530cff3d80}
+  letter.apiKey: ${LETTER_APIKEY}
   letter.template:
-  email.apiKey: ${EMAIL_APIKEY:notificationtestkey-ff5a9c4f-efd8-4553-9c18-80ab45d578ce-0fcc72db-0c9b-4262-af43-c16f1da47037}
+  email.apiKey: ${EMAIL_APIKEY}
   email.template:
   template:
     cheque-po-cash:
@@ -130,8 +128,8 @@ idam:
   api:
     url: ${IDAM_API_URL:https://idam-api.aat.platform.hmcts.net}
   s2s-authorised:
-    services: ${S2S_AUTHORISED_SERVICES:refunds_api,ccpay_bubble,xui_webapp}
+    services: ${S2S_AUTHORISED_SERVICES}
   s2s-auth:
-    url: ${AUTH_PROVIDER_SERVICE_CLIENT_BASEURL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
+    url: ${AUTH_PROVIDER_SERVICE_CLIENT_BASEURL}
     totp_secret: ${OIDC_S2S_SECRET}
-    microservice: ${OIDC_S2S_MICROSERVICE_NAME:notifications_service}
+    microservice: ${OIDC_S2S_MICROSERVICE_NAME}
