@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 100002
+      author: arbab
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE notification ADD COLUMN template_preview TEXT;
