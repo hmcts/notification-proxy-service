@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.notifications.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.notifications.dtos.response.ContactDetailsDto;
+import uk.gov.hmcts.reform.notifications.dtos.response.FromTemplateContact;
 import uk.gov.hmcts.reform.notifications.dtos.response.MailAddress;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationDto;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
@@ -45,7 +46,7 @@ public class NotificationResponseMapper {
               .templateType(notification.getTemplatePreview().getTemplateType())
               .subject(notification.getTemplatePreview().getSubject())
               .html(notification.getTemplatePreview().getHtml())
-             // .from(notification.getTemplatePreview().getFrom())
+              .from(toFromMapper(notification))
               .recipientContact(toContactMapper(notification))
               .body(notification.getTemplatePreview().getBody())
               .build();
@@ -88,4 +89,37 @@ public class NotificationResponseMapper {
         return recipientMailAddress;
     }
 
+
+    public FromTemplateContact toFromMapper(Notification notification) {
+
+        return FromTemplateContact.buildFromTemplateContactWith()
+            .fromEmailAddress(toFromEmailMapper(notification))
+            .fromMailAddress(toFromMailMapper(notification))
+            .build();
+    }
+
+    private String toFromEmailMapper(Notification notification) {
+
+        String email = null;
+        if(EMAIL.equalsIgnoreCase(notification.getNotificationType())) {
+            email = notification.getTemplatePreview().getFrom().getFromEmailAddress();
+        }
+        return email;
+    }
+
+    private MailAddress toFromMailMapper(Notification notification) {
+
+        MailAddress fromMailAddress = null;
+        if(LETTER.equalsIgnoreCase(notification.getNotificationType())) {
+
+            fromMailAddress = MailAddress.buildRecipientMailAddressWith()
+                .addressLine(notification.getTemplatePreview().getFrom().getFromMailAddress().getAddressLine())
+                .city(notification.getTemplatePreview().getFrom().getFromMailAddress().getCity())
+                .county(notification.getTemplatePreview().getFrom().getFromMailAddress().getCounty())
+                .country(notification.getTemplatePreview().getFrom().getFromMailAddress().getCountry())
+                .postalCode(notification.getTemplatePreview().getFrom().getFromMailAddress().getPostalCode())
+                .build();
+        }
+        return fromMailAddress;
+    }
 }

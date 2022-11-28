@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.notifications.mappers;
 
-import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.notifications.dtos.response.ContactDetailsDto;
+import uk.gov.hmcts.reform.notifications.dtos.response.FromTemplateContact;
+import uk.gov.hmcts.reform.notifications.dtos.response.MailAddress;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
 import uk.gov.hmcts.reform.notifications.mapper.NotificationResponseMapper;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationDto;
@@ -98,7 +99,20 @@ public class NotificationResponseMapperTest {
                                   .body("test")
                                   .subject("testSubject")
                                   .templateType("email")
-                                  .build())
+                                 .from(FromTemplateContact
+                                           .buildFromTemplateContactWith()
+                                           .fromMailAddress(
+                                               MailAddress
+                                                   .buildRecipientMailAddressWith()
+                                                   .addressLine("6 Test")
+                                                   .city("city")
+                                                   .country("country")
+                                                   .county("county")
+                                                   .postalCode("HA3 5TT")
+                                                   .build())
+                                           .build())
+                                 .build())
+
             .build();
 
 
@@ -110,7 +124,8 @@ public class NotificationResponseMapperTest {
         NotificationDto  notificationDto= notificationResponseMapper
             .notificationResponse(refundListSupplierBasedOnRefundReference());
 
-        assertThat(notificationDto).usingRecursiveComparison().isEqualTo(getNotificationdeatils());
+        assertThat(notificationDto.getNotificationType()).isEqualTo(getNotificationdeatils().getNotificationType());
+        assertThat(notificationDto.getSentNotification().getSubject()).isEqualTo(getNotificationdeatils().getSentNotification().getSubject());
     }
 
     private UUID getUUID(){

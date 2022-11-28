@@ -79,7 +79,19 @@ public class NotificationServiceImplTest {
                               .body("test")
                               .subject("testSubject")
                               .templateType("letter")
-                              .build())
+                             .from(FromTemplateContact
+                                       .buildFromTemplateContactWith()
+                                       .fromMailAddress(
+                                           MailAddress
+                                               .buildRecipientMailAddressWith()
+                                               .addressLine("6 Test")
+                                               .city("city")
+                                               .country("country")
+                                               .county("county")
+                                               .postalCode("HA3 5TT")
+                                               .build())
+                                       .build())
+                             .build())
         .build();
     @InjectMocks
     private NotificationServiceImpl notificationServiceImpl;
@@ -153,6 +165,7 @@ public class NotificationServiceImplTest {
                              .body("test")
                              .subject("testSubject")
                              .templateType("email")
+                             .from(FromTemplateContact.buildFromTemplateContactWith().fromEmailAddress("test@hmcts.net").build())
         .build())
         .build();
 
