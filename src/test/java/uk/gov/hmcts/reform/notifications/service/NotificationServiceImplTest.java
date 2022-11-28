@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
@@ -44,6 +45,7 @@ import uk.gov.hmcts.reform.notifications.mapper.NotificationResponseMapper;
 import uk.gov.hmcts.reform.notifications.model.ContactDetails;
 import uk.gov.hmcts.reform.notifications.model.Notification;
 import uk.gov.hmcts.reform.notifications.model.ServiceContact;
+import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
 import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 
 import java.util.Date;
@@ -67,6 +69,13 @@ public class NotificationServiceImplTest {
         .createdBy("System")
         .dateUpdated(new Date())
         .contactDetails(getContactLetter())
+        .templatePreview(TemplatePreviewDto.templatePreviewDtoWith()
+                              .id(UUID.randomUUID())
+                              .html("test")
+                              .body("test")
+                              .subject("testSubject")
+                              .templateType("letter")
+                              .build())
         .build();
     @InjectMocks
     private NotificationServiceImpl notificationServiceImpl;
@@ -131,6 +140,13 @@ public class NotificationServiceImplTest {
         .createdBy("e30ccf3a-8457-4e45-b251-74a346e7ec88")
         .dateUpdated(new Date())
         .contactDetails(getContactEmail())
+        .templatePreview(TemplatePreviewDto.templatePreviewDtoWith()
+                             .id(UUID.randomUUID())
+                             .html("test")
+                             .body("test")
+                             .subject("testSubject")
+                             .templateType("email")
+        .build())
         .build();
 
     private static ContactDetails getContactEmail() {

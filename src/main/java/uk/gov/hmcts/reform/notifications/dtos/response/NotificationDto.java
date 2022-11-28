@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
 
 @Builder(builderMethodName = "buildNotificationWith")
 @AllArgsConstructor
@@ -23,5 +24,8 @@ public class NotificationDto {
 
     private Date dateUpdated;
     private ContactDetailsDto contactDetails;
+
+    private NotificationTemplatePreviewResponse sentNotification;
+
 }
 

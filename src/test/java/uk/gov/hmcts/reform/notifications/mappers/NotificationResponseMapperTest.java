@@ -1,18 +1,22 @@
 package uk.gov.hmcts.reform.notifications.mappers;
 
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.notifications.dtos.response.ContactDetailsDto;
+import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
 import uk.gov.hmcts.reform.notifications.mapper.NotificationResponseMapper;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationDto;
 import uk.gov.hmcts.reform.notifications.model.ContactDetails;
 import uk.gov.hmcts.reform.notifications.model.Notification;
+import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
@@ -51,6 +55,13 @@ public class NotificationResponseMapperTest {
                     .build()
 
             )
+            .sentNotification(NotificationTemplatePreviewResponse.buildNotificationTemplatePreviewWith()
+                                .templateId(getUUID().toString())
+                                 .html("test")
+                                 .body("test")
+                                 .subject("testSubject")
+                                 .templateType("email")
+                                 .build())
             .build();
     }
 
@@ -81,6 +92,13 @@ public class NotificationResponseMapperTest {
             .dateUpdated(dateObject)
             .dateCreated(dateObject)
             .contactDetails(getContact())
+            .templatePreview(TemplatePreviewDto.templatePreviewDtoWith()
+                                 .id(getUUID())
+                                  .html("test")
+                                  .body("test")
+                                  .subject("testSubject")
+                                  .templateType("email")
+                                  .build())
             .build();
 
 
@@ -93,5 +111,11 @@ public class NotificationResponseMapperTest {
             .notificationResponse(refundListSupplierBasedOnRefundReference());
 
         assertThat(notificationDto).usingRecursiveComparison().isEqualTo(getNotificationdeatils());
+    }
+
+    private UUID getUUID(){
+
+        String superSecretId = "f000aa01-0451-4000-b000-000000000000";
+       return UUID.fromString(superSecretId);
     }
 }
