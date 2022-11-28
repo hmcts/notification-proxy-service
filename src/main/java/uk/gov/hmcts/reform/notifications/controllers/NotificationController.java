@@ -103,6 +103,7 @@ public class NotificationController {
         @RequestHeader("Authorization") String authorization,
         @RequestHeader(required = false) MultiValueMap<String, String> headers,
         @Valid @RequestBody DocPreviewRequest docPreviewRequest) {
+        System.out.println("Doc Preview Hit");
         return new ResponseEntity<>(
             notificationService.previewNotification(docPreviewRequest),
             HttpStatus.OK
