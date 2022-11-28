@@ -38,7 +38,7 @@ public class NotificationTemplateResponseMapper {
         return NotificationTemplatePreviewResponse.buildNotificationTemplatePreviewWith()
             .templateId(templatePreview.getId().toString())
             .templateType(templatePreview.getTemplateType())
-            .from(toFromMapper(docPreviewRequest))
+            .from(toFromMapper(docPreviewRequest.getNotificationType().name()))
             .html(toHtmlMapper(templatePreview))
             .recipientContact(toContactMapper(docPreviewRequest))
             .subject(templatePreview.getSubject().get())
@@ -92,30 +92,27 @@ public class NotificationTemplateResponseMapper {
         return recipientMailAddress;
     }
 
-    private FromTemplateContact toFromMapper(DocPreviewRequest docPreviewRequest) {
+    public FromTemplateContact toFromMapper(String notificationType) {
 
         return FromTemplateContact.buildFromTemplateContactWith()
-            .fromEmailAddress(toFromEmailMapper(docPreviewRequest))
-            .fromMailAddress(toFromMailMapper(docPreviewRequest))
+            .fromEmailAddress(toFromEmailMapper(notificationType))
+            .fromMailAddress(toFromMailMapper(notificationType))
             .build();
     }
 
-    private String toFromEmailMapper(DocPreviewRequest docPreviewReques) {
+    private String toFromEmailMapper(String notificationType) {
 
         String email = null;
-        if(EMAIL.equalsIgnoreCase(docPreviewReques.getNotificationType().name())) {
-
-            email = notifyTemplateFromEmail;
-
+        if(EMAIL.equalsIgnoreCase(notificationType)) {
+           email = notifyTemplateFromEmail;
         }
-
         return email;
     }
 
-    private MailAddress toFromMailMapper(DocPreviewRequest docPreviewReques) {
+    private MailAddress toFromMailMapper(String notificationType) {
 
         MailAddress fromMailAddress = null;
-        if(LETTER.equalsIgnoreCase(docPreviewReques.getNotificationType().name())) {
+        if(LETTER.equalsIgnoreCase(notificationType)) {
 
             fromMailAddress = MailAddress.buildRecipientMailAddressWith()
                 .addressLine(notifyTemplateFromMailAddressLine)
@@ -125,7 +122,6 @@ public class NotificationTemplateResponseMapper {
                 .postalCode(notifyTemplateFromMailPostCode)
                 .build();
         }
-
         return fromMailAddress;
     }
 

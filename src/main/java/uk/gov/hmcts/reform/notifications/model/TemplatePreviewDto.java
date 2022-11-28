@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
+import uk.gov.hmcts.reform.notifications.dtos.response.FromTemplateContact;
 
 import java.util.UUID;
 
@@ -30,4 +31,6 @@ public class TemplatePreviewDto {
     private String subject;
 
     private String html;
+
+    private FromTemplateContact from;
 }

@@ -32,7 +32,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.notifications.dtos.request.DocPreviewRequest;
-import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
+import uk.gov.hmcts.reform.notifications.dtos.response.*;
+import uk.gov.hmcts.reform.notifications.mapper.NotificationTemplateResponseMapper;
 import uk.gov.hmcts.reform.notifications.model.ContactDetails;
 import uk.gov.hmcts.reform.notifications.model.ServiceContact;
 import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
@@ -44,8 +45,6 @@ import uk.gov.hmcts.reform.notifications.dtos.request.Personalisation;
 import uk.gov.hmcts.reform.notifications.dtos.request.RecipientPostalAddress;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
-import uk.gov.hmcts.reform.notifications.dtos.response.IdamUserIdResponse;
-import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
 import uk.gov.hmcts.reform.notifications.model.Notification;
 import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 import uk.gov.hmcts.reform.notifications.service.NotificationServiceImpl;
@@ -92,6 +91,8 @@ public class NotificationControllerTest {
     @InjectMocks
     private NotificationController notificationController;
 
+    @Mock
+    private NotificationTemplateResponseMapper notificationTemplateResponseMapper;
     @Mock
     private IdamServiceImpl idamService;
 
@@ -1275,7 +1276,20 @@ public class NotificationControllerTest {
                                  .version(11)
                                  .body("Dear Sir Madam")
                                  .subject("HMCTS refund request approved")
-                                 .html("Dear Sir Madam").build())
+                                 .html("Dear Sir Madam")
+                                 .from(FromTemplateContact
+                                           .buildFromTemplateContactWith()
+                                           .fromMailAddress(
+                                               MailAddress
+                                                   .buildRecipientMailAddressWith()
+                                                   .addressLine("6 Test")
+                                                   .city("city")
+                                                   .country("country")
+                                                   .county("county")
+                                                   .postalCode("HA3 5TT")
+                                                   .build())
+                                           .build())
+                                 .build())
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
 
@@ -1318,7 +1332,12 @@ public class NotificationControllerTest {
                                   .version(11)
                                   .body("Dear Sir Madam")
                                   .subject("HMCTS refund request approved")
-                                  .html("Dear Sir Madam").build())
+                                  .html("Dear Sir Madam")
+                                  .from(FromTemplateContact
+                                           .buildFromTemplateContactWith()
+                                           .fromEmailAddress("test@test.com")
+                                           .build())
+                                  .build())
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
 
@@ -1354,6 +1373,10 @@ public class NotificationControllerTest {
                                                            "\"html\": \"Dear Sir/Madam\","+
                                                            "}");
         when(notificationEmailClient.generateTemplatePreview(any(), anyMap())).thenReturn(response);
+        when(notificationTemplateResponseMapper.toFromMapper(any())).thenReturn(FromTemplateContact
+                                                                                    .buildFromTemplateContactWith()
+                                                                                    .fromEmailAddress("test@test.com")
+                                                                                    .build());
     }
 
     private void mockGenerateLetterTemplatePreview() throws NotificationClientException {
@@ -1366,5 +1389,17 @@ public class NotificationControllerTest {
                                                            "\"html\": \"Dear Sir/Madam\","+
                                                            "}");
         when(notificationLetterClient.generateTemplatePreview(any(), anyMap())).thenReturn(response);
+        when(notificationTemplateResponseMapper.toFromMapper(any())).thenReturn(FromTemplateContact
+                                                                                    .buildFromTemplateContactWith()
+                                                                                    .fromMailAddress(
+                                                                                        MailAddress
+                                                                                            .buildRecipientMailAddressWith()
+                                                                                            .addressLine("6 Test")
+                                                                                            .city("city")
+                                                                                            .country("country")
+                                                                                            .county("county")
+                                                                                            .postalCode("HA3 5TT")
+                                                                                            .build())
+                                                                                    .build());
     }
 }

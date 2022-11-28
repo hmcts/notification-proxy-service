@@ -20,17 +20,22 @@ import uk.gov.hmcts.reform.notifications.dtos.request.Personalisation;
 import uk.gov.hmcts.reform.notifications.dtos.request.RecipientPostalAddress;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
+import uk.gov.hmcts.reform.notifications.dtos.response.FromTemplateContact;
+import uk.gov.hmcts.reform.notifications.dtos.response.MailAddress;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
 import uk.gov.hmcts.reform.notifications.functional.config.IdamService;
 import uk.gov.hmcts.reform.notifications.functional.config.NotificationsTestService;
 import uk.gov.hmcts.reform.notifications.functional.config.S2sTokenService;
 import uk.gov.hmcts.reform.notifications.functional.config.TestConfigProperties;
+import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
+import uk.gov.service.notify.TemplatePreview;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @ActiveProfiles({"functional", "liberataMock"})
 @ContextConfiguration(classes = TestContextConfiguration.class)
@@ -450,4 +455,87 @@ public class NotificationsServiceFunctionalTest {
         assertThat(notificationTemplatePreviewResponse.getTemplateId().equals(chequePoCashEmailTemplateId));
     }
 
+    @Test
+    public void sendEmailNotificationRequestWithTemplatePreviews() {
+
+        RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
+            .templateId(emailTemplateId)
+            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .reference("FunctionalTest1")
+            .emailReplyToId(emailReplyToId)
+            .notificationType(NotificationType.EMAIL)
+            .serviceName("Probate")
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
+            .templatePreview(TemplatePreviewDto.templatePreviewDtoWith().id(UUID.randomUUID())
+                                 .templateType("email")
+                                 .version(11)
+                                 .body("Dear Sir Madam")
+                                 .subject("HMCTS refund request approved")
+                                 .html("Dear Sir Madam")
+                                 .from(FromTemplateContact.buildFromTemplateContactWith()
+                                           .fromEmailAddress("test@test.com").build())
+                                 .build())
+            .build();
+
+        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl,
+            refundNotificationEmailRequest
+        );
+        assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat("Notification sent successfully via email")
+            .isEqualTo(responseNotificationEmail.body().asString());
+    }
+
+    @Test
+    public void sendLetterNotificationRequestWithTemplatePreview() {
+
+        RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
+            .templateId(letterTemplateId)
+            .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
+                                        .addressLine("102 Petty France")
+                                        .city(CITY)
+                                        .county(COUNTY)
+                                        .country("England")
+                                        .postalCode("SW1H 9AJ")
+                                        .build())
+            .reference("FunctionalTest2")
+            .notificationType(NotificationType.LETTER)
+            .serviceName("Probate")
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
+            .templatePreview(TemplatePreviewDto.templatePreviewDtoWith().id(UUID.randomUUID())
+                                 .templateType("email")
+                                 .version(11)
+                                 .body("Dear Sir Madam")
+                                 .subject("HMCTS refund request approved")
+                                 .html("Dear Sir Madam")
+                                 .from(FromTemplateContact
+                                           .buildFromTemplateContactWith()
+                                           .fromMailAddress(
+                                               MailAddress
+                                                   .buildRecipientMailAddressWith()
+                                                   .addressLine("6 Test")
+                                                   .city("city")
+                                                   .country("country")
+                                                   .county("county")
+                                                   .postalCode("HA3 5TT")
+                                                   .build())
+                                           .build())
+                                 .build())
+            .build();
+
+        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            refundNotificationLetterRequest
+        );
+        assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat("Notification sent successfully via letter")
+            .isEqualTo(responseNotificationLetter.body().asString());
+
+    }
 }
