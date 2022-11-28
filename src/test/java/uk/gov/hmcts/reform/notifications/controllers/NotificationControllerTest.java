@@ -27,13 +27,17 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.notifications.dtos.request.DocPreviewRequest;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
+import uk.gov.hmcts.reform.notifications.dtos.response.PaymentDto;
 import uk.gov.hmcts.reform.notifications.model.ServiceContact;
 import uk.gov.hmcts.reform.notifications.repository.ServiceContactRepository;
 import uk.gov.hmcts.reform.notifications.service.NotificationServiceImplTest;
@@ -1032,6 +1036,349 @@ public class NotificationControllerTest {
         );
         Assertions.assertEquals("3333960c-4ffa-42db-806c-451a68c56e09",notificationResponseDto.getTemplateId());
         Assertions.assertEquals("letter",notificationResponseDto.getTemplateType());
+    }
+
+    @Test
+    public void returnLetterTemplatePreviewForRefundWhenContactedWhenPaymentRefProvided() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
+        DocPreviewRequest request = DocPreviewRequest.docPreviewRequestWith()
+            .notificationType(NotificationType.LETTER)
+            .personalisation(
+                Personalisation.personalisationRequestWith().refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test").build())
+            .paymentReference("RC-1637-5115-4276-8564")
+            .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith().addressLine("abc").postalCode("123 456")
+                                        .county("london").country("UK").city("london").build())
+            .build();
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+
+        TemplatePreview response = new TemplatePreview("{                                                             "+
+                                                           "\"id\": \"3333960c-4ffa-42db-806c-451a68c56e09\","+
+                                                           "\"type\": \"letter\","+
+                                                           "\"version\": 11,"+
+                                                           "\"body\": \"Dear Sir/Madam\","+
+                                                           "\"subject\": \"HMCTS refund request approved\","+
+                                                           "\"html\": \"Dear Sir/Madam\","+
+                                                           "}");
+        when(notificationLetterClient.generateTemplatePreview(any(), anyMap())).thenReturn(response);
+
+        ResponseEntity<PaymentDto> responseEntity = new ResponseEntity<>(getPaymentsRefundWhenContacted(), HttpStatus.OK);
+         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("authorization", "auth");
+        headers.add("ServiceAuthorization", "service-auth");
+        when(authTokenGenerator.generate()).thenReturn("service auth token");
+        when(this.restTemplatePayment.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(
+            PaymentDto.class))).thenReturn(
+            responseEntity);
+
+        MvcResult result = mockMvc.perform(post("/doc-preview")
+                                               .content(asJsonString(request))
+                                               .header("authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        NotificationTemplatePreviewResponse notificationResponseDto = mapper.readValue(
+            result.getResponse().getContentAsString(), NotificationTemplatePreviewResponse.class
+        );
+        Assertions.assertEquals("3333960c-4ffa-42db-806c-451a68c56e09", notificationResponseDto.getTemplateId());
+        Assertions.assertEquals("letter",notificationResponseDto.getTemplateType());
+    }
+
+    @Test
+    public void returnLetterTemplatePreviewForSendRefundWhenPaymentRefProvided() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
+        DocPreviewRequest request = DocPreviewRequest.docPreviewRequestWith()
+            .notificationType(NotificationType.LETTER)
+            .personalisation(
+                Personalisation.personalisationRequestWith().refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test").build())
+            .paymentReference("RC-1637-5115-4276-8564")
+            .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith().addressLine("abc").postalCode("123 456")
+                                        .county("london").country("UK").city("london").build())
+            .build();
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+
+        TemplatePreview response = new TemplatePreview("{                                                             "+
+                                                           "\"id\": \"2222960c-4ffa-42db-806c-451a68c56e09\","+
+                                                           "\"type\": \"letter\","+
+                                                           "\"version\": 11,"+
+                                                           "\"body\": \"Dear Sir/Madam\","+
+                                                           "\"subject\": \"HMCTS refund request approved\","+
+                                                           "\"html\": \"Dear Sir/Madam\","+
+                                                           "}");
+        when(notificationLetterClient.generateTemplatePreview(any(), anyMap())).thenReturn(response);
+
+        ResponseEntity<PaymentDto> responseEntity = new ResponseEntity<>(getPaymentsSendRefund(), HttpStatus.OK);
+
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("authorization", "auth");
+        headers.add("ServiceAuthorization", "service-auth");
+        when(authTokenGenerator.generate()).thenReturn("service auth token");
+        when(this.restTemplatePayment.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(
+            PaymentDto.class))).thenReturn(
+            responseEntity);
+
+        MvcResult result = mockMvc.perform(post("/doc-preview")
+                                               .content(asJsonString(request))
+                                               .header("authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        NotificationTemplatePreviewResponse notificationResponseDto = mapper.readValue(
+            result.getResponse().getContentAsString(), NotificationTemplatePreviewResponse.class
+        );
+        Assertions.assertEquals("2222960c-4ffa-42db-806c-451a68c56e09", notificationResponseDto.getTemplateId());
+        Assertions.assertEquals("letter",notificationResponseDto.getTemplateType());
+    }
+
+    @Test
+    public void returnEmailTemplatePreviewForRefundWhenContactedWhenPaymentRefProvided() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
+        DocPreviewRequest request = DocPreviewRequest.docPreviewRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .recipientEmailAddress("test@hmcts.net")
+            .paymentReference("RC-1637-5115-4276-8564")
+            .personalisation(
+                Personalisation.personalisationRequestWith().refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test").build())
+            .build();
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+
+        TemplatePreview response = new TemplatePreview("{                                                             "+
+                                                           "\"id\": \"1133960c-4ffa-42db-806c-451a68c56e09\","+
+                                                           "\"type\": \"email\","+
+                                                           "\"version\": 11,"+
+                                                           "\"body\": \"Dear Sir/Madam\","+
+                                                           "\"subject\": \"HMCTS refund request approved\","+
+                                                           "\"html\": \"Dear Sir/Madam\","+
+                                                           "}");
+        when(notificationEmailClient.generateTemplatePreview(any(), anyMap())).thenReturn(response);
+        ResponseEntity<PaymentDto> responseEntity = new ResponseEntity<>(getPaymentsRefundWhenContacted(), HttpStatus.OK);
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("authorization", "auth");
+        headers.add("ServiceAuthorization", "service-auth");
+        when(authTokenGenerator.generate()).thenReturn("service auth token");
+        when(this.restTemplatePayment.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(
+            PaymentDto.class))).thenReturn(
+            responseEntity);
+
+        MvcResult result = mockMvc.perform(post("/doc-preview")
+                                               .content(asJsonString(request))
+                                               .header("authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        NotificationTemplatePreviewResponse notificationResponseDto = mapper.readValue(
+            result.getResponse().getContentAsString(), NotificationTemplatePreviewResponse.class
+        );
+        Assertions.assertEquals("1133960c-4ffa-42db-806c-451a68c56e09",notificationResponseDto.getTemplateId());
+        Assertions.assertEquals("email",notificationResponseDto.getTemplateType());
+    }
+
+    @Test
+    public void returnEmailTemplatePreviewForSendRefundWhenPaymentRefProvided() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
+        DocPreviewRequest request = DocPreviewRequest.docPreviewRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .recipientEmailAddress("test@hmcts.net")
+            .paymentReference("RC-1637-5115-4276-8564")
+            .personalisation(
+                Personalisation.personalisationRequestWith().refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test").build())
+            .build();
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+
+        TemplatePreview response = new TemplatePreview("{                                                             "+
+                                                           "\"id\": \"1222960c-4ffa-42db-806c-451a68c56e09\","+
+                                                           "\"type\": \"email\","+
+                                                           "\"version\": 11,"+
+                                                           "\"body\": \"Dear Sir/Madam\","+
+                                                           "\"subject\": \"HMCTS refund request approved\","+
+                                                           "\"html\": \"Dear Sir/Madam\","+
+                                                           "}");
+        when(notificationEmailClient.generateTemplatePreview(any(), anyMap())).thenReturn(response);
+        ResponseEntity<PaymentDto> responseEntity = new ResponseEntity<>(getPaymentsSendRefund(), HttpStatus.OK);
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("authorization", "auth");
+        headers.add("ServiceAuthorization", "service-auth");
+        when(authTokenGenerator.generate()).thenReturn("service auth token");
+        when(this.restTemplatePayment.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(
+            PaymentDto.class))).thenReturn(
+            responseEntity);
+
+        MvcResult result = mockMvc.perform(post("/doc-preview")
+                                               .content(asJsonString(request))
+                                               .header("authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        NotificationTemplatePreviewResponse notificationResponseDto = mapper.readValue(
+            result.getResponse().getContentAsString(), NotificationTemplatePreviewResponse.class
+        );
+        Assertions.assertEquals("1222960c-4ffa-42db-806c-451a68c56e09",notificationResponseDto.getTemplateId());
+        Assertions.assertEquals("email",notificationResponseDto.getTemplateType());
+    }
+
+    @Test
+    public void returnInternalServerExceptionTemplatePreviewForWhenPaymentRefProvidedAndPayhubReturnException() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
+        DocPreviewRequest request = DocPreviewRequest.docPreviewRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .recipientEmailAddress("test@hmcts.net")
+            .paymentReference("RC-1637-5115-4276-8564")
+            .personalisation(
+                Personalisation.personalisationRequestWith().refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test").build())
+            .build();
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("authorization", "auth");
+        headers.add("ServiceAuthorization", "service-auth");
+        when(authTokenGenerator.generate()).thenReturn("service auth token");
+        when(this.restTemplatePayment.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(
+            PaymentDto.class))).thenThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "internal server error"));
+
+        MvcResult result = mockMvc.perform(post("/doc-preview")
+                                               .content(asJsonString(request))
+                                               .header("authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().is5xxServerError())
+            .andReturn();
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(),result.getResponse().getStatus());
+    }
+
+    @Test
+    public void return404ExceptionTemplatePreviewForWhenPaymentRefProvidedAndPayhubReturnException() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
+        DocPreviewRequest request = DocPreviewRequest.docPreviewRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .recipientEmailAddress("test@hmcts.net")
+            .paymentReference("RC-1637-5115-4276-8564")
+            .personalisation(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test").build())
+            .build();
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("authorization", "auth");
+        headers.add("ServiceAuthorization", "service-auth");
+        when(authTokenGenerator.generate()).thenReturn("service auth token");
+        when(this.restTemplatePayment.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(
+            PaymentDto.class))).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "Payment Reference not found"));
+
+        MvcResult result = mockMvc.perform(post("/doc-preview")
+                                               .content(asJsonString(request))
+                                               .header("authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+        Assertions.assertEquals(HttpStatus.NOT_FOUND.value(),result.getResponse().getStatus());
+    }
+
+    @Test
+    public void return400ExceptionTemplatePreviewForWhenPaymentRefNotProvided() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
+        DocPreviewRequest request = DocPreviewRequest.docPreviewRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .recipientEmailAddress("test@hmcts.net")
+            .personalisation(
+                Personalisation.personalisationRequestWith().refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test").build())
+            .build();
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("authorization", "auth");
+        headers.add("ServiceAuthorization", "service-auth");
+        when(authTokenGenerator.generate()).thenReturn("service auth token");
+        when(this.restTemplatePayment.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(
+            PaymentDto.class))).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "Payment Reference not found"));
+
+        MvcResult result = mockMvc.perform(post("/doc-preview")
+                                               .content(asJsonString(request))
+                                               .header("authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(),result.getResponse().getStatus());
+    }
+
+    @Test
+    public void return400ExceptionTemplatePreviewForWhenPaymentRefAndServiceNameNotProvided() throws Exception {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
+        DocPreviewRequest request = DocPreviewRequest.docPreviewRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .recipientEmailAddress("test@hmcts.net")
+            .paymentMethod("cash")
+            .paymentChannel("bulk scan")
+            .personalisation(
+                Personalisation.personalisationRequestWith().refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test").build())
+            .build();
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("authorization", "auth");
+        headers.add("ServiceAuthorization", "service-auth");
+        when(authTokenGenerator.generate()).thenReturn("service auth token");
+        when(this.restTemplatePayment.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(
+            PaymentDto.class))).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "Payment Reference not found"));
+
+        MvcResult result = mockMvc.perform(post("/doc-preview")
+                                               .content(asJsonString(request))
+                                               .header("authorization", "user")
+                                               .header("ServiceAuthorization", "Services")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(),result.getResponse().getStatus());
+    }
+
+    private PaymentDto getPaymentsRefundWhenContacted() {
+
+        PaymentDto payments = PaymentDto.payment2DtoWith()
+            .amount(BigDecimal.valueOf(100.00))
+            .ccdCaseNumber("1111221383640739")
+            .channel("bulk scan")
+            .method("cash")
+            .id("1")
+            .paymentReference("RC-1637-5115-4276-8564")
+            .serviceName("Probate")
+            .build();
+        return payments;
+    }
+
+    private PaymentDto getPaymentsSendRefund() {
+
+        PaymentDto payments = PaymentDto.payment2DtoWith()
+            .amount(BigDecimal.valueOf(100.00))
+            .ccdCaseNumber("1111221383640739")
+            .channel("telephony")
+            .method("card")
+            .id("1")
+            .paymentReference("RC-1637-5115-4276-8564")
+            .serviceName("Probate")
+            .build();
+        return payments;
     }
 
 

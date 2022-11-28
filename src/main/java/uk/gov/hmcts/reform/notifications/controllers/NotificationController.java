@@ -105,7 +105,7 @@ public class NotificationController {
         @Valid @RequestBody DocPreviewRequest docPreviewRequest) {
         System.out.println("Doc Preview Hit");
         return new ResponseEntity<>(
-            notificationService.previewNotification(docPreviewRequest),
+            notificationService.previewNotification(docPreviewRequest,headers),
             HttpStatus.OK
         );
     }

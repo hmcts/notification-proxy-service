@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.notifications.dtos.request;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,8 +23,6 @@ public class DocPreviewRequest {
     private String paymentReference;
     private String paymentMethod;
     private String paymentChannel;
-    @NotNull(message = "Service name cannot be null")
-    @NotEmpty(message = "Service name  cannot be blank")
     private String serviceName;
 
     @Valid
