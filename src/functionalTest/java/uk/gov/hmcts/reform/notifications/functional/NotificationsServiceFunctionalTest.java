@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.notifications.dtos.request.Personalisation;
 import uk.gov.hmcts.reform.notifications.dtos.request.RecipientPostalAddress;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
+import uk.gov.hmcts.reform.notifications.dtos.response.FromTemplateContact;
+import uk.gov.hmcts.reform.notifications.dtos.response.MailAddress;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
 import uk.gov.hmcts.reform.notifications.functional.config.IdamService;
 import uk.gov.hmcts.reform.notifications.functional.config.NotificationsTestService;
@@ -470,7 +472,10 @@ public class NotificationsServiceFunctionalTest {
                                  .version(11)
                                  .body("Dear Sir Madam")
                                  .subject("HMCTS refund request approved")
-                                 .html("Dear Sir Madam").build())
+                                 .html("Dear Sir Madam")
+                                 .from(FromTemplateContact.buildFromTemplateContactWith()
+                                           .fromEmailAddress("test@test.com").build())
+                                 .build())
             .build();
 
         final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
@@ -506,7 +511,20 @@ public class NotificationsServiceFunctionalTest {
                                  .version(11)
                                  .body("Dear Sir Madam")
                                  .subject("HMCTS refund request approved")
-                                 .html("Dear Sir Madam").build())
+                                 .html("Dear Sir Madam")
+                                 .from(FromTemplateContact
+                                           .buildFromTemplateContactWith()
+                                           .fromMailAddress(
+                                               MailAddress
+                                                   .buildRecipientMailAddressWith()
+                                                   .addressLine("6 Test")
+                                                   .city("city")
+                                                   .country("country")
+                                                   .county("county")
+                                                   .postalCode("HA3 5TT")
+                                                   .build())
+                                           .build())
+                                 .build())
             .build();
 
         final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(

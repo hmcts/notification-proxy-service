@@ -120,7 +120,7 @@ public class NotificationServiceImpl implements NotificationService {
                             emailNotificationRequest.getPersonalisation().getRefundReference()
                         )
                     );
-                templatePreviewDto = buildTemplatePreviewDTO(templatePreview);
+                templatePreviewDto = buildTemplatePreviewDTO(templatePreview, EMAIL);
             }
 
             SendEmailResponse sendEmailResponse = notificationEmailClient
@@ -223,7 +223,7 @@ public class NotificationServiceImpl implements NotificationService {
                             letterNotificationRequest.getPersonalisation().getRefundReason()
                         )
                     );
-                templatePreviewDto = buildTemplatePreviewDTO(templatePreview);
+                templatePreviewDto = buildTemplatePreviewDTO(templatePreview, LETTER);
             }
 
             SendLetterResponse sendLetterResponse = notificationLetterClient.sendLetter(
@@ -385,7 +385,7 @@ public class NotificationServiceImpl implements NotificationService {
             || StringUtils.isBlank(address.getCounty()) );
     }
 
-    private TemplatePreviewDto buildTemplatePreviewDTO(TemplatePreview templatePreview) {
+    private TemplatePreviewDto buildTemplatePreviewDTO(TemplatePreview templatePreview, String notificationType) {
         return TemplatePreviewDto.templatePreviewDtoWith()
             .id(templatePreview.getId())
             .templateType(templatePreview.getTemplateType())
@@ -393,6 +393,7 @@ public class NotificationServiceImpl implements NotificationService {
             .body(templatePreview.getBody())
             .subject(templatePreview.getSubject().get())
             .html(templatePreview.getHtml().get())
+            .from(notificationTemplateResponseMapper.toFromMapper(notificationType))
             .build();
     }
 
