@@ -385,13 +385,16 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private TemplatePreviewDto buildTemplatePreviewDTO(TemplatePreview templatePreview, String notificationType) {
+
+        final String objNull = null;
+
         return TemplatePreviewDto.templatePreviewDtoWith()
             .id(templatePreview.getId())
             .templateType(templatePreview.getTemplateType())
             .version(templatePreview.getVersion())
             .body(templatePreview.getBody())
-            .subject(templatePreview.getSubject().get())
-            .html(templatePreview.getHtml().get())
+            .subject(templatePreview.getSubject().isPresent() ? templatePreview.getSubject().get() : objNull)
+            .html(templatePreview.getHtml().isPresent() ? templatePreview.getHtml().get() : objNull)
             .from(notificationTemplateResponseMapper.toFromMapper(notificationType))
             .build();
     }
