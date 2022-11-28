@@ -13,4 +13,10 @@ public class RestTemplateConfiguration {
         return  new RestTemplate(new HttpComponentsClientHttpRequestFactory());
     }
 
+    @Bean("restTemplatePayment")
+    public RestTemplate restTemplatePayment() {
+        return new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+    }
+
+
 }
