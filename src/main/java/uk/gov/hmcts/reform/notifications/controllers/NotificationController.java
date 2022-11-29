@@ -104,7 +104,7 @@ public class NotificationController {
         @RequestHeader(required = false) MultiValueMap<String, String> headers,
         @Valid @RequestBody DocPreviewRequest docPreviewRequest) {
         return new ResponseEntity<>(
-            notificationService.previewNotification(docPreviewRequest),
+            notificationService.previewNotification(docPreviewRequest,headers),
             HttpStatus.OK
         );
     }
