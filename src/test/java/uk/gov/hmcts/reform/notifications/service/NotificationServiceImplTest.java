@@ -54,7 +54,6 @@ import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Supplier;
 import uk.gov.hmcts.reform.notifications.repository.ServiceContactRepository;
 import uk.gov.service.notify.*;
