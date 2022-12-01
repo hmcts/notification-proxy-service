@@ -579,7 +579,7 @@ public class NotificationsServiceFunctionalTest {
         List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("email")).isEqualTo("akhilesh.nayak@hmcts.net");
+        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
         Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
         assertThat(sendNotification.get("template_id")).isEqualTo(chequePoCashEmailTemplateId);
     }
@@ -623,7 +623,7 @@ public class NotificationsServiceFunctionalTest {
         List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("email")).isEqualTo("akhilesh.nayak@hmcts.net");
+        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
         Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
         assertThat(sendNotification.get("template_id")).isEqualTo(cardPbaEmailTemplateId);
     }
