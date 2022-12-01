@@ -112,8 +112,8 @@ notification:
   service-mailbox: ${SERVICE_MAIL_BOX:}
   service-url: ${SERVICE_URL:http://service}
 notify:
-  letter.template: ${NOTIFICATION_LETTER_TEMPLATE_ID:bc27054e-d13f-4c31-90ab-7972b88f3ff2}
-  email.template: ${NOTIFICATION_EMAIL_TEMPLATE_ID:f644a552-1614-446c-a471-d38109486a79}
+  letter.template: ${NOTIFICATION_LETTER_TEMPLATE_ID:dummy}
+  email.template: ${NOTIFICATION_EMAIL_TEMPLATE_ID:dummy}
   template:
     cheque-po-cash:
       letter: ${NOTIFICATIONS_LETTER_CHEQUE_PO_CASH_TEMPLATE_ID:}
