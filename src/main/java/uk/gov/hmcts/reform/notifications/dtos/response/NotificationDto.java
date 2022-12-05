@@ -23,5 +23,8 @@ public class NotificationDto {
 
     private Date dateUpdated;
     private ContactDetailsDto contactDetails;
+
+    private NotificationTemplatePreviewResponse sentNotification;
+
 }
 

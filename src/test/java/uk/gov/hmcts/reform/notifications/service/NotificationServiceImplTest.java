@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
@@ -53,7 +54,6 @@ import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Supplier;
 import uk.gov.hmcts.reform.notifications.repository.ServiceContactRepository;
 import uk.gov.service.notify.*;
@@ -72,6 +72,25 @@ public class NotificationServiceImplTest {
         .createdBy("System")
         .dateUpdated(new Date())
         .contactDetails(getContactLetter())
+        .templatePreview(TemplatePreviewDto.templatePreviewDtoWith()
+                              .id(UUID.randomUUID())
+                              .html("test")
+                              .body("test")
+                              .subject("testSubject")
+                              .templateType("letter")
+                             .from(FromTemplateContact
+                                       .buildFromTemplateContactWith()
+                                       .fromMailAddress(
+                                           MailAddress
+                                               .buildRecipientMailAddressWith()
+                                               .addressLine("6 Test")
+                                               .city("city")
+                                               .country("country")
+                                               .county("county")
+                                               .postalCode("HA3 5TT")
+                                               .build())
+                                       .build())
+                             .build())
         .build();
     @InjectMocks
     private NotificationServiceImpl notificationServiceImpl;
@@ -139,6 +158,14 @@ public class NotificationServiceImplTest {
         .createdBy("e30ccf3a-8457-4e45-b251-74a346e7ec88")
         .dateUpdated(new Date())
         .contactDetails(getContactEmail())
+        .templatePreview(TemplatePreviewDto.templatePreviewDtoWith()
+                             .id(UUID.randomUUID())
+                             .html("test")
+                             .body("test")
+                             .subject("testSubject")
+                             .templateType("email")
+                             .from(FromTemplateContact.buildFromTemplateContactWith().fromEmailAddress("test@hmcts.net").build())
+        .build())
         .build();
 
     private static ContactDetails getContactEmail() {

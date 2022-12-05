@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.notifications.functional;
 
 import java.math.BigDecimal;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.http.HttpStatus;
 
@@ -538,4 +539,179 @@ public class NotificationsServiceFunctionalTest {
             .isEqualTo(responseNotificationLetter.body().asString());
 
     }
+
+    @Test
+    public void sendEmailNotificationRequestWithRefundWhenContacted() {
+
+        String reference = "RF-1234-" + RandomUtils.nextInt();
+        RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
+            .templateId(chequePoCashEmailTemplateId)
+            .reference(reference)
+            .notificationType(NotificationType.EMAIL)
+            .emailReplyToId(emailReplyToId)
+            .serviceName("Probate")
+            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .personalisation(Personalisation.personalisationRequestWith()
+                                 .ccdCaseNumber(CCD_CASE_NUMBER)
+                                 .refundReference("RF-1234-1234-1234-1234")
+                                 .refundAmount(BigDecimal.valueOf(10))
+                                 .refundReason("Unable to apply refund to Card")
+                                 .build())
+            .build();
+
+        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl,
+            refundNotificationEmailRequest
+        );
+        assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        final Response responseNotification = notificationsTestServicel.getNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            reference
+        );
+
+        assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
+        assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
+        Map contactDetails = (Map) notificationList.get(0).get("contact_details");
+        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
+        Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
+        assertThat(sendNotification.get("template_id")).isEqualTo(chequePoCashEmailTemplateId);
+    }
+
+    @Test
+    public void sendEmailNotificationRequestWithSendRefund() {
+
+        String reference = "RF-1234-" + RandomUtils.nextInt();
+        RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
+            .templateId(cardPbaEmailTemplateId)
+            .reference(reference)
+            .notificationType(NotificationType.EMAIL)
+            .serviceName("Probate")
+            .emailReplyToId(emailReplyToId)
+            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .personalisation(Personalisation.personalisationRequestWith()
+                                 .ccdCaseNumber(CCD_CASE_NUMBER)
+                                 .refundReference("RF-1234-1234-1234-1234")
+                                 .refundAmount(BigDecimal.valueOf(10))
+                                 .refundReason("Unable to apply refund to Card")
+                                 .build())
+            .build();
+
+        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl,
+            refundNotificationEmailRequest
+        );
+        assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        final Response responseNotification = notificationsTestServicel.getNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            reference
+        );
+
+        assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
+        assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
+        Map contactDetails = (Map) notificationList.get(0).get("contact_details");
+        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
+        Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
+        assertThat(sendNotification.get("template_id")).isEqualTo(cardPbaEmailTemplateId);
+    }
+
+    @Test
+    public void sendLetterNotificationRequestSendRefund() {
+        String reference = "RF-1234-" + RandomUtils.nextInt();
+        RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
+            .templateId(cardPbaLetterTemplateId)
+            .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
+                                        .addressLine("102 Petty France")
+                                        .city(CITY)
+                                        .county(COUNTY)
+                                        .country("England")
+                                        .postalCode("SW1H 9AJ")
+                                        .build())
+            .reference(reference)
+            .notificationType(NotificationType.LETTER)
+            .serviceName("Probate")
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
+
+            .build();
+
+        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            refundNotificationLetterRequest
+        );
+        assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        final Response responseNotification = notificationsTestServicel.getNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            reference
+        );
+
+        assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
+        assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
+        Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
+        assertThat(sendNotification.get("template_id")).isEqualTo(cardPbaLetterTemplateId);
+    }
+
+    @Test
+    public void sendLetterNotificationRequestRefundWhenContacted() {
+        String reference = "RF-1234-" + RandomUtils.nextInt();
+        RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
+            .templateId(chequePoCashLetterTemplateId)
+            .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
+                                        .addressLine("102 Petty France")
+                                        .city(CITY)
+                                        .county(COUNTY)
+                                        .country("England")
+                                        .postalCode("SW1H 9AJ")
+                                        .build())
+            .reference(reference)
+            .notificationType(NotificationType.LETTER)
+            .serviceName("Probate")
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
+
+            .build();
+
+        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            refundNotificationLetterRequest
+        );
+        assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        final Response responseNotification = notificationsTestServicel.getNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            reference
+        );
+
+        assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
+        assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
+        Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
+        assertThat(sendNotification.get("template_id")).isEqualTo(chequePoCashLetterTemplateId);
+    }
+
 }
