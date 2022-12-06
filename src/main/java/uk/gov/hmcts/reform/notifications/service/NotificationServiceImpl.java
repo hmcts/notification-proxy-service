@@ -339,7 +339,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         String templateId = getTemplate(docPreviewRequest, instructionType);
-
+        LOG.info(" Before if statement templateId {}", templateId);
         try {
 
             if(EMAIL.equalsIgnoreCase(docPreviewRequest.getNotificationType().name())) {
@@ -371,8 +371,11 @@ public class NotificationServiceImpl implements NotificationService {
 
     private  String getTemplate(DocPreviewRequest docPreviewRequest, String instructionType) {
         String templateId = null;
-        if (null != docPreviewRequest.getNotificationType()) {
 
+        LOG.info("getTemplate getTemplate {}", docPreviewRequest.getNotificationType().name());
+        if (null != docPreviewRequest.getNotificationType().name()) {
+
+            LOG.info("Inside if of instructionType {}", instructionType);
             if (REFUND_WHEN_CONTACTED.equals(instructionType)) {
                 if (EMAIL.equalsIgnoreCase(docPreviewRequest.getNotificationType().name())) {
                     templateId = chequePoCashEmailTemplateId;
