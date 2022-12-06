@@ -311,6 +311,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationTemplatePreviewResponse previewNotification(DocPreviewRequest docPreviewRequest, MultiValueMap<String, String> headers) {
+
+        LOG.info("previewNotification docPreviewRequest {}", docPreviewRequest.toString());
+        LOG.info("previewNotification notification type {}", docPreviewRequest.getNotificationType());
         TemplatePreview templatePreview;
         NotificationTemplatePreviewResponse notificationTemplatePreviewResponse;
         String instructionType ;
