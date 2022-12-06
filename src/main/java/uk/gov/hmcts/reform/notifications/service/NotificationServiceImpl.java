@@ -335,29 +335,32 @@ public class NotificationServiceImpl implements NotificationService {
             ccdCaseNumber = docPreviewRequest.getPersonalisation().getCcdCaseNumber();
         }
 
-        String templeteId = getTemplate(docPreviewRequest, instructionType);
+        String templateId = getTemplate(docPreviewRequest, instructionType);
 
         try {
 
             if(EMAIL.equalsIgnoreCase(docPreviewRequest.getNotificationType().name())) {
-
+                LOG.info("EMAIL templateId {}", templateId);
+                LOG.info("EMAIl Service Mailbox {}",serviceContact.get().getServiceMailbox());
                 templatePreview = notificationEmailClient
-                    .generateTemplatePreview(templeteId,
+                    .generateTemplatePreview(templateId,
                                              createEmailPersonalisation(docPreviewRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
                                                                         refundRef, ccdCaseNumber));
+                LOG.info("EMAIL templatePreview {}", templatePreview);
             } else {
 
                 templatePreview = notificationLetterClient
-                    .generateTemplatePreview(templeteId,
+                    .generateTemplatePreview(templateId,
                                              createLetterPersonalisation(docPreviewRequest.getRecipientPostalAddress(),docPreviewRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
                                                                          refundRef,  ccdCaseNumber));
             }
 
          notificationTemplatePreviewResponse = notificationTemplateResponseMapper.notificationPreviewResponse(templatePreview,docPreviewRequest);
-
+            LOG.info("notificationTemplatePreviewResponse  {}", notificationTemplatePreviewResponse.getTemplateId());
         } catch (NotificationClientException exception) {
+            exception.printStackTrace();
             GovNotifyExceptionWrapper exceptionWrapper = new GovNotifyExceptionWrapper();
-            LOG.error(exception.getMessage());
+            LOG.error("Exception while sending Notification {}",exception.getMessage());
             throw exceptionWrapper.mapGovNotifyPreviewException(exception);
         }
         return notificationTemplatePreviewResponse;
