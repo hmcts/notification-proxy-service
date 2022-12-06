@@ -358,7 +358,7 @@ public class NotificationServiceImpl implements NotificationService {
          notificationTemplatePreviewResponse = notificationTemplateResponseMapper.notificationPreviewResponse(templatePreview,docPreviewRequest);
             LOG.info("notificationTemplatePreviewResponse  {}", notificationTemplatePreviewResponse.getTemplateId());
         } catch (NotificationClientException exception) {
-            exception.printStackTrace();
+            LOG.error("NotificationServiceImpl.previewNotification() : {}", exception);
             GovNotifyExceptionWrapper exceptionWrapper = new GovNotifyExceptionWrapper();
             LOG.error("Exception while sending Notification {}",exception.getMessage());
             throw exceptionWrapper.mapGovNotifyPreviewException(exception);
