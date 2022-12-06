@@ -312,7 +312,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationTemplatePreviewResponse previewNotification(DocPreviewRequest docPreviewRequest, MultiValueMap<String, String> headers) {
 
-        LOG.info("previewNotification docPreviewRequest {}", docPreviewRequest.toString());
+        LOG.info("previewNotification docPreviewRequest {}", docPreviewRequest.getNotificationType().name());
         LOG.info("previewNotification notification type {}", docPreviewRequest.getNotificationType());
         TemplatePreview templatePreview;
         NotificationTemplatePreviewResponse notificationTemplatePreviewResponse;
@@ -321,7 +321,8 @@ public class NotificationServiceImpl implements NotificationService {
         Optional<ServiceContact> serviceContact;
         String refundRef = "RF-****-****-****-****";
         String ccdCaseNumber;
-
+        LOG.info(" docPreviewRequest.getPaymentChannel() {}", docPreviewRequest.getPaymentChannel());
+        LOG.info(" docPreviewRequest.getPaymentMethod() {}", docPreviewRequest.getPaymentMethod());
         if (null == docPreviewRequest.getPaymentChannel()
             || docPreviewRequest.getPaymentChannel().equalsIgnoreCase(STRING)
             || null == docPreviewRequest.getPaymentMethod()
@@ -332,12 +333,17 @@ public class NotificationServiceImpl implements NotificationService {
             serviceContact = serviceContactRepository.findByServiceName(paymentResponse.getServiceName());
             ccdCaseNumber = paymentResponse.getCcdCaseNumber();
         } else {
+            LOG.info(" validateIfPaymentReferenceNotExist ");
             validateIfPaymentReferenceNotExist(docPreviewRequest);
+            LOG.info(" getInstructionType ");
             instructionType = getInstructionType(docPreviewRequest.getPaymentChannel(),docPreviewRequest.getPaymentMethod());
+            LOG.info(" getInstructionType {}" , instructionType);
             serviceContact = serviceContactRepository.findByServiceName(docPreviewRequest.getServiceName());
+            LOG.info(" serviceContact {}" , serviceContact.get().getServiceName());
             ccdCaseNumber = docPreviewRequest.getPersonalisation().getCcdCaseNumber();
+            LOG.info(" ccdCaseNumber {}" , ccdCaseNumber);
         }
-
+        LOG.info(" instructionType {}", instructionType);
         String templateId = getTemplate(docPreviewRequest, instructionType);
         LOG.info(" Before if statement templateId {}", templateId);
         try {
