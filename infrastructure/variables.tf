@@ -68,3 +68,8 @@ variable "product_name" {
   type    = string
   default = "notifications"
 }
+
+variable "additional_databases" {
+  default = []
+}
+
