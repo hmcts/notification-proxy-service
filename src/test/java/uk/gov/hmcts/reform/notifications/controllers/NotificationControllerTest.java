@@ -1719,7 +1719,7 @@ public class NotificationControllerTest {
                                                            "\"html\": \"Dear Sir/Madam\","+
                                                            "}");
         when(notificationEmailClient.generateTemplatePreview(any(), anyMap())).thenReturn(response);
-        when(notificationTemplateResponseMapper.toFromMapper(any())).thenReturn(FromTemplateContact
+        when(notificationTemplateResponseMapper.toFromMapper(any(), any())).thenReturn(FromTemplateContact
                                                                                     .buildFromTemplateContactWith()
                                                                                     .fromEmailAddress("test@test.com")
                                                                                     .build());
@@ -1735,7 +1735,7 @@ public class NotificationControllerTest {
                                                            "\"html\": \"Dear Sir/Madam\","+
                                                            "}");
         when(notificationLetterClient.generateTemplatePreview(any(), anyMap())).thenReturn(response);
-        when(notificationTemplateResponseMapper.toFromMapper(any())).thenReturn(FromTemplateContact
+        when(notificationTemplateResponseMapper.toFromMapper(any(), any())).thenReturn(FromTemplateContact
                                                                                     .buildFromTemplateContactWith()
                                                                                     .fromMailAddress(
                                                                                         MailAddress
