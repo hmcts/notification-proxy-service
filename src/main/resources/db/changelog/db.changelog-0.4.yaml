@@ -1,9 +1,9 @@
 databaseChangeLog:
   - changeSet:
-      id: 100010
+      id: 100011
       author: pragnesh
       changes:
         - sql:
             sql: >
-              ALTER TABLE from_email_address ADD COLUMN service_contact VARCHAR;
-              ALTER TABLE from_mail_address ADD COLUMN service_contact TEXT;
+              ALTER TABLE service_contact ADD COLUMN from_email_address VARCHAR;
+              ALTER TABLE service_contact ADD COLUMN from_mail_address TEXT;

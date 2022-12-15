@@ -336,7 +336,7 @@ public class NotificationControllerTest {
                     BigDecimal.valueOf(10)).refundReason("Unable to apply refund to Card").build())
             .serviceName("Probate")
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForAddress()));
         mockGenerateLetterTemplatePreview();
 
         Notification mockNotification = new Notification();
@@ -659,7 +659,7 @@ public class NotificationControllerTest {
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .serviceName("Probate")
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForAddress()));
 
         mockGenerateLetterTemplatePreview();
 
@@ -706,7 +706,7 @@ public class NotificationControllerTest {
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .serviceName("Probate")
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForAddress()));
         mockGenerateLetterTemplatePreview();
         Notification notification = Notification.builder().build();
 
@@ -748,7 +748,8 @@ public class NotificationControllerTest {
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .serviceName("Probate")
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any()))
+            .thenReturn(Optional.of(buildServiceContactForAddress()));
         mockGenerateLetterTemplatePreview();
         Notification notification = Notification.builder().build();
 
@@ -790,14 +791,14 @@ public class NotificationControllerTest {
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .serviceName("Probate")
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForAddress()));
         mockGenerateLetterTemplatePreview();
 
         Notification notification = Notification.builder().build();
 
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
-        when(serviceContactRepository.findByServiceName(anyString())).thenReturn(Optional.of(ServiceContact.serviceContactWith().serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+       // when(serviceContactRepository.findByServiceName(anyString())).thenReturn(Optional.of(ServiceContact.serviceContactWith().serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
         MvcResult result = mockMvc.perform(post("/notifications/letter")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
@@ -833,7 +834,7 @@ public class NotificationControllerTest {
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .serviceName("Probate")
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForAddress()));
         mockGenerateLetterTemplatePreview();
         Notification notification = Notification.builder().build();
 
@@ -876,7 +877,7 @@ public class NotificationControllerTest {
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .serviceName("Probate")
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForAddress()));
         mockGenerateLetterTemplatePreview();
 
         Notification notification = Notification.builder().build();
@@ -919,7 +920,7 @@ public class NotificationControllerTest {
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .serviceName("Probate")
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForAddress()));
 
         mockGenerateLetterTemplatePreview();
 
@@ -962,7 +963,7 @@ public class NotificationControllerTest {
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .serviceName("Probate")
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForAddress()));
 
         mockGenerateLetterTemplatePreview();
 
@@ -1005,7 +1006,7 @@ public class NotificationControllerTest {
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .serviceName("Probate")
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForAddress()));
 
         mockGenerateLetterTemplatePreview();
 
@@ -1186,7 +1187,7 @@ public class NotificationControllerTest {
             .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith().addressLine("abc").postalCode("123 456")
                                         .county("london").country("UK").city("london").build())
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForAddress()));
 
         TemplatePreview response = new TemplatePreview("{                                                             "+
                                                            "\"id\": \"2222960c-4ffa-42db-806c-451a68c56e09\","+
@@ -1228,7 +1229,7 @@ public class NotificationControllerTest {
             .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith().addressLine("abc").postalCode("123 456")
                                         .county("london").country("UK").city("london").build())
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForAddress()));
 
         TemplatePreview response = new TemplatePreview("{                                                             "+
                                                            "\"id\": \"3333960c-4ffa-42db-806c-451a68c56e09\","+
@@ -1268,7 +1269,7 @@ public class NotificationControllerTest {
             .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith().addressLine("abc").postalCode("123 456")
                                         .county("london").country("UK").city("london").build())
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForAddress()));
 
         TemplatePreview response = new TemplatePreview("{                                                             "+
                                                            "\"id\": \"3333960c-4ffa-42db-806c-451a68c56e09\","+
@@ -1317,7 +1318,7 @@ public class NotificationControllerTest {
             .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith().addressLine("abc").postalCode("123 456")
                                         .county("london").country("UK").city("london").build())
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForAddress()));
 
         TemplatePreview response = new TemplatePreview("{                                                             "+
                                                            "\"id\": \"2222960c-4ffa-42db-806c-451a68c56e09\","+
@@ -1366,7 +1367,7 @@ public class NotificationControllerTest {
                 Personalisation.personalisationRequestWith().refundAmount(
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForEmail()));
 
         TemplatePreview response = new TemplatePreview("{                                                             "+
                                                            "\"id\": \"1133960c-4ffa-42db-806c-451a68c56e09\","+
@@ -1413,7 +1414,7 @@ public class NotificationControllerTest {
                 Personalisation.personalisationRequestWith().refundAmount(
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForEmail()));
 
         TemplatePreview response = new TemplatePreview("{                                                             "+
                                                            "\"id\": \"1222960c-4ffa-42db-806c-451a68c56e09\","+
@@ -1460,7 +1461,8 @@ public class NotificationControllerTest {
                 Personalisation.personalisationRequestWith().refundAmount(
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(
+            buildServiceContactForEmail()));
 
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("authorization", "auth");
@@ -1637,7 +1639,7 @@ public class NotificationControllerTest {
                                            .build())
                                  .build())
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForEmail()));
 
 
         SendLetterResponse response = new SendLetterResponse("{\"content\":{\"body\":\"Hello Unknown\\r\\n\\r\\nRefund Approved on 2022-01-01\"," +
@@ -1685,7 +1687,7 @@ public class NotificationControllerTest {
                                            .build())
                                   .build())
             .build();
-        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(buildServiceContactForEmail()));
 
         SendEmailResponse response = new SendEmailResponse("{\"content\":{\"body\":\"Hello Unknown, your reference is string\\r\\n\\r\\nRefund Approved\\" +
                                                                "r\\n\\r\\nThanks\",\"from_email\":\"test@gov.uk\",\"subject\":" +
@@ -1747,5 +1749,31 @@ public class NotificationControllerTest {
                                                                                             .postalCode("HA3 5TT")
                                                                                             .build())
                                                                                     .build());
+    }
+
+    private ServiceContact buildServiceContactForEmail(){
+
+        return ServiceContact
+            .serviceContactWith().id(1)
+            .serviceName("Probate")
+            .serviceMailbox("probate@gov.uk")
+            .fromEmailAddress("testprobate@hmcts.net")
+            .build();
+    }
+
+    private ServiceContact buildServiceContactForAddress(){
+
+        return ServiceContact
+            .serviceContactWith().id(1)
+            .serviceName("Probate")
+            .serviceMailbox("probate@gov.uk")
+            .fromMailAddress(MailAddress.buildRecipientMailAddressWith()
+                                 .addressLine("Addresss Line 1")
+                                 .city("City A")
+                                 .county("County B")
+                                 .country("Country C")
+                                 .postalCode("AB1 2BX")
+                                 .build())
+            .build();
     }
 }
