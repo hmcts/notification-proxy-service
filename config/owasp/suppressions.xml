@@ -95,4 +95,8 @@
     <cve>CVE-2022-42003</cve>
     <cve>CVE-2022-42004</cve>
   </suppress>
+  <suppress>
+    <notes>Apache Commons Net 3.9.0, Net's FTP client trusts the host from PASV response by default</notes>
+    <cve>CVE-2021-37533</cve>
+  </suppress>
 </suppressions>
