@@ -59,17 +59,17 @@ public class NotificationTemplateResponseMapper {
         return email;
     }
 
-    private MailAddress toMailMapper(DocPreviewRequest docPreviewReques) {
+    private MailAddress toMailMapper(DocPreviewRequest docPreviewRequest) {
 
         MailAddress recipientMailAddress = null;
-        if(LETTER.equalsIgnoreCase(docPreviewReques.getNotificationType().name())) {
+        if(LETTER.equalsIgnoreCase(docPreviewRequest.getNotificationType().name())) {
 
             recipientMailAddress = MailAddress.buildRecipientMailAddressWith()
-                .addressLine(docPreviewReques.getRecipientPostalAddress().getAddressLine())
-                .city(docPreviewReques.getRecipientPostalAddress().getCity())
-                .county(docPreviewReques.getRecipientPostalAddress().getCounty())
-                .country(docPreviewReques.getRecipientPostalAddress().getCountry())
-                .postalCode(docPreviewReques.getRecipientPostalAddress().getPostalCode())
+                .addressLine(docPreviewRequest.getRecipientPostalAddress().getAddressLine())
+                .city(docPreviewRequest.getRecipientPostalAddress().getCity())
+                .county(docPreviewRequest.getRecipientPostalAddress().getCounty())
+                .country(docPreviewRequest.getRecipientPostalAddress().getCountry())
+                .postalCode(docPreviewRequest.getRecipientPostalAddress().getPostalCode())
                 .build();
         }
 
