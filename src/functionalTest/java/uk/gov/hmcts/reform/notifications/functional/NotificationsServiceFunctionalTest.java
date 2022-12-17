@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
 import uk.gov.service.notify.TemplatePreview;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -714,4 +715,141 @@ public class NotificationsServiceFunctionalTest {
         assertThat(sendNotification.get("template_id")).isEqualTo(chequePoCashLetterTemplateId);
     }
 
+    @Test
+    public void sendEmailNotificationRequestForFromEmailAddress() {
+
+        RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
+            .templateId(emailTemplateId)
+            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .reference("FunctionalTest1")
+            .emailReplyToId(emailReplyToId)
+            .notificationType(NotificationType.EMAIL)
+            .serviceName("Probate")
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
+            .build();
+
+        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl,
+            refundNotificationEmailRequest
+        );
+        assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        final Response responseNotification = notificationsTestServicel.getNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            "FunctionalTest1"
+        );
+
+        assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
+        assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
+        Map contactDetails = (Map) notificationList.get(0).get("contact_details");
+        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
+        assertThat(((HashMap)((HashMap)notificationList.get(0).get("sent_notification")).get("from")).get("from_email_address"))
+            .isEqualTo("probate@justice.gov.uk");
+    }
+
+    @Test
+    public void sendEmailNotificationRequestForFromEmailAddressThrows5XXError() {
+
+        RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
+            .templateId(emailTemplateId)
+            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .reference("FunctionalTest1")
+            .emailReplyToId(emailReplyToId)
+            .notificationType(NotificationType.EMAIL)
+            .serviceName("Wrong Service")
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
+            .build();
+
+        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl,
+            refundNotificationEmailRequest
+        );
+        assertThat(500).isEqualTo(responseNotificationEmail.getStatusCode());
+    }
+
+    @Test
+    public void sendLetterNotificationRequestForFromMailAddress() {
+
+        RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
+            .templateId(letterTemplateId)
+            .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
+                                        .addressLine("102 Petty France")
+                                        .city(CITY)
+                                        .county(COUNTY)
+                                        .country("England")
+                                        .postalCode("SW1H 9AJ")
+                                        .build())
+            .reference("FunctionalTest2")
+            .notificationType(NotificationType.LETTER)
+            .serviceName("Probate")
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
+
+            .build();
+
+        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            refundNotificationLetterRequest
+        );
+        assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        final Response responseNotification = notificationsTestServicel.getNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            "FunctionalTest2"
+        );
+
+        assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
+        assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
+        Map contactDetails = (Map) notificationList.get(0).get("contact_details");
+        assertThat(contactDetails.get("postal_code")).isEqualTo("SW1H 9AJ");
+        assertThat(((HashMap)((HashMap)((HashMap)notificationList.get(0).get("sent_notification"))
+            .get("from")).get("from_mail_address")).get("address_line"))
+            .isEqualTo("ABC");
+    }
+
+    @Test
+    public void sendLetterNotificationRequestForFromMailAddressThrows5XXError() {
+
+        RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
+            .templateId(letterTemplateId)
+            .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
+                                        .addressLine("102 Petty France")
+                                        .city(CITY)
+                                        .county(COUNTY)
+                                        .country("England")
+                                        .postalCode("SW1H 9AJ")
+                                        .build())
+            .reference("FunctionalTest2")
+            .notificationType(NotificationType.LETTER)
+            .serviceName("Wrong Service")
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+                BigDecimal.valueOf(10)).refundReason("test").build())
+
+            .build();
+
+        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            refundNotificationLetterRequest
+        );
+
+        assertThat(500).isEqualTo(responseNotificationLetter.getStatusCode());
+    }
 }
