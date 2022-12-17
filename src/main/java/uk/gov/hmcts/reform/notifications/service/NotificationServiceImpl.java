@@ -316,7 +316,7 @@ public class NotificationServiceImpl implements NotificationService {
         String instructionType ;
         PaymentDto paymentResponse;
         Optional<ServiceContact> serviceContact;
-        String refundRef = "RF-****-****-****-****";
+        String refundRef = getRefundReference(docPreviewRequest);
         String ccdCaseNumber;
         if (null == docPreviewRequest.getPaymentChannel()
             || docPreviewRequest.getPaymentChannel().equalsIgnoreCase(STRING)
@@ -505,5 +505,17 @@ public class NotificationServiceImpl implements NotificationService {
         return !( StringUtils.isBlank(address.getPostalCode()) || StringUtils.isBlank(address.getAddressLine())
             || StringUtils.isBlank(address.getCity()) || StringUtils.isBlank(address.getCountry())
             || StringUtils.isBlank(address.getCounty()) );
+    }
+    
+    private String getRefundReference(DocPreviewRequest docPreviewRequest) {
+
+        String refundRef;
+        if(null == docPreviewRequest.getPersonalisation().getRefundReference() || docPreviewRequest.getPersonalisation().getRefundReference().equalsIgnoreCase(STRING)
+            || docPreviewRequest.getPersonalisation().getRefundReference().isEmpty()) {
+            refundRef = "RF-****-****-****-****";
+        } else {
+            refundRef = docPreviewRequest.getPersonalisation().getRefundReference();
+        }
+          return refundRef;
     }
 }
