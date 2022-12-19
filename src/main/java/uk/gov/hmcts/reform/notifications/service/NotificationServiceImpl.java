@@ -35,13 +35,16 @@ import uk.gov.hmcts.reform.notifications.exceptions.DocPreviewBadRequestExceptio
 import uk.gov.hmcts.reform.notifications.exceptions.NotificationListEmptyException;
 import uk.gov.hmcts.reform.notifications.exceptions.PaymentReferenceNotFoundException;
 import uk.gov.hmcts.reform.notifications.exceptions.PaymentServerException;
+import uk.gov.hmcts.reform.notifications.exceptions.RefundReasonNotFoundException;
 import uk.gov.hmcts.reform.notifications.mapper.EmailNotificationMapper;
 import uk.gov.hmcts.reform.notifications.mapper.LetterNotificationMapper;
 import uk.gov.hmcts.reform.notifications.mapper.NotificationResponseMapper;
 import uk.gov.hmcts.reform.notifications.mapper.NotificationTemplateResponseMapper;
 import uk.gov.hmcts.reform.notifications.model.Notification;
+import uk.gov.hmcts.reform.notifications.model.NotificationRefundReasons;
 import uk.gov.hmcts.reform.notifications.model.ServiceContact;
 import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
+import uk.gov.hmcts.reform.notifications.repository.NotificationRefundReasonRepository;
 import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 import uk.gov.hmcts.reform.notifications.repository.ServiceContactRepository;
 import uk.gov.hmcts.reform.notifications.util.GovNotifyExceptionWrapper;
@@ -76,6 +79,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     private ServiceContactRepository serviceContactRepository;
+
+    @Autowired
+    private NotificationRefundReasonRepository notificationRefundReasonRepository;
 
     @Autowired
     private NotificationTemplateResponseMapper notificationTemplateResponseMapper;
@@ -133,16 +139,16 @@ public class NotificationServiceImpl implements NotificationService {
             validateRecipientEmailAddress(emailNotificationRequest);
             Optional<ServiceContact> serviceContact = serviceContactRepository.findByServiceName(emailNotificationRequest.getServiceName());
             IdamUserIdResponse uid = idamService.getUserId(headers);
-
+            String refundReason = getRefundReason(emailNotificationRequest.getPersonalisation().getRefundReason());
             TemplatePreviewDto templatePreviewDto = emailNotificationRequest.getTemplatePreview();
-
             if (templatePreviewDto == null) {
                 TemplatePreview templatePreview = notificationEmailClient
                     .generateTemplatePreview(
                         emailNotificationRequest.getTemplateId(),
                         createEmailPersonalisation(emailNotificationRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
                                                    emailNotificationRequest.getPersonalisation().getRefundReference(),
-                                                   emailNotificationRequest.getPersonalisation().getCcdCaseNumber())
+                                                   emailNotificationRequest.getPersonalisation().getCcdCaseNumber(),
+                                                   refundReason)
                     );
                 templatePreviewDto = buildTemplatePreviewDTO(templatePreview, EMAIL);
             }
@@ -153,7 +159,8 @@ public class NotificationServiceImpl implements NotificationService {
                     getRecipientEmailAddressForRefundWhenContacted(emailNotificationRequest),
                     createEmailPersonalisation(emailNotificationRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
                                                emailNotificationRequest.getPersonalisation().getRefundReference(),
-                                               emailNotificationRequest.getPersonalisation().getCcdCaseNumber()),
+                                               emailNotificationRequest.getPersonalisation().getCcdCaseNumber(),
+                                               refundReason),
                     emailNotificationRequest.getReference()
                 );
 
@@ -228,6 +235,7 @@ public class NotificationServiceImpl implements NotificationService {
             IdamUserIdResponse uid = idamService.getUserId(headers);
 
             TemplatePreviewDto templatePreviewDto = letterNotificationRequest.getTemplatePreview();
+            String refundReason = getRefundReason(letterNotificationRequest.getPersonalisation().getRefundReason());
 
             if (templatePreviewDto == null) {
                 TemplatePreview templatePreview = notificationLetterClient
@@ -235,7 +243,7 @@ public class NotificationServiceImpl implements NotificationService {
                         letterNotificationRequest.getTemplateId(),
                         createLetterPersonalisation(getRecipientContactAddressForRefundWhenContacted(letterNotificationRequest),letterNotificationRequest.getPersonalisation(),serviceContact.get().getServiceMailbox(),
                                                     letterNotificationRequest.getPersonalisation().getRefundReference(),
-                                                    letterNotificationRequest.getPersonalisation().getCcdCaseNumber())
+                                                    letterNotificationRequest.getPersonalisation().getCcdCaseNumber(), refundReason)
                     );
                 templatePreviewDto = buildTemplatePreviewDTO(templatePreview, LETTER);
             }
@@ -244,7 +252,8 @@ public class NotificationServiceImpl implements NotificationService {
                 letterNotificationRequest.getTemplateId(),
                 createLetterPersonalisation(getRecipientContactAddressForRefundWhenContacted(letterNotificationRequest),letterNotificationRequest.getPersonalisation(),serviceContact.get().getServiceMailbox(),
                                             letterNotificationRequest.getPersonalisation().getRefundReference(),
-                                            letterNotificationRequest.getPersonalisation().getCcdCaseNumber()),
+                                            letterNotificationRequest.getPersonalisation().getCcdCaseNumber(),
+                                            refundReason),
                 letterNotificationRequest.getReference()
             );
 
@@ -264,17 +273,17 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private Map<String, Object> createEmailPersonalisation(Personalisation personalisation, String serviceMailBox,
-                                                           String refundRef, String ccdCaseNumber) {
+                                                           String refundRef, String ccdCaseNumber, String refundReason) {
 
         return Map.of("refundReference", refundRef,
                       "ccdCaseNumber", ccdCaseNumber,
                       "serviceMailbox", serviceMailBox,
                       "refundAmount", personalisation.getRefundAmount(),
-                      "reason", personalisation.getRefundReason());
+                      "reason", refundReason);
     }
 
     private Map<String, Object> createLetterPersonalisation(RecipientPostalAddress recipientPostalAddress, Personalisation personalisation, String serviceMailBox,
-                                                            String refundRef, String ccdCaseNumber) {
+                                                            String refundRef, String ccdCaseNumber, String refundReason ) {
 
         return Map.of("address_line_1", recipientPostalAddress.getAddressLine(),
                       "address_line_2", recipientPostalAddress.getCity(),
@@ -285,7 +294,7 @@ public class NotificationServiceImpl implements NotificationService {
                       "ccdCaseNumber", ccdCaseNumber,
                       "serviceMailbox", serviceMailBox,
                       "refundAmount", personalisation.getRefundAmount(),
-                      "reason", personalisation.getRefundReason());
+                      "reason", refundReason);
     }
 
     @Override
@@ -319,6 +328,8 @@ public class NotificationServiceImpl implements NotificationService {
         String instructionType ;
         PaymentDto paymentResponse;
         Optional<ServiceContact> serviceContact;
+        String refundReason = getRefundReason(docPreviewRequest.getPersonalisation().getRefundReason());
+
         String refundRef = "RF-****-****-****-****";
         String ccdCaseNumber;
         LOG.info(" docPreviewRequest.getPaymentChannel() {}", docPreviewRequest.getPaymentChannel());
@@ -354,14 +365,14 @@ public class NotificationServiceImpl implements NotificationService {
                 templatePreview = notificationEmailClient
                     .generateTemplatePreview(templateId,
                                              createEmailPersonalisation(docPreviewRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
-                                                                        refundRef, ccdCaseNumber));
+                                                                        refundRef, ccdCaseNumber,refundReason));
                 LOG.info("EMAIL templatePreview {}", templatePreview);
             } else {
 
                 templatePreview = notificationLetterClient
                     .generateTemplatePreview(templateId,
                                              createLetterPersonalisation(docPreviewRequest.getRecipientPostalAddress(),docPreviewRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
-                                                                         refundRef,  ccdCaseNumber));
+                                                                         refundRef, ccdCaseNumber, refundReason));
             }
 
          notificationTemplatePreviewResponse = notificationTemplateResponseMapper.notificationPreviewResponse(templatePreview,docPreviewRequest);
@@ -519,5 +530,18 @@ public class NotificationServiceImpl implements NotificationService {
         return !( StringUtils.isBlank(address.getPostalCode()) || StringUtils.isBlank(address.getAddressLine())
             || StringUtils.isBlank(address.getCity()) || StringUtils.isBlank(address.getCountry())
             || StringUtils.isBlank(address.getCounty()) );
+    }
+
+    private String getRefundReason(String refundReasonCode) {
+
+        String refundReason;
+        Optional<NotificationRefundReasons> notificationRefundReasons = notificationRefundReasonRepository.findByRefundReasonCode(refundReasonCode);
+
+        if(notificationRefundReasons.isPresent()){
+            refundReason = notificationRefundReasons.get().getRefundReasonNotification();
+        } else {
+            throw new RefundReasonNotFoundException("Invalid Reason Type : " + refundReasonCode);
+        }
+        return refundReason;
     }
 }
