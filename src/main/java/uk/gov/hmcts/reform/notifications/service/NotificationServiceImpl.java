@@ -51,7 +51,7 @@ import uk.gov.hmcts.reform.notifications.util.GovNotifyExceptionWrapper;
 import uk.gov.service.notify.*;
 
 @Service
-@SuppressWarnings({"PMD.TooManyFields", "PMD.ExcessiveImports", "PMD.TooManyMethods", "PMD.GodClass"})
+@SuppressWarnings({"PMD.TooManyFields", "PMD.ExcessiveImports", "PMD.TooManyMethods", "PMD.GodClass","PMD.CyclomaticComplexity"})
 public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
