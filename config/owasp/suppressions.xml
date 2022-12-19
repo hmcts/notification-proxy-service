@@ -94,5 +94,6 @@
     <notes>Jackson Databind needs update to version 2.13.* or greater (major release)</notes>
     <cve>CVE-2022-42003</cve>
     <cve>CVE-2022-42004</cve>
+    <cve>CVE-2021-37533</cve>
   </suppress>
 </suppressions>
