@@ -816,7 +816,6 @@ public class NotificationControllerTest {
         ));
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenThrow(new NotificationClientException(errorMessage));
         when(notificationRepository.save(notification)).thenReturn(notification);
-        when(serviceContactRepository.findByServiceName(anyString())).thenReturn(Optional.of(ServiceContact.serviceContactWith().serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
         MvcResult result = mockMvc.perform(post("/notifications/letter")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
