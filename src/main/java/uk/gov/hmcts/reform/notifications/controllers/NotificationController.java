@@ -82,12 +82,12 @@ public class NotificationController {
 
     @GetMapping("/notifications/{reference}")
     public ResponseEntity<NotificationResponseDto> getNotifications(
-        @RequestHeader("Authorization") String authorization,
+        @RequestHeader(name = "Authorization", required = false) String authorization,
         @RequestHeader(required = false) MultiValueMap<String, String> headers,
         @PathVariable("reference") String reference) {
 
         return new ResponseEntity<>(
-            notificationService .getNotification(reference),
+            notificationService.getNotification(reference),
             HttpStatus.OK
         );
     }
