@@ -150,7 +150,7 @@ public class NotificationServiceImpl implements NotificationService {
                                                    emailNotificationRequest.getPersonalisation().getCcdCaseNumber(),
                                                    refundReason)
                     );
-                templatePreviewDto = buildTemplatePreviewDTO(templatePreview, EMAIL);
+                templatePreviewDto = buildTemplatePreviewDTO(templatePreview, EMAIL, serviceContact.get());
             }
 
             SendEmailResponse sendEmailResponse = notificationEmailClient
@@ -245,7 +245,7 @@ public class NotificationServiceImpl implements NotificationService {
                                                     letterNotificationRequest.getPersonalisation().getRefundReference(),
                                                     letterNotificationRequest.getPersonalisation().getCcdCaseNumber(), refundReason)
                     );
-                templatePreviewDto = buildTemplatePreviewDTO(templatePreview, LETTER);
+                templatePreviewDto = buildTemplatePreviewDTO(templatePreview, LETTER, serviceContact.get());
             }
 
             SendLetterResponse sendLetterResponse = notificationLetterClient.sendLetter(
@@ -264,6 +264,7 @@ public class NotificationServiceImpl implements NotificationService {
             );
             notification.setTemplatePreview(templatePreviewDto);
             notificationRepository.save(notification);
+            LOG.info("Letter notification saved successfully.");
             return sendLetterResponse;
         }catch (NotificationClientException exception){
             GovNotifyExceptionWrapper exceptionWrapper = new GovNotifyExceptionWrapper();
@@ -303,8 +304,6 @@ public class NotificationServiceImpl implements NotificationService {
         Optional<List<Notification>> notificationList;
         notificationList = notificationRepository.findByReferenceOrderByDateUpdatedDesc(reference);
 
-        LOG.info("notificationList: {}", notificationList);
-
         if (notificationList.isPresent() && !notificationList.get().isEmpty()) {
 
             notificationResponseDto = NotificationResponseDto
@@ -321,19 +320,14 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationTemplatePreviewResponse previewNotification(DocPreviewRequest docPreviewRequest, MultiValueMap<String, String> headers) {
 
-        LOG.info("previewNotification docPreviewRequest {}", docPreviewRequest.getNotificationType().name());
-        LOG.info("previewNotification notification type {}", docPreviewRequest.getNotificationType());
         TemplatePreview templatePreview;
         NotificationTemplatePreviewResponse notificationTemplatePreviewResponse;
         String instructionType ;
         PaymentDto paymentResponse;
         Optional<ServiceContact> serviceContact;
+        String refundRef = getRefundReference(docPreviewRequest);
         String refundReason = getRefundReason(docPreviewRequest.getPersonalisation().getRefundReason());
-
-        String refundRef = "RF-****-****-****-****";
         String ccdCaseNumber;
-        LOG.info(" docPreviewRequest.getPaymentChannel() {}", docPreviewRequest.getPaymentChannel());
-        LOG.info(" docPreviewRequest.getPaymentMethod() {}", docPreviewRequest.getPaymentMethod());
         if (null == docPreviewRequest.getPaymentChannel()
             || docPreviewRequest.getPaymentChannel().equalsIgnoreCase(STRING)
             || null == docPreviewRequest.getPaymentMethod()
@@ -344,29 +338,21 @@ public class NotificationServiceImpl implements NotificationService {
             serviceContact = serviceContactRepository.findByServiceName(paymentResponse.getServiceName());
             ccdCaseNumber = paymentResponse.getCcdCaseNumber();
         } else {
-            LOG.info(" validateIfPaymentReferenceNotExist ");
             validateIfPaymentReferenceNotExist(docPreviewRequest);
-            LOG.info(" getInstructionType ");
             instructionType = getInstructionType(docPreviewRequest.getPaymentChannel(),docPreviewRequest.getPaymentMethod());
-            LOG.info(" getInstructionType {}" , instructionType);
             serviceContact = serviceContactRepository.findByServiceName(docPreviewRequest.getServiceName());
-            LOG.info(" serviceContact {}" , serviceContact.get().getServiceName());
             ccdCaseNumber = docPreviewRequest.getPersonalisation().getCcdCaseNumber();
-            LOG.info(" ccdCaseNumber {}" , ccdCaseNumber);
         }
-        LOG.info(" instructionType {}", instructionType);
-        String templateId = getTemplate(docPreviewRequest, instructionType);
-        LOG.info(" Before if statement templateId {}", templateId);
-        try {
 
+        String templateId = getTemplate(docPreviewRequest, instructionType);
+        try {
             if(EMAIL.equalsIgnoreCase(docPreviewRequest.getNotificationType().name())) {
-                LOG.info("EMAIL templateId {}", templateId);
-                LOG.info("EMAIl Service Mailbox {}",serviceContact.get().getServiceMailbox());
                 templatePreview = notificationEmailClient
                     .generateTemplatePreview(templateId,
                                              createEmailPersonalisation(docPreviewRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
                                                                         refundRef, ccdCaseNumber,refundReason));
                 LOG.info("EMAIL templatePreview {}", templatePreview);
+
             } else {
 
                 templatePreview = notificationLetterClient
@@ -375,8 +361,9 @@ public class NotificationServiceImpl implements NotificationService {
                                                                          refundRef, ccdCaseNumber, refundReason));
             }
 
-         notificationTemplatePreviewResponse = notificationTemplateResponseMapper.notificationPreviewResponse(templatePreview,docPreviewRequest);
-            LOG.info("notificationTemplatePreviewResponse  {}", notificationTemplatePreviewResponse.getTemplateId());
+         notificationTemplatePreviewResponse = notificationTemplateResponseMapper.notificationPreviewResponse(templatePreview,
+                                                                                                              docPreviewRequest,
+                                                                                                              serviceContact.get());
         } catch (NotificationClientException exception) {
             LOG.error("NotificationServiceImpl.previewNotification() : {}", exception);
             GovNotifyExceptionWrapper exceptionWrapper = new GovNotifyExceptionWrapper();
@@ -392,7 +379,6 @@ public class NotificationServiceImpl implements NotificationService {
         LOG.info("getTemplate getTemplate {}", docPreviewRequest.getNotificationType().name());
         if (null != docPreviewRequest.getNotificationType().name()) {
 
-            LOG.info("Inside if of instructionType {}", instructionType);
             if (REFUND_WHEN_CONTACTED.equals(instructionType)) {
                 if (EMAIL.equalsIgnoreCase(docPreviewRequest.getNotificationType().name())) {
                     templateId = chequePoCashEmailTemplateId;
@@ -410,7 +396,8 @@ public class NotificationServiceImpl implements NotificationService {
         return templateId;
     }
 
-    private TemplatePreviewDto buildTemplatePreviewDTO(TemplatePreview templatePreview, String notificationType) {
+    private TemplatePreviewDto buildTemplatePreviewDTO(TemplatePreview templatePreview, String notificationType,
+                                                       ServiceContact serviceContact) {
 
         final String objNull = null;
 
@@ -421,7 +408,7 @@ public class NotificationServiceImpl implements NotificationService {
             .body(templatePreview.getBody())
             .subject(templatePreview.getSubject().isPresent() ? templatePreview.getSubject().get() : objNull)
             .html(templatePreview.getHtml().isPresent() ? templatePreview.getHtml().get() : objNull)
-            .from(notificationTemplateResponseMapper.toFromMapper(notificationType))
+            .from(notificationTemplateResponseMapper.toFromMapper(notificationType, serviceContact))
             .build();
     }
 
@@ -543,5 +530,17 @@ public class NotificationServiceImpl implements NotificationService {
             throw new RefundReasonNotFoundException("Invalid Reason Type : " + refundReasonCode);
         }
         return refundReason;
+    }
+
+    private String getRefundReference(DocPreviewRequest docPreviewRequest) {
+
+        String refundRef;
+        if(null == docPreviewRequest.getPersonalisation().getRefundReference() || docPreviewRequest.getPersonalisation().getRefundReference().equalsIgnoreCase(STRING)
+            || docPreviewRequest.getPersonalisation().getRefundReference().isEmpty()) {
+            refundRef = "RF-****-****-****-****";
+        } else {
+            refundRef = docPreviewRequest.getPersonalisation().getRefundReference();
+        }
+          return refundRef;
     }
 }

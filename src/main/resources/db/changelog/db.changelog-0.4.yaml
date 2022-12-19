@@ -65,3 +65,11 @@ databaseChangeLog:
                   ('RR033', 'Other- Family', 'Other'),
                   ('RR034', 'Other- CoP', 'Other'),
                   ('RR035', 'Other- Tribunals', 'Other');
+  - changeSet:
+      id: 100011
+      author: pragnesh
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE service_contact ADD COLUMN from_email_address VARCHAR;
+              ALTER TABLE service_contact ADD COLUMN from_mail_address TEXT;

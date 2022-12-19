@@ -296,7 +296,7 @@ public class NotificationServiceImplTest {
                                                            "\"html\": \"Dear Sir/Madam\","+
                                                            "}");
         when(notificationEmailClient.generateTemplatePreview(any(), anyMap())).thenReturn(templatePreview);
-        when(notificationTemplateResponseMapper.toFromMapper(any())).thenReturn(FromTemplateContact
+        when(notificationTemplateResponseMapper.toFromMapper(any(), any())).thenReturn(FromTemplateContact
                                                                                     .buildFromTemplateContactWith()
                                                                                     .fromEmailAddress("test@test.com")
                                                                                     .build());
@@ -350,7 +350,7 @@ public class NotificationServiceImplTest {
                                                                   "\"html\": \"Dear Sir/Madam\","+
                                                                   "}");
         when(notificationLetterClient.generateTemplatePreview(any(), anyMap())).thenReturn(templatePreview);
-        when(notificationTemplateResponseMapper.toFromMapper(any())).thenReturn(FromTemplateContact
+        when(notificationTemplateResponseMapper.toFromMapper(any(), any())).thenReturn(FromTemplateContact
                                                                                     .buildFromTemplateContactWith()
                                                                                     .fromMailAddress(
                                                                                         MailAddress
@@ -469,7 +469,7 @@ public class NotificationServiceImplTest {
                                                                  "\"version\":1},\"uri\":\"https://api.notifications.service\"}\n");
         Notification notification = Notification.builder().build();
 
-        when(notificationTemplateResponseMapper.toFromMapper(any())).thenReturn(FromTemplateContact
+        when(notificationTemplateResponseMapper.toFromMapper(any(), any())).thenReturn(FromTemplateContact
                                                                                     .buildFromTemplateContactWith()
                                                                                     .fromEmailAddress("test@test.com")
                                                                                     .build());
@@ -518,7 +518,7 @@ public class NotificationServiceImplTest {
                                                                   "\"html\": \"Dear Sir/Madam\","+
                                                                   "}");
         when(notificationLetterClient.generateTemplatePreview(any(), anyMap())).thenReturn(templatePreview);
-        when(notificationTemplateResponseMapper.toFromMapper(any())).thenReturn(FromTemplateContact
+        when(notificationTemplateResponseMapper.toFromMapper(any(), any())).thenReturn(FromTemplateContact
                                                                                     .buildFromTemplateContactWith()
                                                                                     .fromMailAddress(
                                                                                         MailAddress
