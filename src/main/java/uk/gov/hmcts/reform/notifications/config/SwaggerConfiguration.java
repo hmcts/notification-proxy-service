@@ -31,7 +31,6 @@ This needs to be uncommented when auth tokens are required to access the endpoin
             new ParameterBuilder()
                 .name("Authorization")
                 .description("User authorization header")
-                .required(false)
                 .parameterType("header")
                 .modelRef(new ModelRef("string"))
                 .build(),
