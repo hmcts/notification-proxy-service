@@ -852,4 +852,31 @@ public class NotificationsServiceFunctionalTest {
 
         assertThat(500).isEqualTo(responseNotificationLetter.getStatusCode());
     }
+
+    @Test
+    public void emailNotificationTemplateForSendRefundWhenReasonIsAmendedClaim() {
+
+        DocPreviewRequest request = DocPreviewRequest.docPreviewRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .recipientEmailAddress("test@hmcts.net")
+            .serviceName("Probate")
+            .personalisation(
+                Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("RR001").refundReference("RF-1234-1234-1234-1234").build())
+            .paymentChannel("online")
+            .paymentMethod("card")
+            .build();
+
+        final Response responseNotificationLetter = notificationsTestServicel.getTemplateNotificationPreview(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            request
+        );
+
+        NotificationTemplatePreviewResponse notificationTemplatePreviewResponse = responseNotificationLetter.getBody().as(NotificationTemplatePreviewResponse.class);
+        assertThat(notificationTemplatePreviewResponse.getTemplateType().equals("email"));
+        assertThat(notificationTemplatePreviewResponse.getHtml().contains("There has been an amendment to your claim"));
+    }
+
 }
