@@ -29,10 +29,8 @@ import uk.gov.hmcts.reform.notifications.functional.config.NotificationsTestServ
 import uk.gov.hmcts.reform.notifications.functional.config.S2sTokenService;
 import uk.gov.hmcts.reform.notifications.functional.config.TestConfigProperties;
 import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
-import uk.gov.service.notify.TemplatePreview;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -126,7 +124,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+                BigDecimal.valueOf(10)).refundReason("RR001").build())
             .build();
 
         final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
@@ -236,7 +234,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+                BigDecimal.valueOf(10)).refundReason("RR001").build())
 
             .build();
 
@@ -259,7 +257,7 @@ public class NotificationsServiceFunctionalTest {
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+                BigDecimal.valueOf(10)).refundReason("RR001").build())
 
             .build();
 
@@ -288,7 +286,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+                BigDecimal.valueOf(10)).refundReason("RR001").build())
 
             .build();
 
@@ -312,7 +310,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+                BigDecimal.valueOf(10)).refundReason("RR001").build())
 
             .build();
 
@@ -358,7 +356,7 @@ public class NotificationsServiceFunctionalTest {
             .serviceName("Probate")
             .personalisation(
                 Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundAmount(
-                    BigDecimal.valueOf(10)).refundReason("test").refundReference("RF-1234-1234-1234-1234").build())
+                    BigDecimal.valueOf(10)).refundReason("RR001").refundReference("RF-1234-1234-1234-1234").build())
             .paymentChannel("telephony")
             .paymentMethod("card")
             .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith().addressLine("abc").postalCode("123 456")
@@ -386,7 +384,7 @@ public class NotificationsServiceFunctionalTest {
             .serviceName("Probate")
             .personalisation(
                 Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundAmount(
-                    BigDecimal.valueOf(10)).refundReason("test").refundReference("RF-1234-1234-1234-1234").build())
+                    BigDecimal.valueOf(10)).refundReason("RR001").refundReference("RF-1234-1234-1234-1234").build())
             .paymentChannel("bull scan")
             .paymentMethod("cash")
             .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith().addressLine("abc").postalCode("123 456")
@@ -414,7 +412,7 @@ public class NotificationsServiceFunctionalTest {
             .serviceName("Probate")
             .personalisation(
                 Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundAmount(
-                    BigDecimal.valueOf(10)).refundReason("test").refundReference("RF-1234-1234-1234-1234").build())
+                    BigDecimal.valueOf(10)).refundReason("RR001").refundReference("RF-1234-1234-1234-1234").build())
             .paymentChannel("online")
             .paymentMethod("card")
             .build();
@@ -440,7 +438,7 @@ public class NotificationsServiceFunctionalTest {
             .serviceName("Probate")
             .personalisation(
                 Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundAmount(
-                    BigDecimal.valueOf(10)).refundReason("test").refundReference("RF-1234-1234-1234-1234").build())
+                    BigDecimal.valueOf(10)).refundReason("RR001").refundReference("RF-1234-1234-1234-1234").build())
             .paymentChannel("bulk scan")
             .paymentMethod("cash")
             .build();
@@ -468,7 +466,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+                BigDecimal.valueOf(10)).refundReason("RR001").build())
             .templatePreview(TemplatePreviewDto.templatePreviewDtoWith().id(UUID.randomUUID())
                                  .templateType("email")
                                  .version(11)
@@ -507,7 +505,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+                BigDecimal.valueOf(10)).refundReason("RR001").build())
             .templatePreview(TemplatePreviewDto.templatePreviewDtoWith().id(UUID.randomUUID())
                                  .templateType("email")
                                  .version(11)
@@ -556,7 +554,7 @@ public class NotificationsServiceFunctionalTest {
                                  .ccdCaseNumber(CCD_CASE_NUMBER)
                                  .refundReference("RF-1234-1234-1234-1234")
                                  .refundAmount(BigDecimal.valueOf(10))
-                                 .refundReason("Unable to apply refund to Card")
+                                 .refundReason("RR001")
                                  .build())
             .build();
 
@@ -600,7 +598,7 @@ public class NotificationsServiceFunctionalTest {
                                  .ccdCaseNumber(CCD_CASE_NUMBER)
                                  .refundReference("RF-1234-1234-1234-1234")
                                  .refundAmount(BigDecimal.valueOf(10))
-                                 .refundReason("Unable to apply refund to Card")
+                                 .refundReason("RR001")
                                  .build())
             .build();
 
@@ -645,7 +643,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+                BigDecimal.valueOf(10)).refundReason("RR001").build())
 
             .build();
 
@@ -688,7 +686,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+                BigDecimal.valueOf(10)).refundReason("RR001").build())
 
             .build();
 
@@ -726,7 +724,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+                BigDecimal.valueOf(10)).refundReason("RR001").build())
             .build();
 
         final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
@@ -765,7 +763,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.EMAIL)
             .serviceName("Wrong Service")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+                BigDecimal.valueOf(10)).refundReason("RR001").build())
             .build();
 
         final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
@@ -793,7 +791,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+                BigDecimal.valueOf(10)).refundReason("RR001").build())
 
             .build();
 
@@ -839,7 +837,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.LETTER)
             .serviceName("Wrong Service")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
-                BigDecimal.valueOf(10)).refundReason("test").build())
+                BigDecimal.valueOf(10)).refundReason("RR001").build())
 
             .build();
 
@@ -878,5 +876,126 @@ public class NotificationsServiceFunctionalTest {
         assertThat(notificationTemplatePreviewResponse.getTemplateType().equals("email"));
         assertThat(notificationTemplatePreviewResponse.getHtml().contains("There has been an amendment to your claim"));
     }
+
+    @Test
+    public void letterNotificationTemplateForSendRefundReasonIsApplicationRejected() {
+
+        DocPreviewRequest request = DocPreviewRequest.docPreviewRequestWith()
+            .notificationType(NotificationType.LETTER)
+            .recipientEmailAddress("test@hmcts.net")
+            .serviceName("Probate")
+            .personalisation(
+                Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("RR003").refundReference("RF-1234-1234-1234-1234").build())
+            .paymentChannel("telephony")
+            .paymentMethod("card")
+            .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith().addressLine("abc").postalCode("123 456")
+                                        .county("london").country("UK").city("london").build())
+            .build();
+
+        final Response responseNotificationLetter = notificationsTestServicel.getTemplateNotificationPreview(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            request
+        );
+
+        NotificationTemplatePreviewResponse notificationTemplatePreviewResponse = responseNotificationLetter.getBody().as(NotificationTemplatePreviewResponse.class);
+        assertThat(notificationTemplatePreviewResponse.getTemplateType().equals("letter"));
+        assertThat(notificationTemplatePreviewResponse.getBody().contains("Application fee has been refunded due to non-processing of application"));
+
+    }
+
+    @Test
+    public void sendLetterNotificationRequestRefundWhenContactedWhenReasonIsCourtDiscretion() {
+        String reference = "RF-1234-" + RandomUtils.nextInt();
+        RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
+            .templateId(chequePoCashLetterTemplateId)
+            .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
+                                        .addressLine("102 Petty France")
+                                        .city(CITY)
+                                        .county(COUNTY)
+                                        .country("England")
+                                        .postalCode("SW1H 9AJ")
+                                        .build())
+            .reference(reference)
+            .notificationType(NotificationType.LETTER)
+            .serviceName("Probate")
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER)
+                                 .refundReference("RF-1234-1234-1234-1234").refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("RR007").build())
+
+            .build();
+
+        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+            userTokenPaymentRefundApprover,
+            serviceTokenPayBubble,
+            testConfigProperties.baseTestUrl,
+            refundNotificationLetterRequest
+        );
+        assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        final Response responseNotification = notificationsTestServicel.getNotification(
+            userTokenPaymentRefundApprover,
+            serviceTokenPayBubble,
+            testConfigProperties.baseTestUrl,
+            reference
+        );
+
+        assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Map> notificationList = responseNotification.getBody().jsonPath().getList("notifications");
+        assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
+        Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
+
+        String bodyString = sendNotification.get("body").toString();
+        assertThat(bodyString.contains("Due to court's discretion a refund has been approved"));
+    }
+
+    @Test
+    public void sendEmailNotificationRequestWithSendRefundWhenReasonIsDuplicateFee() {
+
+        String reference = "RF-1234-" + RandomUtils.nextInt();
+        RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
+            .templateId(cardPbaEmailTemplateId)
+            .reference(reference)
+            .notificationType(NotificationType.EMAIL)
+            .serviceName("Probate")
+            .emailReplyToId(emailReplyToId)
+            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .personalisation(Personalisation.personalisationRequestWith()
+                                 .ccdCaseNumber(CCD_CASE_NUMBER)
+                                 .refundReference("RF-1234-1234-1234-1234")
+                                 .refundAmount(BigDecimal.valueOf(10))
+                                 .refundReason("RR009")
+                                 .build())
+            .build();
+
+        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl,
+            refundNotificationEmailRequest
+        );
+        assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        final Response responseNotification = notificationsTestServicel.getNotification(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            reference
+        );
+
+        assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
+        assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
+        Map contactDetails = (Map) notificationList.get(0).get("contact_details");
+        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
+        Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
+        String bodyString = sendNotification.get("html").toString();
+        assertThat(bodyString.contains("A duplicate fee was processed and has now been refunded"));
+    }
+
 
 }
