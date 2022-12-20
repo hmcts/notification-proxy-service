@@ -1,5 +1,71 @@
 databaseChangeLog:
   - changeSet:
+      id: 1000012
+      author: ranjeet
+      changes:
+        - createTable:
+            tableName: notification_refund_reasons
+            columns:
+              - column:
+                  name: refund_reason_code
+                  type: varchar(5)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: refund_reason
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: refund_reason_notification
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+
+  - changeSet:
+      id: 1000012-1
+      author: ranjeet
+      changes:
+        - sql:
+            splitStatements: true
+            sql: >
+              INSERT INTO notification_refund_reasons (refund_reason_code, refund_reason, refund_reason_notification)
+                VALUES
+                  ('RR001', 'Amended claim', 'There has been an amendment to your claim'),
+                  ('RR003', 'Application rejected', 'Application fee has been refunded due to non-processing of application'),
+                  ('RR004', 'Application/Case withdrawn', 'You have notified the court that you do not wish to continue with this application so you have been refunded your application fee'),
+                  ('RR007', 'Court discretion', 'Due to court''s discretion a refund has been approved'),
+                  ('RR009', 'Duplicate fee (court error)', 'A duplicate fee was processed and has now been refunded'),
+                  ('RR010', 'Duplicate fee (customer error)', 'A duplicate payment has been received and has now been refunded'),
+                  ('RR023', 'Fee not due (court error)', 'A payment was taken incorrectly and has now been refunded'),
+                  ('RR024', 'System error/Technical error', 'Due to a technical error a payment was taken incorrectly and has now been refunded'),
+                  ('RR002', 'Amended court', 'Refund has been issued due to application filed at the wrong court'),
+                  ('RR005', 'Claim Issued in error (court error)', 'Refund has been issued due to an error with the claim'),
+                  ('RR006', 'Claim Issued in error (customer error)', 'Refund has been issued because your claim was filed incorrectly'),
+                  ('RR008', 'Court error', 'Refund issued due to an administrative error'),
+                  ('RR011', 'Excess fee paid', 'Refund has been issued due to overpayment of fee'),
+                  ('RR012', 'Following appeal', 'Following your successful appeal a refund has been issued'),
+                  ('RR014', 'Return of hearing fee', 'Refund issued due to wrong fee taken'),
+                  ('RR015', 'Incorrect PBA reference supplied', 'Refund issued due to fee applied to the wrong PbA'),
+                  ('RR016', 'Judge''s order', 'Refund has been applied due to Judge''s order'),
+                  ('RR025', 'Legal correction - Legislation Revised', 'Due to revision in legislation there has been a change in fee that has required refund to be issued'),
+                  ('RR026', 'Legal correction - Legislation Reinterpretation', 'Due to reinterpretation of legislation there has been a change in fee that has required refund to be issued'),
+                  ('RR017', 'Missing/Incorrect Documents', 'Refund issued due to missing or incorrect documents filed'),
+                  ('RR019', 'Return of hearing fee', 'Return of hearing fee'),
+                  ('RR020', 'Trial fees (on settlements)', 'Trial fee refund due to settlement'),
+                  ('RR021', 'Unused warrant', 'Due to a warrant not being issued a refund has been processed'),
+                  ('RR027', 'Other- RCJ', 'Other'),
+                  ('RR028', 'Other- County', 'Other'),
+                  ('RR029', 'Other - Divorce', 'Other'),
+                  ('RR030', 'Other- Probate', 'Other'),
+                  ('RR031', 'Other- Private Law', 'Other'),
+                  ('RR032', 'Other- Public Law', 'Other'),
+                  ('RR033', 'Other- Family', 'Other'),
+                  ('RR034', 'Other- CoP', 'Other'),
+                  ('RR035', 'Other- Tribunals', 'Other');
+  - changeSet:
       id: 100011
       author: pragnesh
       changes:

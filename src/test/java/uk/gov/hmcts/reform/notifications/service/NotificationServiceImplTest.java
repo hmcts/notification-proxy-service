@@ -47,8 +47,10 @@ import uk.gov.hmcts.reform.notifications.mapper.NotificationResponseMapper;
 import uk.gov.hmcts.reform.notifications.mapper.NotificationTemplateResponseMapper;
 import uk.gov.hmcts.reform.notifications.model.ContactDetails;
 import uk.gov.hmcts.reform.notifications.model.Notification;
+import uk.gov.hmcts.reform.notifications.model.NotificationRefundReasons;
 import uk.gov.hmcts.reform.notifications.model.ServiceContact;
 import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
+import uk.gov.hmcts.reform.notifications.repository.NotificationRefundReasonRepository;
 import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 
 import java.util.Date;
@@ -128,6 +130,9 @@ public class NotificationServiceImplTest {
 
     @Mock
     private ServiceContactRepository serviceContactRepository;
+
+    @Mock
+    private NotificationRefundReasonRepository notificationRefundReasonRepository;
 
     @Mock
     private NotificationTemplateResponseMapper notificationTemplateResponseMapper;
@@ -271,7 +276,8 @@ public class NotificationServiceImplTest {
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
-
+        when(notificationRefundReasonRepository.findByRefundReasonCode(any())).thenReturn(Optional.of(NotificationRefundReasons.notificationRefundReasonWith().refundReasonNotification("There has been an amendment to your claim").build()
+        ));
         SendEmailResponse response = new SendEmailResponse("{\"content\":{\"body\":\"Hello Unknown, your reference is string\\r\\n\\r\\nRefund Approved\\" +
                                                                "r\\n\\r\\nThanks\",\"from_email\":\"test@gov.uk\",\"subject\":" +
                                                                "\"Refund Notification Approval\"},\"id\":\"10f101e0-6ab8-4a83-8ebd-124d648dd282\"," +
@@ -325,7 +331,8 @@ public class NotificationServiceImplTest {
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
-
+        when(notificationRefundReasonRepository.findByRefundReasonCode(any())).thenReturn(Optional.of(NotificationRefundReasons.notificationRefundReasonWith().refundReasonNotification("There has been an amendment to your claim").build()
+        ));
         SendLetterResponse response = new SendLetterResponse("{\"content\":{\"body\":\"Hello Unknown\\r\\n\\r\\nRefund Approved on 2022-01-01\"," +
                                                                  "\"subject\":\"Refund Notification\"},\"id\":\"0f101e0-6ab8-4a83-8ebd-124d648dd282\"," +
                                                                  "\"reference\":\"string\",\"scheduled_for\":null,\"template\":{\"id\":" +
@@ -392,7 +399,8 @@ public class NotificationServiceImplTest {
             .build();
 
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
-
+        when(notificationRefundReasonRepository.findByRefundReasonCode(any())).thenReturn(Optional.of(NotificationRefundReasons.notificationRefundReasonWith().refundReasonNotification("There has been an amendment to your claim").build()
+        ));
         SendEmailResponse response = new SendEmailResponse("{\"content\":{\"body\":\"Hello Unknown, your reference is string\\r\\n\\r\\nRefund Approved\\" +
                                                                "r\\n\\r\\nThanks\",\"from_email\":\"test@gov.uk\",\"subject\":" +
                                                                "\"Refund Notification Approval\"},\"id\":\"10f101e0-6ab8-4a83-8ebd-124d648dd282\"," +
@@ -468,7 +476,8 @@ public class NotificationServiceImplTest {
         when(notificationLetterClient.sendLetter(any(), any(), any())).thenReturn(response);
         when(letterNotificationMapper.letterResponseMapper(any(),any(),any())).thenReturn(notification);
         when(notificationRepository.save(notification)).thenReturn(notification);
-
+        when(notificationRefundReasonRepository.findByRefundReasonCode(any())).thenReturn(Optional.of(NotificationRefundReasons.notificationRefundReasonWith().refundReasonNotification("There has been an amendment to your claim").build()
+        ));
 
         response = notificationServiceImpl.sendLetterNotification(request,any());
         assertEquals("Refund Notification", response.getSubject());
@@ -498,7 +507,8 @@ public class NotificationServiceImplTest {
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
-
+        when(notificationRefundReasonRepository.findByRefundReasonCode(any())).thenReturn(Optional.of(NotificationRefundReasons.notificationRefundReasonWith().refundReasonNotification("There has been an amendment to your claim").build()
+        ));
         TemplatePreview templatePreview = new TemplatePreview("{                                                             "+
                                                                   "\"id\": \"1222960c-4ffa-42db-806c-451a68c56e09\","+
                                                                   "\"type\": \"email\","+
@@ -547,7 +557,8 @@ public class NotificationServiceImplTest {
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
-
+        when(notificationRefundReasonRepository.findByRefundReasonCode(any())).thenReturn(Optional.of(NotificationRefundReasons.notificationRefundReasonWith().refundReasonNotification("There has been an amendment to your claim").build()
+        ));
         TemplatePreview templatePreview = new TemplatePreview("{                                                             "+
                                                                   "\"id\": \"1222960c-4ffa-42db-806c-451a68c56e09\","+
                                                                   "\"type\": \"email\","+
@@ -579,7 +590,9 @@ public class NotificationServiceImplTest {
                     BigDecimal.valueOf(10)).refundReason("test").build())
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
-
+        when(notificationRefundReasonRepository.findByRefundReasonCode(any())).thenReturn(Optional.of(
+            NotificationRefundReasons.notificationRefundReasonWith().refundReasonNotification("There has been an amendment to your claim").build()
+        ));
         TemplatePreview templatePreview = new TemplatePreview("{                                                             "+
                                                                   "\"id\": \"1222960c-4ffa-42db-806c-451a68c56e09\","+
                                                                   "\"type\": \"email\","+
