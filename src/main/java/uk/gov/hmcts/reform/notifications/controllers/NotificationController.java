@@ -82,7 +82,6 @@ public class NotificationController {
 
     @GetMapping("/notifications/{reference}")
     public ResponseEntity<NotificationResponseDto> getNotifications(
-        @RequestHeader(name = "Authorization", required = false) String authorization,
         @RequestHeader(required = false) MultiValueMap<String, String> headers,
         @PathVariable("reference") String reference) {
 
