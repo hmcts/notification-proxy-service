@@ -105,7 +105,7 @@ public class NotificationsServiceFunctionalTest {
             System.out.println("userTokenPaymentRefundApprover  >> "+userTokenPaymentRefundApprover);
             System.out.println("testConfigProperties.s2sRefundsApi  >> "+ testConfigProperties.s2sRefundsApi);
             serviceTokenPayBubble =
-                s2sTokenService.getS2sToken("refunds_api", testConfigProperties.s2sRefundsApi);
+                s2sTokenService.getS2sToken("cmc", testConfigProperties.s2sRefundsApi);
                 //s2sTokenService.getS2sToken("ccpay_bubble", testConfigProperties.payBubbleS2SSecret);
             System.out.println("serviceTokenPayBubble  >> "+serviceTokenPayBubble);
             isTokensInitialized = true;
