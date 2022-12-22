@@ -28,6 +28,7 @@ public class S2sTokenService {
         LOG.info("s2sApi : " + s2sApi.toString());
         LOG.info("microservice : " + microservice);
         LOG.info("secret : " + secret);
+        LOG.info("otp : " + otp);
         try {
             return s2sApi.serviceToken(microservice, otp);
         } catch (Exception ex) {
