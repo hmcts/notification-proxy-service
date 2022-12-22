@@ -31,6 +31,7 @@ public class S2sTokenService {
         try {
             return s2sApi.serviceToken(microservice, otp);
         } catch (Exception ex) {
+            LOG.error("EXCEPTION in S2sTokenService Notifications-Service !!!");
             LOG.info(ex.getMessage());
         }
         return null;
