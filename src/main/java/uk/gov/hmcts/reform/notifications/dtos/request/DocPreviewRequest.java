@@ -23,13 +23,13 @@ public class DocPreviewRequest {
 
     private String paymentReference;
 
-    @NotNull(message = "payment method cannot be null")
-    @NotEmpty(message = "payment method cannot be blank")
+    @NotNull(message = "Payment method cannot be null")
+    @NotEmpty(message = "Payment method cannot be blank")
     private String paymentMethod;
-    @NotNull(message = "payment channel cannot be null")
-    @NotEmpty(message = "payment channel cannot be blank")
+    @NotNull(message = "Payment channel cannot be null")
+    @NotEmpty(message = "Payment channel cannot be blank")
     private String paymentChannel;
-    @NotNull(message = "service cannot be null")
+    @NotNull(message = "Service cannot be null")
     @NotEmpty(message = "Service cannot be blank")
     private String serviceName;
 

@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.notifications.dtos.request.*;
 import uk.gov.hmcts.reform.notifications.dtos.response.IdamUserIdResponse;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
-import uk.gov.hmcts.reform.notifications.exceptions.DocPreviewBadRequestException;
 import uk.gov.hmcts.reform.notifications.exceptions.NotificationListEmptyException;
 import uk.gov.hmcts.reform.notifications.exceptions.RefundReasonNotFoundException;
 import uk.gov.hmcts.reform.notifications.mapper.EmailNotificationMapper;
@@ -300,7 +299,6 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationTemplatePreviewResponse notificationTemplatePreviewResponse;
         String instructionType ;
         Optional<ServiceContact> serviceContact;
-        validateDocPreviewRequest(docPreviewRequest);
         String refundRef = getRefundReference(docPreviewRequest);
         String refundReason = getRefundReason(docPreviewRequest.getPersonalisation().getRefundReason());
         String ccdCaseNumber;
@@ -387,20 +385,6 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         return instructionType;
-    }
-
-    private void validateDocPreviewRequest(DocPreviewRequest docPreviewRequest) {
-
-        if (null == docPreviewRequest.getPaymentChannel() || docPreviewRequest.getPaymentChannel()
-            .equalsIgnoreCase(STRING) || docPreviewRequest.getPaymentChannel().isEmpty() ||
-            null == docPreviewRequest.getPaymentMethod() || docPreviewRequest.getPaymentMethod()
-            .equalsIgnoreCase(STRING) || docPreviewRequest.getPaymentMethod().isEmpty() ||
-        null == docPreviewRequest.getServiceName() || docPreviewRequest.getServiceName()
-            .equalsIgnoreCase(STRING) || docPreviewRequest.getServiceName().isEmpty()) {
-
-            throw new DocPreviewBadRequestException("Payment channel, payment method, service name  cannot be null");
-
-        }
     }
 
     private void validateRecipientEmailAddress(RefundNotificationEmailRequest emailNotificationRequest) {
