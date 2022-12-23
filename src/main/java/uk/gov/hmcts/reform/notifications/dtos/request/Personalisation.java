@@ -26,7 +26,6 @@ public class Personalisation {
     private String refundReference;
 
     @NotNull(message = "Refund amount cannot be null")
-    @NotEmpty(message = "Refund amount cannot be blank")
     private BigDecimal refundAmount;
 
     @NotNull(message = "Refund reason cannot be null")
