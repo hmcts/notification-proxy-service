@@ -95,21 +95,12 @@ public class NotificationsServiceFunctionalTest {
     public void setUp() {
 
         if (!isTokensInitialized) {
-
-            //userTokenPaymentRefundApprover =
-              //  idamService.createUserWithSearchScope("idam.user.ccpayrefundsapi@hmcts.net").getAuthorisationToken();
-
             userTokenPaymentRefundApprover =
                 idamService.createUserWithSearchScope(IdamService.CMC_CASE_WORKER_GROUP, "payments-refund-approver", "payments")
                     .getAuthorisationToken();
-            System.out.println("userTokenPaymentRefundApprover  >> "+userTokenPaymentRefundApprover);
-            System.out.println("testConfigProperties.s2sRefundsApi  >> "+ testConfigProperties.s2sRefundsApi);
             serviceTokenPayBubble =
                 s2sTokenService.getS2sToken("cmc", testConfigProperties.s2sRefundsApi);
-                //s2sTokenService.getS2sToken("ccpay_bubble", testConfigProperties.payBubbleS2SSecret);
-            System.out.println("serviceTokenPayBubble  >> "+serviceTokenPayBubble);
             isTokensInitialized = true;
-
         }
     }
 

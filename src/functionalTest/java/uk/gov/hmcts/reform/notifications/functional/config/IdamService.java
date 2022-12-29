@@ -63,10 +63,7 @@ public class IdamService {
 
     public ValidUser createUserWithSearchScope(String userGroup, String... roles) {
         String email = nextUserEmail();
-        LOG.info("email : " + email);
         CreateUserRequest userRequest = userRequest(email, userGroup, roles);
-        LOG.info("idamApi : " + idamApi.toString());
-        LOG.info("userRequest : " + userRequest);
         try {
             idamApi.createUser(userRequest);
         } catch (Exception ex) {
@@ -75,7 +72,6 @@ public class IdamService {
         }
 
         String accessToken = authenticateUserWithSearchScope(email, testConfig.getTestUserPassword());
-        LOG.info("accessToken Before creating Valid User {}", accessToken);
         return new ValidUser(email, accessToken);
     }
 
