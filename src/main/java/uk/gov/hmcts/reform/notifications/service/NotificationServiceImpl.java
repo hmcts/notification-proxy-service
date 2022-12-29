@@ -416,8 +416,16 @@ public class NotificationServiceImpl implements NotificationService {
 
     private String getRefundReason(String refundReasonCode) {
         LOG.info("refundReasonCode >>  {}",refundReasonCode);
+        final int refundreasoncodelimit = 5;
+        String reasonCode;
+        if (refundReasonCode.length() > refundreasoncodelimit) {
+            reasonCode = refundReasonCode.split("-")[0];
+        } else {
+            reasonCode = refundReasonCode;
+        }
+        LOG.info("reasonCode for searching in Notifications Repo >>  {}",reasonCode);
         String refundReason;
-        Optional<NotificationRefundReasons> notificationRefundReasons = notificationRefundReasonRepository.findByRefundReasonCode(refundReasonCode);
+        Optional<NotificationRefundReasons> notificationRefundReasons = notificationRefundReasonRepository.findByRefundReasonCode(reasonCode);
 
         if(notificationRefundReasons.isPresent()){
             refundReason = notificationRefundReasons.get().getRefundReasonNotification();
