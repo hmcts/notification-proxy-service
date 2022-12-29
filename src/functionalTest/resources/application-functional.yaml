@@ -79,7 +79,7 @@ s2s:
   service :
     refunds:
       name: ${S2S_SERVICE_NAME_PAYBUBBLE:ccpay_bubble}
-      secret: ${S2S_SERVICE_SECRET_PAYBUBBLE:AAAAAAAAAAAAAAAA}
+      secret: ${S2S_SERVICE_SECRET_PAYBUBBLE:RD53IBEKQTO4WMQY}
 
 azure:
   application-insights:
