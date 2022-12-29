@@ -114,6 +114,7 @@ public class NotificationServiceImpl implements NotificationService {
             validateRecipientEmailAddress(emailNotificationRequest);
             Optional<ServiceContact> serviceContact = serviceContactRepository.findByServiceName(emailNotificationRequest.getServiceName());
             IdamUserIdResponse uid = idamService.getUserId(headers);
+            LOG.info("Refund reason in sendEmailNotification", emailNotificationRequest.getPersonalisation().getRefundReason());
             String refundReason = getRefundReason(emailNotificationRequest.getPersonalisation().getRefundReason());
             TemplatePreviewDto templatePreviewDto = emailNotificationRequest.getTemplatePreview();
             if (templatePreviewDto == null) {
@@ -414,7 +415,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private String getRefundReason(String refundReasonCode) {
-
+        LOG.info("refundReasonCode >>  {}",refundReasonCode);
         String refundReason;
         Optional<NotificationRefundReasons> notificationRefundReasons = notificationRefundReasonRepository.findByRefundReasonCode(refundReasonCode);
 
