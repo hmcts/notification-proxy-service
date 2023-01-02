@@ -18,4 +18,6 @@ public interface NotificationService {
     NotificationResponseDto getNotification(String reference);
 
     NotificationTemplatePreviewResponse previewNotification(DocPreviewRequest docPreviewRequest, MultiValueMap<String, String> headers);
+
+    void deleteNotification(String reference);
 }

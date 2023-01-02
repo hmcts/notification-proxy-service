@@ -18,6 +18,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -31,11 +32,7 @@ import uk.gov.hmcts.reform.notifications.dtos.response.IdamUserIdResponse;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
 import uk.gov.hmcts.reform.notifications.dtos.response.PaymentDto;
-import uk.gov.hmcts.reform.notifications.exceptions.DocPreviewBadRequestException;
-import uk.gov.hmcts.reform.notifications.exceptions.NotificationListEmptyException;
-import uk.gov.hmcts.reform.notifications.exceptions.PaymentReferenceNotFoundException;
-import uk.gov.hmcts.reform.notifications.exceptions.PaymentServerException;
-import uk.gov.hmcts.reform.notifications.exceptions.RefundReasonNotFoundException;
+import uk.gov.hmcts.reform.notifications.exceptions.*;
 import uk.gov.hmcts.reform.notifications.mapper.EmailNotificationMapper;
 import uk.gov.hmcts.reform.notifications.mapper.LetterNotificationMapper;
 import uk.gov.hmcts.reform.notifications.mapper.NotificationResponseMapper;
@@ -371,6 +368,15 @@ public class NotificationServiceImpl implements NotificationService {
             throw exceptionWrapper.mapGovNotifyPreviewException(exception);
         }
         return notificationTemplatePreviewResponse;
+    }
+
+    @Override
+    @Transactional
+    public void deleteNotification(String reference) {
+        long records = notificationRepository.deleteByReference(reference);
+        if (records == 0) {
+            throw new NotificationNotFoundException("No records found for given refund reference");
+        }
     }
 
     private  String getTemplate(DocPreviewRequest docPreviewRequest, String instructionType) {

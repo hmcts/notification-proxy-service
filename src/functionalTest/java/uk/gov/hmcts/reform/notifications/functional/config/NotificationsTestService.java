@@ -49,6 +49,12 @@ public class NotificationsTestService {
             .get("/notifications/{reference}", reference);
     }
 
+    public Response deleteNotification(final String userToken, final String serviceToken,
+                                 final String reference) {
+        return givenWithAuthHeaders(userToken, serviceToken)
+            .delete("/notifications/{reference}", reference);
+    }
+
     public RequestSpecification givenWithAuthHeaders(final String userToken, final String serviceToken) {
         return RestAssured.given()
             .header(AUTHORIZATION, userToken)

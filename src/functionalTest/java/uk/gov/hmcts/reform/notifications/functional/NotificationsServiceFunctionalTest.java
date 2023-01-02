@@ -28,14 +28,14 @@ import uk.gov.hmcts.reform.notifications.functional.config.IdamService;
 import uk.gov.hmcts.reform.notifications.functional.config.NotificationsTestService;
 import uk.gov.hmcts.reform.notifications.functional.config.S2sTokenService;
 import uk.gov.hmcts.reform.notifications.functional.config.TestConfigProperties;
+import uk.gov.hmcts.reform.notifications.model.Notification;
 import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
+import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @ActiveProfiles({"functional", "liberataMock"})
 @ContextConfiguration(classes = TestContextConfiguration.class)
@@ -81,7 +81,10 @@ public class NotificationsServiceFunctionalTest {
     private S2sTokenService s2sTokenService;
 
     @Autowired
-    private NotificationsTestService notificationsTestServicel;
+    private NotificationsTestService notificationsTestService;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     private String serviceTokenPayBubble;
 
@@ -89,7 +92,7 @@ public class NotificationsServiceFunctionalTest {
 
     private boolean isTokensInitialized;
 
-    private static final String REFERENCE = "RF-1111-2222-3333-4444";
+    //private static final String REFERENCE = "RF-1111-2222-3333-4444";
 
     private static final String CCD_CASE_NUMBER = "1234567890123456";
 
@@ -116,10 +119,11 @@ public class NotificationsServiceFunctionalTest {
     @Test
     public void sendEmailNotificationRequest() {
 
+        String reference = "FunctionalTest1";
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
-            .reference("FunctionalTest1")
+            .recipientEmailAddress("vat12@mailinator.com")
+            .reference(reference)
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
@@ -127,22 +131,24 @@ public class NotificationsServiceFunctionalTest {
                 BigDecimal.valueOf(10)).refundReason("RR001").build())
             .build();
 
-        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+        final Response responseNotificationEmail = notificationsTestService.postEmailNotification(
         userTokenPaymentRefundApprover ,
         serviceTokenPayBubble ,
         testConfigProperties.baseTestUrl,
         refundNotificationEmailRequest
         );
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+        deleteNotifications(reference);
      }
 
     @Test
     public void sendEmailNotificationRequestWithReasonUnableToApplyRefundToCard() {
 
+        String reference = "FunctionalTest1";
         sendEmailNotificationRequest();
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
-            .reference("FunctionalTest1")
+            .reference(reference)
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith()
@@ -153,7 +159,7 @@ public class NotificationsServiceFunctionalTest {
                                  .build())
             .build();
 
-        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+        final Response responseNotificationEmail = notificationsTestService.postEmailNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl,
@@ -161,11 +167,11 @@ public class NotificationsServiceFunctionalTest {
         );
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        final Response responseNotification = notificationsTestServicel.getNotification(
+        final Response responseNotification = notificationsTestService.getNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
-            "FunctionalTest1"
+            reference
         );
 
         assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
@@ -173,16 +179,19 @@ public class NotificationsServiceFunctionalTest {
         List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
+        assertThat(contactDetails.get("email")).isEqualTo("vat12@mailinator.com");
+
+        deleteNotifications(reference);
     }
 
     @Test
     public void sendLetterNotificationRequestWithReasonUnableToApplyRefundToCard() {
 
+        String reference = "FunctionalTest2";
         sendLetterNotificationRequest();
         RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
             .templateId(letterTemplateId)
-            .reference("FunctionalTest2")
+            .reference(reference)
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith()
@@ -194,7 +203,7 @@ public class NotificationsServiceFunctionalTest {
 
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+        final Response responseNotificationLetter = notificationsTestService.postLetterNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -202,11 +211,11 @@ public class NotificationsServiceFunctionalTest {
         );
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        final Response responseNotification = notificationsTestServicel.getNotification(
+        final Response responseNotification = notificationsTestService.getNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
-            "FunctionalTest2"
+            reference
         );
 
         assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
@@ -216,11 +225,14 @@ public class NotificationsServiceFunctionalTest {
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
         assertThat(contactDetails.get("postal_code")).isEqualTo("SW1H 9AJ");
         assertThat(contactDetails.get("address_line")).isEqualTo("102 Petty France");
+
+        deleteNotifications(reference);
     }
 
     @Test
     public void sendLetterNotificationRequest() {
 
+        String reference ="FunctionalTest2";
         RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
             .templateId(letterTemplateId)
             .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
@@ -230,7 +242,7 @@ public class NotificationsServiceFunctionalTest {
                                         .country("England")
                                         .postalCode("SW1H 9AJ")
                                         .build())
-            .reference("FunctionalTest2")
+            .reference(reference)
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
@@ -238,22 +250,24 @@ public class NotificationsServiceFunctionalTest {
 
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+        final Response responseNotificationLetter = notificationsTestService.postLetterNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
             refundNotificationLetterRequest
         );
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+        deleteNotifications(reference);
     }
 
     @Test
     public void negativeIncorrectEmailFormatSendEmailNotificationRequest() {
 
+        String reference = "Functional Test";
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
             .recipientEmailAddress("testtestcom")
-            .reference("Functional Test")
+            .reference(reference)
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
@@ -261,18 +275,21 @@ public class NotificationsServiceFunctionalTest {
 
             .build();
 
-        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+        final Response responseNotificationEmail = notificationsTestService.postEmailNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
             refundNotificationEmailRequest
         );
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        deleteNotifications(reference);
     }
 
     @Test
     public void negativeInvalidPostcodeSendLetterNotificationRequest() {
 
+        String reference = "Functional Test";
         RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
             .templateId(letterTemplateId)
             .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
@@ -282,7 +299,7 @@ public class NotificationsServiceFunctionalTest {
                                         .country("England")
                                         .postalCode("SSGSSB")
                                         .build())
-            .reference("test reference")
+            .reference(reference)
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
@@ -290,7 +307,7 @@ public class NotificationsServiceFunctionalTest {
 
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+        final Response responseNotificationLetter = notificationsTestService.postLetterNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -298,14 +315,17 @@ public class NotificationsServiceFunctionalTest {
         );
 
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
+        deleteNotifications(reference);
     }
 
     @Test
     public void getDetailsForSentEmailNotification(){
+
+        String reference = "RF-1234-" + RandomUtils.nextInt();
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
-            .reference(REFERENCE)
+            .recipientEmailAddress("vat12@mailinator.com")
+            .reference(reference)
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
@@ -314,7 +334,7 @@ public class NotificationsServiceFunctionalTest {
 
             .build();
 
-        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+        final Response responseNotificationEmail = notificationsTestService.postEmailNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -322,22 +342,24 @@ public class NotificationsServiceFunctionalTest {
         );
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        final Response responseNotification = notificationsTestServicel.getNotification(
+        final Response responseNotification = notificationsTestService.getNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
-            REFERENCE
+            reference
         );
 
         assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 
         List<Map<String,String>> getNotificationsResponse =  responseNotification.getBody().jsonPath().getList("notifications");
         assertThat(getNotificationsResponse.size()).isGreaterThanOrEqualTo(1);
+
+        deleteNotifications(reference);
     }
 
     @Test
     public void getNotificationDetailsForEmptyReference() {
-        final Response responseNotification = notificationsTestServicel.getNotification(
+        final Response responseNotification = notificationsTestService.getNotification(
             userTokenPaymentRefundApprover,
             serviceTokenPayBubble,
             testConfigProperties.baseTestUrl,
@@ -363,7 +385,7 @@ public class NotificationsServiceFunctionalTest {
                                         .county("london").country("UK").city("london").build())
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.getTemplateNotificationPreview(
+        final Response responseNotificationLetter = notificationsTestService.getTemplateNotificationPreview(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -391,7 +413,7 @@ public class NotificationsServiceFunctionalTest {
                                         .county("london").country("UK").city("london").build())
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.getTemplateNotificationPreview(
+        final Response responseNotificationLetter = notificationsTestService.getTemplateNotificationPreview(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -417,7 +439,7 @@ public class NotificationsServiceFunctionalTest {
             .paymentMethod("card")
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.getTemplateNotificationPreview(
+        final Response responseNotificationLetter = notificationsTestService.getTemplateNotificationPreview(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -443,7 +465,7 @@ public class NotificationsServiceFunctionalTest {
             .paymentMethod("cash")
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.getTemplateNotificationPreview(
+        final Response responseNotificationLetter = notificationsTestService.getTemplateNotificationPreview(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -458,10 +480,11 @@ public class NotificationsServiceFunctionalTest {
     @Test
     public void sendEmailNotificationRequestWithTemplatePreviews() {
 
+        String reference = "FunctionalTest1";
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
-            .reference("FunctionalTest1")
+            .recipientEmailAddress("vat12@mailinator.com")
+            .reference(reference)
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
@@ -478,7 +501,7 @@ public class NotificationsServiceFunctionalTest {
                                  .build())
             .build();
 
-        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+        final Response responseNotificationEmail = notificationsTestService.postEmailNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl,
@@ -487,11 +510,14 @@ public class NotificationsServiceFunctionalTest {
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat("Notification sent successfully via email")
             .isEqualTo(responseNotificationEmail.body().asString());
+
+        deleteNotifications(reference);
     }
 
     @Test
     public void sendLetterNotificationRequestWithTemplatePreview() {
 
+        String reference ="FunctionalTest2";
         RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
             .templateId(letterTemplateId)
             .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
@@ -501,7 +527,7 @@ public class NotificationsServiceFunctionalTest {
                                         .country("England")
                                         .postalCode("SW1H 9AJ")
                                         .build())
-            .reference("FunctionalTest2")
+            .reference(reference)
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
@@ -527,7 +553,7 @@ public class NotificationsServiceFunctionalTest {
                                  .build())
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+        final Response responseNotificationLetter = notificationsTestService.postLetterNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -537,6 +563,7 @@ public class NotificationsServiceFunctionalTest {
         assertThat("Notification sent successfully via letter")
             .isEqualTo(responseNotificationLetter.body().asString());
 
+        deleteNotifications(reference);
     }
 
     @Test
@@ -549,7 +576,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.EMAIL)
             .emailReplyToId(emailReplyToId)
             .serviceName("Probate")
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .recipientEmailAddress("vat12@mailinator.com")
             .personalisation(Personalisation.personalisationRequestWith()
                                  .ccdCaseNumber(CCD_CASE_NUMBER)
                                  .refundReference("RF-1234-1234-1234-1234")
@@ -558,7 +585,7 @@ public class NotificationsServiceFunctionalTest {
                                  .build())
             .build();
 
-        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+        final Response responseNotificationEmail = notificationsTestService.postEmailNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl,
@@ -566,7 +593,7 @@ public class NotificationsServiceFunctionalTest {
         );
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        final Response responseNotification = notificationsTestServicel.getNotification(
+        final Response responseNotification = notificationsTestService.getNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -578,9 +605,11 @@ public class NotificationsServiceFunctionalTest {
         List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
+        assertThat(contactDetails.get("email")).isEqualTo("vat12@mailinator.com");
         Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
         assertThat(sendNotification.get("template_id")).isEqualTo(chequePoCashEmailTemplateId);
+
+        deleteNotifications(reference);
     }
 
     @Test
@@ -593,7 +622,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
             .emailReplyToId(emailReplyToId)
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .recipientEmailAddress("vat12@mailinator.com")
             .personalisation(Personalisation.personalisationRequestWith()
                                  .ccdCaseNumber(CCD_CASE_NUMBER)
                                  .refundReference("RF-1234-1234-1234-1234")
@@ -602,7 +631,7 @@ public class NotificationsServiceFunctionalTest {
                                  .build())
             .build();
 
-        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+        final Response responseNotificationEmail = notificationsTestService.postEmailNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl,
@@ -610,7 +639,7 @@ public class NotificationsServiceFunctionalTest {
         );
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        final Response responseNotification = notificationsTestServicel.getNotification(
+        final Response responseNotification = notificationsTestService.getNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -622,9 +651,11 @@ public class NotificationsServiceFunctionalTest {
         List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
+        assertThat(contactDetails.get("email")).isEqualTo("vat12@mailinator.com");
         Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
         assertThat(sendNotification.get("template_id")).isEqualTo(cardPbaEmailTemplateId);
+
+        deleteNotifications(reference);
     }
 
     @Test
@@ -647,7 +678,7 @@ public class NotificationsServiceFunctionalTest {
 
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+        final Response responseNotificationLetter = notificationsTestService.postLetterNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -655,7 +686,7 @@ public class NotificationsServiceFunctionalTest {
         );
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        final Response responseNotification = notificationsTestServicel.getNotification(
+        final Response responseNotification = notificationsTestService.getNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -668,6 +699,8 @@ public class NotificationsServiceFunctionalTest {
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
         assertThat(sendNotification.get("template_id")).isEqualTo(cardPbaLetterTemplateId);
+
+        deleteNotifications(reference);
     }
 
     @Test
@@ -690,7 +723,7 @@ public class NotificationsServiceFunctionalTest {
 
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+        final Response responseNotificationLetter = notificationsTestService.postLetterNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -698,7 +731,7 @@ public class NotificationsServiceFunctionalTest {
         );
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        final Response responseNotification = notificationsTestServicel.getNotification(
+        final Response responseNotification = notificationsTestService.getNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -711,15 +744,18 @@ public class NotificationsServiceFunctionalTest {
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
         assertThat(sendNotification.get("template_id")).isEqualTo(chequePoCashLetterTemplateId);
+
+        deleteNotifications(reference);
     }
 
     @Test
     public void sendEmailNotificationRequestForFromEmailAddress() {
 
+        String reference = "FunctionalTest1";
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
-            .reference("FunctionalTest1")
+            .recipientEmailAddress("vat12@mailinator.com")
+            .reference(reference)
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
@@ -727,7 +763,7 @@ public class NotificationsServiceFunctionalTest {
                 BigDecimal.valueOf(10)).refundReason("RR001").build())
             .build();
 
-        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+        final Response responseNotificationEmail = notificationsTestService.postEmailNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl,
@@ -735,11 +771,11 @@ public class NotificationsServiceFunctionalTest {
         );
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        final Response responseNotification = notificationsTestServicel.getNotification(
+        final Response responseNotification = notificationsTestService.getNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
-            "FunctionalTest1"
+            reference
         );
 
         assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
@@ -747,18 +783,21 @@ public class NotificationsServiceFunctionalTest {
         List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
+        assertThat(contactDetails.get("email")).isEqualTo("vat12@mailinator.com");
         assertThat(((HashMap)((HashMap)notificationList.get(0).get("sent_notification")).get("from")).get("from_email_address"))
             .isEqualTo("probate@justice.gov.uk");
+
+        deleteNotifications(reference);
     }
 
     @Test
     public void sendEmailNotificationRequestForFromEmailAddressThrows5XXError() {
 
+        String reference = "FunctionalTest1";
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
-            .reference("FunctionalTest1")
+            .recipientEmailAddress("vat12@mailinator.com")
+            .reference(reference)
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
             .serviceName("Wrong Service")
@@ -766,18 +805,21 @@ public class NotificationsServiceFunctionalTest {
                 BigDecimal.valueOf(10)).refundReason("RR001").build())
             .build();
 
-        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+        final Response responseNotificationEmail = notificationsTestService.postEmailNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl,
             refundNotificationEmailRequest
         );
         assertThat(500).isEqualTo(responseNotificationEmail.getStatusCode());
+
+        deleteNotifications(reference);
     }
 
     @Test
     public void sendLetterNotificationRequestForFromMailAddress() {
 
+        String reference = "FunctionalTest2";
         RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
             .templateId(letterTemplateId)
             .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
@@ -787,7 +829,7 @@ public class NotificationsServiceFunctionalTest {
                                         .country("England")
                                         .postalCode("SW1H 9AJ")
                                         .build())
-            .reference("FunctionalTest2")
+            .reference(reference)
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
@@ -795,7 +837,7 @@ public class NotificationsServiceFunctionalTest {
 
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+        final Response responseNotificationLetter = notificationsTestService.postLetterNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -803,11 +845,11 @@ public class NotificationsServiceFunctionalTest {
         );
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        final Response responseNotification = notificationsTestServicel.getNotification(
+        final Response responseNotification = notificationsTestService.getNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
-            "FunctionalTest2"
+            reference
         );
 
         assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
@@ -819,11 +861,14 @@ public class NotificationsServiceFunctionalTest {
         assertThat(((HashMap)((HashMap)((HashMap)notificationList.get(0).get("sent_notification"))
             .get("from")).get("from_mail_address")).get("address_line"))
             .isEqualTo("ABC");
+
+        deleteNotifications(reference);
     }
 
     @Test
     public void sendLetterNotificationRequestForFromMailAddressThrows5XXError() {
 
+        String reference = "FunctionalTest2";
         RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
             .templateId(letterTemplateId)
             .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
@@ -833,7 +878,7 @@ public class NotificationsServiceFunctionalTest {
                                         .country("England")
                                         .postalCode("SW1H 9AJ")
                                         .build())
-            .reference("FunctionalTest2")
+            .reference(reference)
             .notificationType(NotificationType.LETTER)
             .serviceName("Wrong Service")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
@@ -841,7 +886,7 @@ public class NotificationsServiceFunctionalTest {
 
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+        final Response responseNotificationLetter = notificationsTestService.postLetterNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -849,6 +894,7 @@ public class NotificationsServiceFunctionalTest {
         );
 
         assertThat(500).isEqualTo(responseNotificationLetter.getStatusCode());
+        deleteNotifications(reference);
     }
 
     @Test
@@ -865,7 +911,7 @@ public class NotificationsServiceFunctionalTest {
             .paymentMethod("card")
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.getTemplateNotificationPreview(
+        final Response responseNotificationLetter = notificationsTestService.getTemplateNotificationPreview(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -893,7 +939,7 @@ public class NotificationsServiceFunctionalTest {
                                         .county("london").country("UK").city("london").build())
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.getTemplateNotificationPreview(
+        final Response responseNotificationLetter = notificationsTestService.getTemplateNotificationPreview(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -927,7 +973,7 @@ public class NotificationsServiceFunctionalTest {
 
             .build();
 
-        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
+        final Response responseNotificationLetter = notificationsTestService.postLetterNotification(
             userTokenPaymentRefundApprover,
             serviceTokenPayBubble,
             testConfigProperties.baseTestUrl,
@@ -935,7 +981,7 @@ public class NotificationsServiceFunctionalTest {
         );
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        final Response responseNotification = notificationsTestServicel.getNotification(
+        final Response responseNotification = notificationsTestService.getNotification(
             userTokenPaymentRefundApprover,
             serviceTokenPayBubble,
             testConfigProperties.baseTestUrl,
@@ -950,6 +996,8 @@ public class NotificationsServiceFunctionalTest {
 
         String bodyString = sendNotification.get("body").toString();
         assertThat(bodyString.contains("Due to court's discretion a refund has been approved"));
+
+        deleteNotifications(reference);
     }
 
     @Test
@@ -962,7 +1010,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
             .emailReplyToId(emailReplyToId)
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .recipientEmailAddress("vat12@mailinator.com")
             .personalisation(Personalisation.personalisationRequestWith()
                                  .ccdCaseNumber(CCD_CASE_NUMBER)
                                  .refundReference("RF-1234-1234-1234-1234")
@@ -971,7 +1019,7 @@ public class NotificationsServiceFunctionalTest {
                                  .build())
             .build();
 
-        final Response responseNotificationEmail = notificationsTestServicel.postEmailNotification(
+        final Response responseNotificationEmail = notificationsTestService.postEmailNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl,
@@ -979,7 +1027,7 @@ public class NotificationsServiceFunctionalTest {
         );
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        final Response responseNotification = notificationsTestServicel.getNotification(
+        final Response responseNotification = notificationsTestService.getNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
@@ -991,11 +1039,17 @@ public class NotificationsServiceFunctionalTest {
         List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
+        assertThat(contactDetails.get("email")).isEqualTo("vat12@mailinator.com");
         Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
         String bodyString = sendNotification.get("html").toString();
         assertThat(bodyString.contains("A duplicate fee was processed and has now been refunded"));
+
+        deleteNotifications(reference);
     }
 
-
+    private void deleteNotifications(String reference) {
+        // delete notification record
+        notificationsTestService.deleteNotification(userTokenPaymentRefundApprover, serviceTokenPayBubble, reference)
+            .then().statusCode(NO_CONTENT.value());
+    }
 }
