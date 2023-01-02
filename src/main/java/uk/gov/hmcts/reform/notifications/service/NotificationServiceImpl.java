@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.notifications.service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -13,19 +12,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.util.UriComponentsBuilder;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.notifications.config.security.idam.IdamService;
 import uk.gov.hmcts.reform.notifications.dtos.request.*;
 import uk.gov.hmcts.reform.notifications.dtos.response.IdamUserIdResponse;
@@ -117,18 +109,6 @@ public class NotificationServiceImpl implements NotificationService {
     @Value("${notify.template.card-pba.email}")
     private String cardPbaEmailTemplateId;
 
-    @Value("${payments.api.url}")
-    private String paymentApiUrl;
-
-    public static final String CONTENT_TYPE = "content-type";
-
-    @Qualifier("restTemplatePayment")
-    @Autowired()
-    private RestTemplate restTemplatePayment;
-
-    @Autowired
-    private AuthTokenGenerator authTokenGenerator;
-
     @Override
     public SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest, MultiValueMap<String, String> headers) {
         try {
@@ -136,6 +116,7 @@ public class NotificationServiceImpl implements NotificationService {
             validateRecipientEmailAddress(emailNotificationRequest);
             Optional<ServiceContact> serviceContact = serviceContactRepository.findByServiceName(emailNotificationRequest.getServiceName());
             IdamUserIdResponse uid = idamService.getUserId(headers);
+            LOG.info("Refund reason in sendEmailNotification {}", emailNotificationRequest.getPersonalisation().getRefundReason());
             String refundReason = getRefundReason(emailNotificationRequest.getPersonalisation().getRefundReason());
             TemplatePreviewDto templatePreviewDto = emailNotificationRequest.getTemplatePreview();
             if (templatePreviewDto == null) {
@@ -320,26 +301,13 @@ public class NotificationServiceImpl implements NotificationService {
         TemplatePreview templatePreview;
         NotificationTemplatePreviewResponse notificationTemplatePreviewResponse;
         String instructionType ;
-        PaymentDto paymentResponse;
         Optional<ServiceContact> serviceContact;
         String refundRef = getRefundReference(docPreviewRequest);
         String refundReason = getRefundReason(docPreviewRequest.getPersonalisation().getRefundReason());
         String ccdCaseNumber;
-        if (null == docPreviewRequest.getPaymentChannel()
-            || docPreviewRequest.getPaymentChannel().equalsIgnoreCase(STRING)
-            || null == docPreviewRequest.getPaymentMethod()
-            || docPreviewRequest.getPaymentMethod().equalsIgnoreCase(STRING) ) {
-            validateIfPaymentReferenceExist(docPreviewRequest);
-            paymentResponse = fetchPaymentGroupResponse(headers,docPreviewRequest.getPaymentReference());
-            instructionType = getInstructionType(paymentResponse.getChannel(),paymentResponse.getMethod());
-            serviceContact = serviceContactRepository.findByServiceName(paymentResponse.getServiceName());
-            ccdCaseNumber = paymentResponse.getCcdCaseNumber();
-        } else {
-            validateIfPaymentReferenceNotExist(docPreviewRequest);
-            instructionType = getInstructionType(docPreviewRequest.getPaymentChannel(),docPreviewRequest.getPaymentMethod());
-            serviceContact = serviceContactRepository.findByServiceName(docPreviewRequest.getServiceName());
-            ccdCaseNumber = docPreviewRequest.getPersonalisation().getCcdCaseNumber();
-        }
+        instructionType = getInstructionType(docPreviewRequest.getPaymentChannel(),docPreviewRequest.getPaymentMethod());
+        serviceContact = serviceContactRepository.findByServiceName(docPreviewRequest.getServiceName());
+        ccdCaseNumber = docPreviewRequest.getPersonalisation().getCcdCaseNumber();
 
         String templateId = getTemplate(docPreviewRequest, instructionType);
         try {
@@ -418,52 +386,6 @@ public class NotificationServiceImpl implements NotificationService {
             .build();
     }
 
-    private PaymentDto fetchPaymentGroupResponse(MultiValueMap<String, String> headers,
-                                                          String paymentReference) {
-        ResponseEntity<PaymentDto> paymentResponse = null;
-        try {
-            paymentResponse = fetchPaymentDataFromPayhub(headers, paymentReference);
-
-        } catch (HttpClientErrorException e) {
-            LOG.error(e.getMessage());
-            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                throw new PaymentReferenceNotFoundException("Payment Reference not found", e);
-            }
-        } catch (Exception e) {
-            LOG.error(e.getMessage());
-            throw new PaymentServerException("Payment Server Exception", e);
-        }
-        return paymentResponse.getBody();
-    }
-
-    private ResponseEntity<PaymentDto> fetchPaymentDataFromPayhub(MultiValueMap<String, String> headers,
-
-                                                                                 String paymentReference) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(
-            new StringBuilder(paymentApiUrl).append("/payments/").append(paymentReference)
-                .toString());
-         LOG.info("URI {}", builder.toUriString());
-        return restTemplatePayment
-            .exchange(
-                builder.toUriString(),
-                HttpMethod.GET,
-                getHeadersEntity(headers), PaymentDto.class);
-    }
-
-    private HttpEntity<String> getHeadersEntity(MultiValueMap<String, String> headers) {
-        return new HttpEntity<>(getFormatedHeaders(headers));
-    }
-
-    private MultiValueMap<String, String> getFormatedHeaders(MultiValueMap<String, String> headers) {
-        List<String> authtoken = headers.get("authorization");
-        List<String> servauthtoken = Arrays.asList(authTokenGenerator.generate());
-        MultiValueMap<String, String> inputHeaders = new LinkedMultiValueMap<>();
-        inputHeaders.put(CONTENT_TYPE, headers.get(CONTENT_TYPE));
-        inputHeaders.put("Authorization", authtoken);
-        inputHeaders.put("ServiceAuthorization", servauthtoken);
-        return inputHeaders;
-    }
-
     private String getInstructionType(String paymentChannel, String paymentMethod) {
 
         String instructionType;
@@ -475,28 +397,6 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         return instructionType;
-    }
-
-    private void validateIfPaymentReferenceExist(DocPreviewRequest docPreviewRequest){
-
-        if(null == docPreviewRequest.getPaymentReference() || docPreviewRequest.getPaymentReference().equalsIgnoreCase(STRING)){
-
-            throw new DocPreviewBadRequestException("Payment reference cannot be null");
-        }
-    }
-
-    private void validateIfPaymentReferenceNotExist(DocPreviewRequest docPreviewRequest) {
-
-        if (null == docPreviewRequest.getPaymentChannel() || docPreviewRequest.getPaymentChannel()
-            .equalsIgnoreCase(STRING) ||
-            null == docPreviewRequest.getPaymentMethod() || docPreviewRequest.getPaymentMethod()
-            .equalsIgnoreCase(STRING) ||
-            null == docPreviewRequest.getServiceName() || docPreviewRequest.getServiceName()
-            .equalsIgnoreCase(STRING)) {
-
-            throw new DocPreviewBadRequestException("Payment channel, payment method, service name  cannot be null");
-
-        }
     }
 
     private void validateRecipientEmailAddress(RefundNotificationEmailRequest emailNotificationRequest) {
@@ -526,9 +426,17 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private String getRefundReason(String refundReasonCode) {
-
+        LOG.info("refundReasonCode >>  {}",refundReasonCode);
+        final int refundreasoncodelimit = 5;
+        String reasonCode;
+        if (refundReasonCode.length() > refundreasoncodelimit) {
+            reasonCode = refundReasonCode.split("-")[0];
+        } else {
+            reasonCode = refundReasonCode;
+        }
+        LOG.info("reasonCode for searching in Notifications Repo >>  {}",reasonCode);
         String refundReason;
-        Optional<NotificationRefundReasons> notificationRefundReasons = notificationRefundReasonRepository.findByRefundReasonCode(refundReasonCode);
+        Optional<NotificationRefundReasons> notificationRefundReasons = notificationRefundReasonRepository.findByRefundReasonCode(reasonCode);
 
         if(notificationRefundReasons.isPresent()){
             refundReason = notificationRefundReasons.get().getRefundReasonNotification();
