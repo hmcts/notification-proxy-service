@@ -62,10 +62,4 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         LOG.error(ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.GATEWAY_TIMEOUT);
     }
-
-    @ExceptionHandler(DocPreviewBadRequestException.class)
-    public ResponseEntity return400(DocPreviewBadRequestException ex) {
-        LOG.error(ex.getMessage());
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
 }
