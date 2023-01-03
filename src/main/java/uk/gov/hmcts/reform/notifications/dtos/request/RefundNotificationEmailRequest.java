@@ -33,6 +33,8 @@ public class RefundNotificationEmailRequest {
     @NotEmpty(message = "Template ID cannot be blank")
     private String templateId;
 
+    @NotNull(message = "Recipient Email Address cannot be null")
+    @NotEmpty(message = "Recipient Email Address cannot be blank")
     @Email(message = "Please enter a valid Email Address")
     private String recipientEmailAddress;
 
