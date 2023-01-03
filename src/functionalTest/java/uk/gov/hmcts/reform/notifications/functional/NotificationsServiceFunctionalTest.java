@@ -28,9 +28,7 @@ import uk.gov.hmcts.reform.notifications.functional.config.IdamService;
 import uk.gov.hmcts.reform.notifications.functional.config.NotificationsTestService;
 import uk.gov.hmcts.reform.notifications.functional.config.S2sTokenService;
 import uk.gov.hmcts.reform.notifications.functional.config.TestConfigProperties;
-import uk.gov.hmcts.reform.notifications.model.Notification;
 import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
-import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -82,9 +80,6 @@ public class NotificationsServiceFunctionalTest {
 
     @Autowired
     private NotificationsTestService notificationsTestService;
-
-    @Autowired
-    private NotificationRepository notificationRepository;
 
     private String serviceTokenPayBubble;
 
