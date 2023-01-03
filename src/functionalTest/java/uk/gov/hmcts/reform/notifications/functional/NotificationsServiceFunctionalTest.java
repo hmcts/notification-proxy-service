@@ -33,7 +33,10 @@ import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @ActiveProfiles({"functional", "liberataMock"})
 @ContextConfiguration(classes = TestContextConfiguration.class)
@@ -87,8 +90,6 @@ public class NotificationsServiceFunctionalTest {
 
     private boolean isTokensInitialized;
 
-    //private static final String REFERENCE = "RF-1111-2222-3333-4444";
-
     private static final String CCD_CASE_NUMBER = "1234567890123456";
 
     private static final String CITY = "London";
@@ -100,12 +101,18 @@ public class NotificationsServiceFunctionalTest {
 
         if (!isTokensInitialized) {
 
+            //userTokenPaymentRefundApprover =
+              //  idamService.createUserWithSearchScope("idam.user.ccpayrefundsapi@hmcts.net").getAuthorisationToken();
+
             userTokenPaymentRefundApprover =
-                idamService.createUserWithSearchScope("idam.user.ccpayrefundsapi@hmcts.net").getAuthorisationToken();
-
+                idamService.createUserWithSearchScope(IdamService.CMC_CASE_WORKER_GROUP, "payments-refund-approver", "payments")
+                    .getAuthorisationToken();
+            System.out.println("userTokenPaymentRefundApprover  >> "+userTokenPaymentRefundApprover);
+            System.out.println("testConfigProperties.s2sRefundsApi  >> "+ testConfigProperties.s2sRefundsApi);
             serviceTokenPayBubble =
-                s2sTokenService.getS2sToken("ccpay_bubble", testConfigProperties.s2sPayBubble);
-
+                s2sTokenService.getS2sToken("cmc", testConfigProperties.s2sRefundsApi);
+                //s2sTokenService.getS2sToken("ccpay_bubble", testConfigProperties.payBubbleS2SSecret);
+            System.out.println("serviceTokenPayBubble  >> "+serviceTokenPayBubble);
             isTokensInitialized = true;
 
         }
