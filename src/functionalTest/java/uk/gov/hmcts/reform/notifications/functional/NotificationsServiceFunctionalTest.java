@@ -644,12 +644,16 @@ public class NotificationsServiceFunctionalTest {
 
             .build();
 
+        System.out.println("userTokenPaymentRefundApprover >> "+userTokenPaymentRefundApprover);
+        System.out.println("serviceTokenPayBubble >> "+serviceTokenPayBubble);
+        System.out.println("testConfigProperties.baseTestUrl >> "+testConfigProperties.baseTestUrl);
         final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
             userTokenPaymentRefundApprover ,
             serviceTokenPayBubble ,
             testConfigProperties.baseTestUrl ,
             refundNotificationLetterRequest
         );
+        System.out.println("responseNotificationLetter.getStatusCode() >> "+responseNotificationLetter.getStatusCode());
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         final Response responseNotification = notificationsTestServicel.getNotification(
