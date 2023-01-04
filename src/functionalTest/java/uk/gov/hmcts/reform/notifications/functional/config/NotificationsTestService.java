@@ -34,6 +34,7 @@ public class NotificationsTestService {
         return givenWithAuthHeaders(userToken, serviceToken)
             .contentType(ContentType.JSON)
             .body(request)
+            .baseUri(baseUri)
             .when()
             .post("/notifications/letter");
     }
