@@ -18,7 +18,7 @@ import static io.restassured.config.JsonConfig.jsonConfig;
 @PropertySource("classpath:application-functional.yaml")
 public class TestContextConfiguration {
 
-    @Value("{test.url:http://localhost:8080}")
+    @Value("https://ccpay-notifications-service-pr-100.service.core-compute-preview.internal")
     private String baseURL;
 
     @PostConstruct
