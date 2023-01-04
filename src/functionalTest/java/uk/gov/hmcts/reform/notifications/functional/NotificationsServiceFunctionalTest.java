@@ -104,8 +104,10 @@ public class NotificationsServiceFunctionalTest {
             userTokenPaymentRefundApprover =
                 idamService.createUserWithSearchScope(IdamService.CMC_CASE_WORKER_GROUP, "payments-refund-approver", "payments")
                     .getAuthorisationToken();
+            System.out.println("testConfigProperties.s2sRefundsApi in setUp >>>>     "+testConfigProperties.s2sRefundsApi);
             serviceTokenPayBubble =
                 s2sTokenService.getS2sToken("cmc", testConfigProperties.s2sRefundsApi);
+            System.out.println("serviceTokenPayBubble in setUp >>>>     "+serviceTokenPayBubble);
             isTokensInitialized = true;
         }
     }
