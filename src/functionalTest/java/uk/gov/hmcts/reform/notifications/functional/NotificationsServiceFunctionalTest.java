@@ -662,7 +662,7 @@ public class NotificationsServiceFunctionalTest {
             testConfigProperties.baseTestUrl ,
             reference
         );
-
+        System.out.println("responseNotification.getStatusCode() >> "+responseNotification.getStatusCode());
         assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 
         List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
