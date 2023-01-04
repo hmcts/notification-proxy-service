@@ -32,9 +32,9 @@ import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.UUID;
 
 @ActiveProfiles({"functional", "liberataMock"})
@@ -101,15 +101,12 @@ public class NotificationsServiceFunctionalTest {
     public void setUp() {
 
         if (!isTokensInitialized) {
-
             userTokenPaymentRefundApprover =
-                idamService.createUserWithSearchScope("idam.user.ccpayrefundsapi@hmcts.net").getAuthorisationToken();
-
+                idamService.createUserWithSearchScope(IdamService.CMC_CASE_WORKER_GROUP, "payments-refund-approver", "payments")
+                    .getAuthorisationToken();
             serviceTokenPayBubble =
-                s2sTokenService.getS2sToken("ccpay_bubble", testConfigProperties.s2sPayBubble);
-
+                s2sTokenService.getS2sToken("cmc", testConfigProperties.s2sRefundsApi);
             isTokensInitialized = true;
-
         }
     }
 

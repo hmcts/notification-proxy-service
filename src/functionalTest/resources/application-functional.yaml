@@ -53,7 +53,7 @@ test:
     refunds : ${TEST_URL_REFUND:http://ccpay-refunds-api-pr-211.service.core-compute-preview.internal}
     payments : ${TEST_URL_PAYMENT:http://payment-api-pr-1089.service.core-compute-preview.internal}
   user:
-    password: ${REFUND_SERVICE_ACCOUNT_PASSWORD}
+    password: ${TEST_USER_PASSWORD:password123Notif}
 
 idam:
   api:
@@ -67,7 +67,7 @@ idam:
   paybubble:
     client:
       id: ${IDAM_PAYBUBBLE_CLIENT_ID:paybubble}
-      secret: ${IDAM_PAYBUBBLE_CLIENT_SECRET}
+      secret: ${IDAM_PAYBUBBLE_CLIENT_SECRET:NVYEC2X7XFSRENTU}
 oauth2:
   redirect:
     uri: ${OAUTH2_REDIRECT_URI:https://moneyclaims.aat.platform.hmcts.net}
@@ -78,8 +78,11 @@ s2s:
   url: ${S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
   service :
     refunds:
-      name: ${S2S_SERVICE_NAME_REFUNDS_API:refunds_api}
-      secret: ${OIDC_S2S_SECRET}
+      name: ${S2S_SERVICE_NAME_PAYBUBBLE:ccpay_bubble}
+      secret: ${S2S_SERVICE_SECRET_PAYBUBBLE:RD53IBEKQTO4WMQY}
+
+     #name: ${S2S_SERVICE_NAME_REFUNDS_API:refunds_api}
+      #secret: ${OIDC_S2S_SECRET}
     paymentapp :
       name : ${S2S_SERVICE_NAME_PAYMENT_APP:payment_app}
       secret: ${S2S_SERVICE_SECRET_PAYMENT_APP}
@@ -95,7 +98,7 @@ azure:
 generated:
   user:
     email:
-      pattern:${GENERATED_USER_EMAIL_PATTERN:freg-test-functional-aldie-junk-user-%s@feemail.com}
+      pattern: ${GENERATED_USER_EMAIL_PATTERN:freg-test-functional-aldie-notif-user-%s@feemail.com}
 payments:
   account:
     existing:
