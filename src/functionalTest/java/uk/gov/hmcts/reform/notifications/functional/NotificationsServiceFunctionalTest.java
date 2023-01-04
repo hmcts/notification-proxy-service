@@ -105,10 +105,10 @@ public class NotificationsServiceFunctionalTest {
                 idamService.createUserWithSearchScope(IdamService.CMC_CASE_WORKER_GROUP, "payments-refund-approver", "payments")
                     .getAuthorisationToken();
             System.out.println("testConfigProperties.s2sRefundsApi in setUp >>>>     "+testConfigProperties.s2sRefundsApi);
-            //serviceTokenPayBubble =
-              //  s2sTokenService.getS2sToken("refunds_api", testConfigProperties.s2sRefundsApi);
+            serviceTokenPayBubble =
+                s2sTokenService.getS2sToken("refunds_api", testConfigProperties.s2sRefundsApi);
 
-            serviceTokenPayBubble = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjY3BheV9idWJibGUiLCJleHAiOjE2NzI4NjEyNTJ9.wF2KVrL7zcau5EbiY1QM7-TX9VnveU5HObF5itvtnj3OFKJFQcxrYL8AjePaINC70s6i7Ydsl7QSsNGQ7jaPyg";
+            //serviceTokenPayBubble = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjY3BheV9idWJibGUiLCJleHAiOjE2NzI4NjEyNTJ9.wF2KVrL7zcau5EbiY1QM7-TX9VnveU5HObF5itvtnj3OFKJFQcxrYL8AjePaINC70s6i7Ydsl7QSsNGQ7jaPyg";
             System.out.println("serviceTokenPayBubble in setUp >>>>     "+serviceTokenPayBubble);
             isTokensInitialized = true;
         }
