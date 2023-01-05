@@ -208,7 +208,7 @@ public class NotificationServiceImpl implements NotificationService {
 
             TemplatePreviewDto templatePreviewDto = letterNotificationRequest.getTemplatePreview();
             String refundReason = getRefundReason(letterNotificationRequest.getPersonalisation().getRefundReason());
-
+            LOG.info("Refund Reason in sendLetterNotification {}",refundReason);
             if (templatePreviewDto == null) {
                 TemplatePreview templatePreview = notificationLetterClient
                     .generateTemplatePreview(
@@ -219,7 +219,7 @@ public class NotificationServiceImpl implements NotificationService {
                     );
                 templatePreviewDto = buildTemplatePreviewDTO(templatePreview, LETTER, serviceContact.get());
             }
-
+            LOG.info("templatePreviewDto {}",templatePreviewDto);
             SendLetterResponse sendLetterResponse = notificationLetterClient.sendLetter(
                 letterNotificationRequest.getTemplateId(),
                 createLetterPersonalisation(letterNotificationRequest.getRecipientPostalAddress(),letterNotificationRequest.getPersonalisation(),serviceContact.get().getServiceMailbox(),
@@ -228,12 +228,13 @@ public class NotificationServiceImpl implements NotificationService {
                                             refundReason),
                 letterNotificationRequest.getReference()
             );
-
+            LOG.info("sendLetterResponse {}",sendLetterResponse.getBody());
             Notification notification = letterNotificationMapper.letterResponseMapper(
                 sendLetterResponse,
                 letterNotificationRequest,
                 uid
             );
+            LOG.info("notification {}",notification.getId());
             notification.setTemplatePreview(templatePreviewDto);
             notificationRepository.save(notification);
             LOG.info("Letter notification saved successfully.");

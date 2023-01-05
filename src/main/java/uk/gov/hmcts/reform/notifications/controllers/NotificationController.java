@@ -69,6 +69,7 @@ public class NotificationController {
         @RequestHeader("Authorization") String authorization,
         @RequestHeader(required = false) MultiValueMap<String, String> headers,
         @Valid @RequestBody RefundNotificationLetterRequest request) {
+        log.info("Inside /notifications/letter {}",request);
             notificationService.sendLetterNotification(request, headers );
         return new ResponseEntity<>(
             "Notification sent successfully via letter", HttpStatus.CREATED);
