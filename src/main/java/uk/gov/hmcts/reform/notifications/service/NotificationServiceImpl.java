@@ -146,7 +146,6 @@ public class NotificationServiceImpl implements NotificationService {
 
             return sendEmailResponse;
         }catch (NotificationClientException exception){
-            exception.printStackTrace();
             GovNotifyExceptionWrapper exceptionWrapper = new GovNotifyExceptionWrapper();
             LOG.error(exception.getMessage());
             throw exceptionWrapper.mapGovNotifyEmailException(exception);
