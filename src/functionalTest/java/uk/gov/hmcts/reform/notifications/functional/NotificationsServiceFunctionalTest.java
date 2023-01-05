@@ -118,7 +118,7 @@ public class NotificationsServiceFunctionalTest {
 
     @Test
     public void sendEmailNotificationRequest() {
-        System.out.println("emailTemplateId >>>    "+emailTemplateId);
+
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
             .recipientEmailAddress("kaushik.maitra@hmcts.net")
@@ -136,8 +136,7 @@ public class NotificationsServiceFunctionalTest {
         testConfigProperties.baseTestUrl,
         refundNotificationEmailRequest
         );
-        System.out.println("responseNotificationEmail in sendEmailNotificationRequest  >>  "
-                               + responseNotificationEmail.getStatusCode());
+
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
      }
 
@@ -165,10 +164,7 @@ public class NotificationsServiceFunctionalTest {
             testConfigProperties.baseTestUrl,
             refundNotificationEmailRequest
         );
-        System.out.println("responseNotificationEmail in sendEmailNotificationRequestWithReasonUnableToApplyRefundToCard  >>  "
-                               + responseNotificationEmail.getStatusCode());
-        System.out.println("responseNotificationEmail in sendEmailNotificationRequestWithReasonUnableToApplyRefundToCard  >>  "
-                               + responseNotificationEmail.getBody().print());
+
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
         final Response responseNotification = notificationsTestServicel.getNotification(
@@ -183,49 +179,7 @@ public class NotificationsServiceFunctionalTest {
         List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
-    }
-/*
-    @Test
-    public void sendLetterNotificationRequestWithReasonUnableToApplyRefundToCard() {
-
-        sendLetterNotificationRequest();
-        RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
-            .templateId(letterTemplateId)
-            .reference("FunctionalTest2")
-            .notificationType(NotificationType.LETTER)
-            .serviceName("Probate")
-            .personalisation(Personalisation.personalisationRequestWith()
-                                 .ccdCaseNumber(CCD_CASE_NUMBER)
-                                 .refundReference("RF-1234-1234-1234-1234")
-                                 .refundAmount(BigDecimal.valueOf(10))
-                                 .refundReason("Unable to apply refund to Card")
-                                 .build())
-
-            .build();
-
-        final Response responseNotificationLetter = notificationsTestServicel.postLetterNotification(
-            userTokenPaymentRefundApprover ,
-            serviceTokenPayBubble ,
-            testConfigProperties.baseTestUrl ,
-            refundNotificationLetterRequest
-        );
-        assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        final Response responseNotification = notificationsTestServicel.getNotification(
-            userTokenPaymentRefundApprover ,
-            serviceTokenPayBubble ,
-            testConfigProperties.baseTestUrl ,
-            "FunctionalTest2"
-        );
-
-        assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
-
-        List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
-        assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
-        Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("postal_code")).isEqualTo("SW1H 9AJ");
-        assertThat(contactDetails.get("address_line")).isEqualTo("102 Petty France");
+        assertThat(contactDetails.get("email")).isEqualTo("kaushik.maitra@hmcts.net");
     }
 
     @Test
@@ -256,6 +210,7 @@ public class NotificationsServiceFunctionalTest {
         );
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
+
 
     @Test
     public void negativeIncorrectEmailFormatSendEmailNotificationRequest() {
@@ -309,7 +264,7 @@ public class NotificationsServiceFunctionalTest {
 
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
-
+/*
     @Test
     public void getDetailsForSentEmailNotification(){
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
