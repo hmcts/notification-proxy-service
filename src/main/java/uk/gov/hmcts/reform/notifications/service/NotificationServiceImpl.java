@@ -234,7 +234,7 @@ public class NotificationServiceImpl implements NotificationService {
                 letterNotificationRequest,
                 uid
             );
-            LOG.info("notification {}",notification.getId());
+            LOG.info("notification {}",notification.getReference());
             notification.setTemplatePreview(templatePreviewDto);
             notificationRepository.save(notification);
             LOG.info("Letter notification saved successfully.");

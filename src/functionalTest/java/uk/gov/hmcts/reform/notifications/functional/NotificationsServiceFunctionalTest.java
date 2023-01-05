@@ -595,6 +595,7 @@ public class NotificationsServiceFunctionalTest {
     @Test
     public void sendLetterNotificationRequestSendRefund() {
         String reference = "RF-1234-" + RandomUtils.nextInt();
+        System.out.println("cardPbaLetterTemplateId >> " + cardPbaLetterTemplateId);
         RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
             .templateId(cardPbaLetterTemplateId)
             .recipientPostalAddress(RecipientPostalAddress.recipientPostalAddressWith()
