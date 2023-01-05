@@ -503,7 +503,8 @@ public class NotificationsServiceFunctionalTest {
             .isEqualTo(responseNotificationLetter.body().asString());
 
     }
-//Failure
+    */
+
     @Test
     public void sendEmailNotificationRequestWithRefundWhenContacted() {
 
@@ -547,7 +548,7 @@ public class NotificationsServiceFunctionalTest {
         Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
         assertThat(sendNotification.get("template_id")).isEqualTo(chequePoCashEmailTemplateId);
     }
-//Failure
+
     @Test
     public void sendEmailNotificationRequestWithSendRefund() {
 
@@ -591,7 +592,7 @@ public class NotificationsServiceFunctionalTest {
         Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
         assertThat(sendNotification.get("template_id")).isEqualTo(cardPbaEmailTemplateId);
     }
-*/
+
     @Test
     public void sendLetterNotificationRequestSendRefund() {
         String reference = "RF-1234-" + RandomUtils.nextInt();
@@ -872,7 +873,8 @@ public class NotificationsServiceFunctionalTest {
         assertThat(notificationTemplatePreviewResponse.getBody().contains("Application fee has been refunded due to non-processing of application"));
 
     }
-//Failure
+    */
+
     @Test
     public void sendLetterNotificationRequestRefundWhenContactedWhenReasonIsCourtDiscretion() {
         String reference = "RF-1234-" + RandomUtils.nextInt();
@@ -918,7 +920,7 @@ public class NotificationsServiceFunctionalTest {
         String bodyString = sendNotification.get("body").toString();
         assertThat(bodyString.contains("Due to court's discretion a refund has been approved"));
     }
-// Failure
+
     @Test
     public void sendEmailNotificationRequestWithSendRefundWhenReasonIsDuplicateFee() {
 
@@ -963,6 +965,6 @@ public class NotificationsServiceFunctionalTest {
         String bodyString = sendNotification.get("html").toString();
         assertThat(bodyString.contains("A duplicate fee was processed and has now been refunded"));
     }
-*/
+
 
 }
