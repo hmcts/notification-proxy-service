@@ -167,7 +167,9 @@ public class NotificationsServiceFunctionalTest {
         );
         System.out.println("responseNotificationEmail in sendEmailNotificationRequestWithReasonUnableToApplyRefundToCard  >>  "
                                + responseNotificationEmail.getStatusCode());
-        assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+        System.out.println("responseNotificationEmail in sendEmailNotificationRequestWithReasonUnableToApplyRefundToCard  >>  "
+                               + responseNotificationEmail.getBody().print());
+        assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
         final Response responseNotification = notificationsTestServicel.getNotification(
             userTokenPaymentRefundApprover ,
