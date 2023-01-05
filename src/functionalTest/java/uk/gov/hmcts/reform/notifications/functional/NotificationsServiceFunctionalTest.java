@@ -115,7 +115,7 @@ public class NotificationsServiceFunctionalTest {
             isTokensInitialized = true;
         }
     }
-/*
+
     @Test
     public void sendEmailNotificationRequest() {
 
@@ -503,7 +503,6 @@ public class NotificationsServiceFunctionalTest {
             .isEqualTo(responseNotificationLetter.body().asString());
 
     }
-    */
 
     @Test
     public void sendEmailNotificationRequestWithRefundWhenContacted() {
@@ -637,7 +636,7 @@ public class NotificationsServiceFunctionalTest {
         Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
         assertThat(sendNotification.get("template_id")).isEqualTo(cardPbaLetterTemplateId);
     }
-/*
+
     @Test
     public void sendLetterNotificationRequestRefundWhenContacted() {
         String reference = "RF-1234-" + RandomUtils.nextInt();
@@ -873,7 +872,6 @@ public class NotificationsServiceFunctionalTest {
         assertThat(notificationTemplatePreviewResponse.getBody().contains("Application fee has been refunded due to non-processing of application"));
 
     }
-    */
 
     @Test
     public void sendLetterNotificationRequestRefundWhenContactedWhenReasonIsCourtDiscretion() {
