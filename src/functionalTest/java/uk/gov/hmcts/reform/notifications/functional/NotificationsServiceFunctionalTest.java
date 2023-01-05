@@ -264,7 +264,7 @@ public class NotificationsServiceFunctionalTest {
 
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
-/*
+
     @Test
     public void getDetailsForSentEmailNotification(){
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
@@ -965,6 +965,6 @@ public class NotificationsServiceFunctionalTest {
         String bodyString = sendNotification.get("html").toString();
         assertThat(bodyString.contains("A duplicate fee was processed and has now been refunded"));
     }
-*/
+
 
 }
