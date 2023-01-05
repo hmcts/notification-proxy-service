@@ -104,6 +104,7 @@ public class NotificationsServiceFunctionalTest {
             userTokenPaymentRefundApprover =
                 idamService.createUserWithSearchScope(IdamService.CMC_CASE_WORKER_GROUP, "payments-refund-approver", "payments")
                     .getAuthorisationToken();
+            System.out.println("userTokenPaymentRefundApproverin setUp >>>>     "+userTokenPaymentRefundApprover);
             System.out.println("testConfigProperties.s2sRefundsApi in setUp >>>>     "+testConfigProperties.s2sRefundsApi);
             serviceTokenPayBubble =
                 s2sTokenService.getS2sToken("refunds_api", testConfigProperties.s2sRefundsApi);

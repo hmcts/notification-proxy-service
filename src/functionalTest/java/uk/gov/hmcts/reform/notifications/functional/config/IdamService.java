@@ -63,6 +63,8 @@ public class IdamService {
 
     public ValidUser createUserWithSearchScope(String userGroup, String... roles) {
         String email = nextUserEmail();
+        System.out.println("testConfig.getTestUserPassword()"+testConfig.getTestUserPassword());
+        System.out.println("testConfig.getGeneratedUserEmailPattern"+testConfig.getGeneratedUserEmailPattern());
         CreateUserRequest userRequest = userRequest(email, userGroup, roles);
         try {
             idamApi.createUser(userRequest);
