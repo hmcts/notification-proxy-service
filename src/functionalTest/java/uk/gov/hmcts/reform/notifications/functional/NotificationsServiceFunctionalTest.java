@@ -101,13 +101,14 @@ public class NotificationsServiceFunctionalTest {
     public void setUp() {
 
         if (!isTokensInitialized) {
-            userTokenPaymentRefundApprover =
-                idamService.createUserWithSearchScope(IdamService.CMC_CASE_WORKER_GROUP, "payments-refund-approver", "payments")
-                    .getAuthorisationToken();
-            System.out.println("userTokenPaymentRefundApproverin setUp >>>>     "+userTokenPaymentRefundApprover);
-            System.out.println("testConfigProperties.s2sRefundsApi in setUp >>>>     "+testConfigProperties.s2sRefundsApi);
+            userTokenPaymentRefundApprover = idamService.createUserWithSearchScope
+                ("idam.user.ccpayrefundsapi@hmcts.net").getAuthorisationToken();
+                //idamService.createUserWithSearchScope(IdamService., "payments-refund-approver", "payments")
+                  //  .getAuthorisationToken();
+            System.out.println("userTokenPaymentRefundApprover in setUp >>>>     "+userTokenPaymentRefundApprover);
+            System.out.println("testConfigProperties.s2sPayBubble in setUp >>>>     "+testConfigProperties.s2sPayBubble);
             serviceTokenPayBubble =
-                s2sTokenService.getS2sToken("refunds_api", testConfigProperties.s2sRefundsApi);
+                s2sTokenService.getS2sToken("ccpay_bubble", testConfigProperties.s2sPayBubble);
 
             //serviceTokenPayBubble = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjY3BheV9idWJibGUiLCJleHAiOjE2NzI4NjEyNTJ9.wF2KVrL7zcau5EbiY1QM7-TX9VnveU5HObF5itvtnj3OFKJFQcxrYL8AjePaINC70s6i7Ydsl7QSsNGQ7jaPyg";
             System.out.println("serviceTokenPayBubble in setUp >>>>     "+serviceTokenPayBubble);

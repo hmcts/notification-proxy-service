@@ -20,6 +20,7 @@ def secrets = [
     secret('refunds-api-client-secret', 'REFUND_SERVICE_ACCOUNT_CLIENT_SECRET'),
     secret('refunds-api-user-password', 'REFUND_SERVICE_ACCOUNT_PASSWORD'),
     secret('notifications-s2s-secret', 'OIDC_S2S_SECRET'),
+    secret('paybubble-s2s-secret', 'S2S_SERVICE_SECRET_PAYBUBBLE'),
     secret('freg-idam-generated-user-email-pattern', 'GENERATED_USER_EMAIL_PATTERN'),
     secret('freg-idam-test-user-password', 'TEST_USER_PASSWORD'),
     secret('notifications-letter-template-id', 'NOTIFICATION_LETTER_TEMPLATE_ID'),
