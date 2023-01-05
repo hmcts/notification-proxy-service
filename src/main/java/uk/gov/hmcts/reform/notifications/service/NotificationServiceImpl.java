@@ -112,6 +112,7 @@ public class NotificationServiceImpl implements NotificationService {
             LOG.info("Refund reason in sendEmailNotification {}", emailNotificationRequest.getPersonalisation().getRefundReason());
             String refundReason = getRefundReason(emailNotificationRequest.getPersonalisation().getRefundReason());
             TemplatePreviewDto templatePreviewDto = emailNotificationRequest.getTemplatePreview();
+            LOG.info("templatePreviewDto {}",templatePreviewDto);
             if (templatePreviewDto == null) {
                 TemplatePreview templatePreview = notificationEmailClient
                     .generateTemplatePreview(
@@ -123,7 +124,7 @@ public class NotificationServiceImpl implements NotificationService {
                     );
                 templatePreviewDto = buildTemplatePreviewDTO(templatePreview, EMAIL, serviceContact.get());
             }
-
+            LOG.info("Before sending mail to Notification Client ");
             SendEmailResponse sendEmailResponse = notificationEmailClient
                 .sendEmail(
                     emailNotificationRequest.getTemplateId(),
@@ -134,7 +135,7 @@ public class NotificationServiceImpl implements NotificationService {
                                                refundReason),
                     emailNotificationRequest.getReference()
                 );
-
+            LOG.info(" Notification Email sent to Client ");
             Notification notification = emailNotificationMapper.emailResponseMapper(
                 emailNotificationRequest, uid
             );
@@ -145,6 +146,7 @@ public class NotificationServiceImpl implements NotificationService {
 
             return sendEmailResponse;
         }catch (NotificationClientException exception){
+            exception.printStackTrace();
             GovNotifyExceptionWrapper exceptionWrapper = new GovNotifyExceptionWrapper();
             LOG.error(exception.getMessage());
             throw exceptionWrapper.mapGovNotifyEmailException(exception);
