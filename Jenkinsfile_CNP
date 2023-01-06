@@ -67,19 +67,10 @@ withPipeline(type, product, component) {
   after('functionalTest:preview') {
 
     publishHTML target: [
-      reportDir            : "build/reports/tests/functional",
       allowMissing         : true,
       alwaysLinkToLastBuild: true,
       keepAll              : true,
-      reportFiles          : "index.html",
-      reportName           : "CCPAY NOTIFICATIONS PREVIEW API Functional Test Report"
-    ]
-
-    publishHTML target: [
-      allowMissing         : true,
-      alwaysLinkToLastBuild: true,
-      keepAll              : true,
-      reportDir            : "api/target/site/serenity/",
+      reportDir            : "target/site/serenity/",
       reportFiles          : "index.html",
       reportName           : "CCPAY NOTIFICATIONS SERVICE PREVIEW API Functional Test Serenity Report"
     ]
@@ -90,7 +81,7 @@ withPipeline(type, product, component) {
       allowMissing         : true,
       alwaysLinkToLastBuild: true,
       keepAll              : true,
-      reportDir            : "api/target/site/serenity/",
+      reportDir            : "target/site/serenity/",
       reportFiles          : "index.html",
       reportName           : "CCPAY NOTIFICATIONS SERVICE AAT Functional Tests Serenity Report"
     ]
