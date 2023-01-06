@@ -92,6 +92,7 @@ task functional(type: Test) {
   scanForTestClasses = true
 }
 
+// Serenity Reporting
 functional.finalizedBy(aggregate)
 
 task integration(type: Test) {
@@ -350,4 +351,7 @@ wrapper {
   distributionType = Wrapper.DistributionType.ALL
 }
 
+serenity {
+  reports = ["single-page-html"]
+}
 
