@@ -115,7 +115,7 @@ public class NotificationsServiceFunctionalTest {
 
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
-            .recipientEmailAddress("kaushik.maitra@hmcts.net")
+            .recipientEmailAddress("vat12@mailinator.com")
             .reference("FunctionalTest1")
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
@@ -140,7 +140,7 @@ public class NotificationsServiceFunctionalTest {
         sendEmailNotificationRequest();
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
-            .recipientEmailAddress("kaushik.maitra@hmcts.net")
+            .recipientEmailAddress("vat12@mailinator.com")
             .reference("FunctionalTest12")
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
@@ -173,7 +173,7 @@ public class NotificationsServiceFunctionalTest {
         List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("email")).isEqualTo("kaushik.maitra@hmcts.net");
+        assertThat(contactDetails.get("email")).isEqualTo("vat12@mailinator.com");
     }
 
     @Test
@@ -263,7 +263,7 @@ public class NotificationsServiceFunctionalTest {
     public void getDetailsForSentEmailNotification(){
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .recipientEmailAddress("vat12@mailinator.com")
             .reference(REFERENCE)
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
@@ -419,7 +419,7 @@ public class NotificationsServiceFunctionalTest {
 
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .recipientEmailAddress("vat12@mailinator.com")
             .reference("FunctionalTest1")
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
@@ -508,7 +508,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.EMAIL)
             .emailReplyToId(emailReplyToId)
             .serviceName("Probate")
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .recipientEmailAddress("vat12@mailinator.com")
             .personalisation(Personalisation.personalisationRequestWith()
                                  .ccdCaseNumber(CCD_CASE_NUMBER)
                                  .refundReference("RF-1234-1234-1234-1234")
@@ -537,7 +537,7 @@ public class NotificationsServiceFunctionalTest {
         List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
+        assertThat(contactDetails.get("email")).isEqualTo("vat12@mailinator.com");
         Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
         assertThat(sendNotification.get("template_id")).isEqualTo(chequePoCashEmailTemplateId);
     }
@@ -552,7 +552,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
             .emailReplyToId(emailReplyToId)
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .recipientEmailAddress("vat12@mailinator.com")
             .personalisation(Personalisation.personalisationRequestWith()
                                  .ccdCaseNumber(CCD_CASE_NUMBER)
                                  .refundReference("RF-1234-1234-1234-1234")
@@ -581,7 +581,7 @@ public class NotificationsServiceFunctionalTest {
         List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
+        assertThat(contactDetails.get("email")).isEqualTo("vat12@mailinator.com");
         Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
         assertThat(sendNotification.get("template_id")).isEqualTo(cardPbaEmailTemplateId);
     }
@@ -679,7 +679,7 @@ public class NotificationsServiceFunctionalTest {
 
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .recipientEmailAddress("vat12@mailinator.com")
             .reference("FunctionalTest1")
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
@@ -708,7 +708,7 @@ public class NotificationsServiceFunctionalTest {
         List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
+        assertThat(contactDetails.get("email")).isEqualTo("vat12@mailinator.com");
         assertThat(((HashMap)((HashMap)notificationList.get(0).get("sent_notification")).get("from")).get("from_email_address"))
             .isEqualTo("probate@justice.gov.uk");
     }
@@ -718,7 +718,7 @@ public class NotificationsServiceFunctionalTest {
 
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .recipientEmailAddress("vat12@mailinator.com")
             .reference("FunctionalTest1")
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
@@ -923,7 +923,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
             .emailReplyToId(emailReplyToId)
-            .recipientEmailAddress("akhil.nuthakki@hmcts.net")
+            .recipientEmailAddress("vat12@mailinator.com")
             .personalisation(Personalisation.personalisationRequestWith()
                                  .ccdCaseNumber(CCD_CASE_NUMBER)
                                  .refundReference("RF-1234-1234-1234-1234")
@@ -952,7 +952,7 @@ public class NotificationsServiceFunctionalTest {
         List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("email")).isEqualTo("akhil.nuthakki@hmcts.net");
+        assertThat(contactDetails.get("email")).isEqualTo("vat12@mailinator.com");
         Map sendNotification = (Map) notificationList.get(0).get("sent_notification");
         String bodyString = sendNotification.get("html").toString();
         assertThat(bodyString.contains("A duplicate fee was processed and has now been refunded"));
