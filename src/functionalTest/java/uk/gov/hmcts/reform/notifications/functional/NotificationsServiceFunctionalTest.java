@@ -175,7 +175,7 @@ public class NotificationsServiceFunctionalTest {
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
         assertThat(contactDetails.get("email")).isEqualTo("kaushik.maitra@hmcts.net");
     }
-/*
+
     @Test
     public void sendLetterNotificationRequest() {
 
@@ -957,6 +957,4 @@ public class NotificationsServiceFunctionalTest {
         String bodyString = sendNotification.get("html").toString();
         assertThat(bodyString.contains("A duplicate fee was processed and has now been refunded"));
     }
-
-*/
 }

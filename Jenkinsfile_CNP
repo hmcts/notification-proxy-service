@@ -67,6 +67,15 @@ withPipeline(type, product, component) {
   after('functionalTest:preview') {
 
     publishHTML target: [
+      reportDir            : "build/reports/tests/functional",
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportFiles          : "index.html",
+      reportName           : "CCPAY NOTIFICATIONS PREVIEW API Functional Test Report"
+    ]
+
+    publishHTML target: [
       allowMissing         : true,
       alwaysLinkToLastBuild: true,
       keepAll              : true,
