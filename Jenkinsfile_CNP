@@ -48,46 +48,31 @@ def branchesToSync = ['demo', 'ithc', 'perftest']
 
 withPipeline(type, product, component) {
   enableAksStagingDeployment()
-  enableSlackNotifications('#cc-payments-tech')
   disableLegacyDeployment()
-  disableLegacyDeploymentOnAAT()
   loadVaultSecrets(secrets)
   enableDbMigration('ccpay')
-  syncBranchesWithMaster(branchesToSync)
-
 
   after('functionalTest:preview') {
 
     publishHTML target: [
-      reportDir            : "build/reports/tests/functional",
       allowMissing         : true,
       alwaysLinkToLastBuild: true,
       keepAll              : true,
-      reportFiles          : "index.html",
-      alwaysLinkToLastBuild: true,
-      reportName           : "CCPAY NOTIFICATIONS SERVICE PREVIEW API Functional Test Report"
-    ]
-
-    publishHTML target: [
       reportDir            : "api/target/site/serenity/",
-      allowMissing         : true,
-      alwaysLinkToLastBuild: true,
-      keepAll              : true,
       reportFiles          : "index.html",
-      alwaysLinkToLastBuild: true,
-      reportName           : "CCPAY NOTIFICATIONS SERVICE PREVIEW API Functional Test Sereneity Report"
+      reportName           : "CCPAY NOTIFICATIONS SERVICE PREVIEW API Functional Test Serenity Report"
     ]
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
   }
 
   after('functionalTest:aat') {
     publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
       reportDir            : "api/target/site/serenity/",
       reportFiles          : "index.html",
-      reportName           : "CCPAY NOTIFICATIONS SERVICE AAT Functional Tests",
-      alwaysLinkToLastBuild: true
+      reportName           : "CCPAY NOTIFICATIONS SERVICE AAT Functional Tests Serenity Report"
     ]
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
   }
 
   //Sync demo,ithc and perftest with master branch
