@@ -64,18 +64,16 @@ withPipeline(type, product, component) {
       alwaysLinkToLastBuild: true,
       keepAll              : true,
       reportFiles          : "index.html",
-      reportName           : "Preview Functional Tests",
       alwaysLinkToLastBuild: true,
       reportName           : "CCPAY NOTIFICATIONS SERVICE PREVIEW API Functional Test Report"
     ]
 
     publishHTML target: [
-      reportDir            : "target/site/serenity/",
+      reportDir            : "api/target/site/serenity/",
       allowMissing         : true,
       alwaysLinkToLastBuild: true,
       keepAll              : true,
       reportFiles          : "index.html",
-      reportName           : "Preview Functional Tests",
       alwaysLinkToLastBuild: true,
       reportName           : "CCPAY NOTIFICATIONS SERVICE PREVIEW API Functional Test Sereneity Report"
     ]
@@ -84,11 +82,14 @@ withPipeline(type, product, component) {
 
   after('functionalTest:aat') {
     publishHTML target: [
-      reportDir            : "target/site/serenity/",
+      reportDir            : "api/target/site/serenity/",
       reportFiles          : "index.html",
       reportName           : "CCPAY NOTIFICATIONS SERVICE AAT Functional Tests",
       alwaysLinkToLastBuild: true
     ]
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
   }
+
+  //Sync demo,ithc and perftest with master branch
+  syncBranchesWithMaster(branchesToSync)
 }

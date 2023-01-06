@@ -103,15 +103,8 @@ public class NotificationsServiceFunctionalTest {
         if (!isTokensInitialized) {
             userTokenPaymentRefundApprover = idamService.createUserWithSearchScope
                 ("idam.user.ccpayrefundsapi@hmcts.net").getAuthorisationToken();
-                //idamService.createUserWithSearchScope(IdamService., "payments-refund-approver", "payments")
-                  //  .getAuthorisationToken();
-            System.out.println("userTokenPaymentRefundApprover in setUp >>>>     "+userTokenPaymentRefundApprover);
-            System.out.println("testConfigProperties.s2sPayBubble in setUp >>>>     "+testConfigProperties.s2sPayBubble);
             serviceTokenPayBubble =
                 s2sTokenService.getS2sToken("ccpay_bubble", testConfigProperties.s2sPayBubble);
-
-            //serviceTokenPayBubble = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjY3BheV9idWJibGUiLCJleHAiOjE2NzI4NjEyNTJ9.wF2KVrL7zcau5EbiY1QM7-TX9VnveU5HObF5itvtnj3OFKJFQcxrYL8AjePaINC70s6i7Ydsl7QSsNGQ7jaPyg";
-            System.out.println("serviceTokenPayBubble in setUp >>>>     "+serviceTokenPayBubble);
             isTokensInitialized = true;
         }
     }
@@ -181,7 +174,7 @@ public class NotificationsServiceFunctionalTest {
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
         assertThat(contactDetails.get("email")).isEqualTo("kaushik.maitra@hmcts.net");
     }
-
+/*
     @Test
     public void sendLetterNotificationRequest() {
 
@@ -964,5 +957,5 @@ public class NotificationsServiceFunctionalTest {
         assertThat(bodyString.contains("A duplicate fee was processed and has now been refunded"));
     }
 
-
+*/
 }

@@ -80,9 +80,6 @@ s2s:
     refunds:
       name: ${S2S_SERVICE_NAME_PAYBUBBLE:ccpay_bubble}
       secret: ${OIDC_S2S_SECRET}
-
-     #name: ${S2S_SERVICE_NAME_REFUNDS_API:refunds_api}
-      #secret: ${OIDC_S2S_SECRET}
     paymentapp :
       name : ${S2S_SERVICE_NAME_PAYMENT_APP:payment_app}
       secret: ${S2S_SERVICE_SECRET_PAYMENT_APP}
