@@ -52,32 +52,6 @@ withPipeline(type, product, component) {
   enableAksStagingDeployment()
 
   after('test') {
-    publishHTML target: [
-      allowMissing         : true,
-      alwaysLinkToLastBuild: true,
-      keepAll              : true,
-      reportDir            : "build/reports/checkstyle",
-      reportFiles          : "main.html",
-      reportName           : "CCPAY NOTIFICATIONS PREVIEW Application Checkstyle Main Report"
-    ]
-
-    publishHTML target: [
-      allowMissing         : true,
-      alwaysLinkToLastBuild: true,
-      keepAll              : true,
-      reportDir            : "build/reports/checkstyle",
-      reportFiles          : "test.html",
-      reportName           : "CCPAY NOTIFICATIONS PREVIEW Test Checkstyle Test Report"
-    ]
-
-    publishHTML target: [
-      allowMissing         : true,
-      alwaysLinkToLastBuild: true,
-      keepAll              : true,
-      reportDir            : "build/reports/checkstyle",
-      reportFiles          : "aat.html",
-      reportName           : "CCPAY NOTIFICATIONS AAT Application Checkstyle AAT Report"
-    ]
 
     publishHTML target: [
       allowMissing         : true,

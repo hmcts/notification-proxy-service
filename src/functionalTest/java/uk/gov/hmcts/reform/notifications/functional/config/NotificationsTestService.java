@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import net.serenitybdd.rest.SerenityRest;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.notifications.dtos.request.DocPreviewRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
@@ -51,7 +52,7 @@ public class NotificationsTestService {
     }
 
     public RequestSpecification givenWithAuthHeaders(final String userToken, final String serviceToken) {
-        return RestAssured.given()
+        return SerenityRest.given()
             .header(AUTHORIZATION, userToken)
             .header("ServiceAuthorization", serviceToken);
     }
