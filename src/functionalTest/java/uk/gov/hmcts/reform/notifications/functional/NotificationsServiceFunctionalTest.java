@@ -105,6 +105,7 @@ public class NotificationsServiceFunctionalTest {
                 ("idam.user.ccpayrefundsapi@hmcts.net").getAuthorisationToken();
             serviceTokenPayBubble =
                 s2sTokenService.getS2sToken("ccpay_bubble", testConfigProperties.s2sPayBubble);
+
             isTokensInitialized = true;
         }
     }
