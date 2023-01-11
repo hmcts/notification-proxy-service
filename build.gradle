@@ -2,6 +2,7 @@ buildscript {
   repositories {
     mavenLocal()
     mavenCentral()
+    jcenter()
   }
   dependencies {
     classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.83")
@@ -207,6 +208,7 @@ dependencyManagement {
 repositories {
   mavenLocal()
   mavenCentral()
+  jcenter()
   maven { url 'https://jitpack.io' }
 }
 
@@ -232,6 +234,13 @@ def versions = [
   sonarPitest    : '0.5'
 ]
 
+
+task fortifyScan(type: JavaExec)  {
+  mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  classpath += sourceSets.test.runtimeClasspath
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
+}
+
 configurations {
   compileOnly {
     extendsFrom annotationProcessor
@@ -241,6 +250,7 @@ configurations {
 dependencies {
 
   compileOnly 'com.sun.xml.bind:jaxb-osgi:2.3.1'
+  implementation 'com.github.hmcts:fortify-client:1.2.1:all'
   implementation 'junit:junit:4.13.1'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'

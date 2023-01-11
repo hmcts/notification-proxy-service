@@ -80,6 +80,7 @@
   <suppress>
     <notes>Apache tomcat version upgrade needed</notes>
     <cve>CVE-2022-34305</cve>
+    <cve>CVE-2022-45143</cve>
   </suppress>
   <suppress>
     <notes>Spring security core upgraded needed</notes>
@@ -145,7 +146,7 @@
     <notes>Postgresql version needs upgrading to resolve CVE</notes>
     <cve>CVE-2022-41946</cve>
   </suppress>
-    <suppress>
+  <suppress>
         <notes>Prior to Apache Commons Net 3.9.0, Net's FTP client trusts the host from PASV response by default. A
             malicious server can redirect the Commons Net code to use a different host, but the user has to connect to
             the malicious server in the first place. This may lead to leakage of information about services running on
@@ -153,5 +154,56 @@
             does. See https://issues.apache.org/jira/browse/NET-711.
         </notes>
         <cve>CVE-2021-37533</cve>
-    </suppress>
+  </suppress>
+  <suppress>
+    <notes>
+      In Apache Commons IO before 2.7, When invoking the method FileNameUtils.normalize with an improper input string,
+      like "//../foo", or "\\..\foo", the result would be the same value
+    </notes>
+    <cve>CVE-2021-29425</cve>
+  </suppress>
+  <suppress>
+    <notes>
+      The package com.google.code.gson:gson before 2.8.9 are vulnerable to Deserialization of Untrusted Data via
+      the writeReplace() method in internal classes, which may lead to DoS attacks
+    </notes>
+    <cve>CVE-2022-25647</cve>
+  </suppress>
+  <suppress>
+    <notes>
+      The package com.google.code.gson:gson before 2.8.9 are vulnerable to Deserialization of Untrusted Data via
+      the writeReplace() method in internal classes, which may lead to DoS attacks
+    </notes>
+    <cve>CVE-2022-25647</cve>
+  </suppress>
+  <suppress>
+    <notes>
+      ** DISPUTED ** CertificatePinner.java in OkHttp 3.x through 3.12.0 allows man-in-the-middle attackers to bypass
+      certificate pinning by changing SSLContext and the boolean values while hooking the application.
+    </notes>
+    <cve>CVE-2018-20200</cve>
+  </suppress>
+  <suppress>
+    <notes>
+      Apache HttpClient versions prior to version 4.5.13 and 5.0.3 can misinterpret malformed authority component
+      in request URIs passed to the library as java.net.URI object and pick the wrong target host for request execution.
+    </notes>
+    <cve>CVE-2020-13956</cve>
+  </suppress>
+  <suppress>
+    <notes>
+      Due to unbounded alias chasing, a maliciously crafted YAML file can cause the system to consume significant
+      system resources. If parsing user input, this may be used as a denial of service vector.
+    </notes>
+    <cve>CVE-2021-4235</cve>
+    <cve>CVE-2022-3064</cve>
+  </suppress>
+  <suppress>
+    <notes>
+      The JsonErrorReportValve in Apache Tomcat 8.5.83, 9.0.40 to 9.0.68 and 10.1.0-M1 to 10.1.1 did not escape the type,
+      message or description values. In some circumstances these are constructed from user provided data and it was
+      therefore possible for users to supply values that invalidated or manipulated the JSON output.
+    </notes>
+    <cve>CVE-2022-45143</cve>
+  </suppress>
 </suppressions>
