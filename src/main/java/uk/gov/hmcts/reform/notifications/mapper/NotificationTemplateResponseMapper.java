@@ -80,7 +80,7 @@ public class NotificationTemplateResponseMapper {
 
         return FromTemplateContact.buildFromTemplateContactWith()
             .fromEmailAddress(toFromEmailMapper(notificationType, serviceContact))
-            .fromMailAddress(toFromMailMapper(notificationType, serviceContact))
+            .fromMailAddress(!(serviceContact.getFromMailAddress() == null)?toFromMailMapper(notificationType, serviceContact):null)
             .build();
     }
 
