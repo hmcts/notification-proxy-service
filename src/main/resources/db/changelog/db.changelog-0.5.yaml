@@ -114,3 +114,43 @@ databaseChangeLog:
             splitStatements: true
             sql: >
               DELETE FROM service_contact WHERE service_name = 'Digital Bar';
+  - changeSet:
+      id: 100012-3
+      author: Ranjeet
+      changes:
+        - sql:
+            splitStatements: true
+            sql: >
+              UPDATE service_contact SET
+                service_mailbox = 'contactfpl@justice.gov.uk'
+                WHERE service_name = 'Family Public Law';
+              UPDATE service_contact SET
+                service_mailbox = 'contactocmc@justice.gov.uk'
+                WHERE service_name = 'Specified Money Claims';
+              UPDATE service_contact SET
+                service_mailbox = 'adoption@justice.gov.uk'
+                WHERE service_name = 'Adoption';
+              UPDATE service_contact SET
+                service_mailbox = 'contactia@justice.gov.uk'
+                WHERE service_name = 'Immigration and Asylum Appeals';
+              UPDATE service_contact SET
+                service_mailbox = 'contactocmc@justice.gov.uk'
+                WHERE service_name = 'Civil Money Claims';
+              UPDATE service_contact SET
+                service_mailbox = 'contactfinancialremedy@justice.gov.uk'
+                WHERE service_name = 'Finrem';
+              UPDATE service_contact SET
+                service_mailbox = 'divorcecase@justice.gov.uk'
+                WHERE service_name = 'Divorce';
+              UPDATE service_contact SET
+                service_mailbox = 'contactfinancialremedy@justice.gov.uk'
+                WHERE service_name = 'Financial Remedy';
+              UPDATE service_contact SET
+                service_mailbox = 'civil@justice.gov.uk'
+                WHERE service_name = 'Civil';
+              UPDATE service_contact SET
+                service_mailbox = 'family@justice.gov.uk'
+                WHERE service_name = 'Family Private Law';
+              UPDATE service_contact SET
+                service_mailbox = 'contactprobate@justice.gov.uk'
+                WHERE service_name = 'Probate';
