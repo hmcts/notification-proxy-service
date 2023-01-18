@@ -57,15 +57,11 @@ databaseChangeLog:
 
   - changeSet:
       id: 100012-1
-      author: ranjeet
+      author: Ranjeet
       changes:
         - sql:
             splitStatements: true
             sql: >
-              UPDATE service_contact SET
-                from_email_address = '',
-                from_mail_address = ''
-                WHERE service_name = 'Digital Bar';
               UPDATE service_contact SET
                 from_email_address = 'contactfpl@justice.gov.uk',
                 from_mail_address = NULL
@@ -110,3 +106,11 @@ databaseChangeLog:
                 from_email_address = 'contactprobate@justice.gov.uk',
                 from_mail_address = NULL
                 WHERE service_name = 'Probate';
+  - changeSet:
+      id: 100012-2
+      author: Ranjeet
+      changes:
+        - sql:
+            splitStatements: true
+            sql: >
+              DELETE FROM service_contact WHERE service_name = 'Digital Bar';
