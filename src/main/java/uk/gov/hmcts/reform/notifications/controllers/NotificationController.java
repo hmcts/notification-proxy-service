@@ -89,7 +89,7 @@ public class NotificationController {
         @RequestHeader("Authorization") String authorization,
         @RequestHeader(required = false) MultiValueMap<String, String> headers,
         @PathVariable("reference") String reference) {
-
+        log.info("Notification reference in GET endpoint /notifications/{reference} {}", reference);
         return new ResponseEntity<>(
             notificationService.getNotification(reference),
             HttpStatus.OK

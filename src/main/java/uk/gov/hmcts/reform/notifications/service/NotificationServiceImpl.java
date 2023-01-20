@@ -273,10 +273,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationResponseDto getNotification(String reference) {
-
         Optional<List<Notification>> notificationList;
         notificationList = notificationRepository.findByReferenceOrderByDateUpdatedDesc(reference);
-
+        LOG.info("Notification List retrieved {}",notificationList);
         if (notificationList.isPresent() && !notificationList.get().isEmpty()) {
 
             notificationResponseDto = NotificationResponseDto
@@ -284,6 +283,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .notifications(notificationList.get().stream().map(notificationResponseMapper::notificationResponse)
                                    .collect(Collectors.toList()))
                 .build();
+            LOG.info("Notification Response prepared from getNotification {}",notificationResponseDto);
         }else {
             throw new NotificationListEmptyException("Notification has not been sent for this refund");
         }
