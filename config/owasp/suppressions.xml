@@ -128,4 +128,23 @@
         </notes>
         <cve>CVE-2021-37533</cve>
     </suppress>
+  <suppress>
+    <cve>CVE-2021-4277</cve>
+  </suppress>
+  <suppress>
+    <notes>
+      Due to unbounded alias chasing, a maliciously crafted YAML file can cause the system to consume significant
+      system resources. If parsing user input, this may be used as a denial of service vector.
+    </notes>
+    <cve>CVE-2021-4235</cve>
+    <cve>CVE-2022-3064</cve>
+  </suppress>
+  <suppress>
+    <notes>
+      The JsonErrorReportValve in Apache Tomcat 8.5.83, 9.0.40 to 9.0.68 and 10.1.0-M1 to 10.1.1 did not escape the type,
+      message or description values. In some circumstances these are constructed from user provided data and it was
+      therefore possible for users to supply values that invalidated or manipulated the JSON output.
+    </notes>
+    <cve>CVE-2022-45143</cve>
+  </suppress>
 </suppressions>
