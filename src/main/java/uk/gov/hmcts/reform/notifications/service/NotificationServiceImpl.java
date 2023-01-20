@@ -275,7 +275,7 @@ public class NotificationServiceImpl implements NotificationService {
     public NotificationResponseDto getNotification(String reference) {
         Optional<List<Notification>> notificationList;
         notificationList = notificationRepository.findByReferenceOrderByDateUpdatedDesc(reference);
-        LOG.info("Notification List retrieved {}",notificationList);
+        LOG.info("Notification List retrieved in getNotification {}",notificationList);
         if (notificationList.isPresent() && !notificationList.get().isEmpty()) {
 
             notificationResponseDto = NotificationResponseDto
@@ -298,7 +298,9 @@ public class NotificationServiceImpl implements NotificationService {
         String instructionType ;
         Optional<ServiceContact> serviceContact;
         String refundRef = getRefundReference(docPreviewRequest);
+        LOG.info("Refund reference in previewNotification {}", refundRef);
         String refundReason = getRefundReason(docPreviewRequest.getPersonalisation().getRefundReason());
+        LOG.info("Refund reason in previewNotification {}", refundReason);
         String ccdCaseNumber;
         instructionType = getInstructionType(docPreviewRequest.getPaymentChannel(),docPreviewRequest.getPaymentMethod());
         serviceContact = serviceContactRepository.findByServiceName(docPreviewRequest.getServiceName());
@@ -319,6 +321,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .generateTemplatePreview(templateId,
                                              createLetterPersonalisation(docPreviewRequest.getRecipientPostalAddress(),docPreviewRequest.getPersonalisation(), serviceContact.get().getServiceMailbox(),
                                                                          refundRef, ccdCaseNumber, refundReason));
+                LOG.info("LETTER templatePreview {}", templatePreview);
             }
 
          notificationTemplatePreviewResponse = notificationTemplateResponseMapper.notificationPreviewResponse(templatePreview,

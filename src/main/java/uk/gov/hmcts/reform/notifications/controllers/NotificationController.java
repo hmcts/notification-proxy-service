@@ -47,9 +47,10 @@ public class NotificationController {
          @RequestHeader("Authorization") String authorization,
          @RequestHeader(required = false) MultiValueMap<String, String> headers,
          @Valid @RequestBody RefundNotificationEmailRequest request) {
-            notificationService.sendEmailNotification(request, headers);
-
-        return new ResponseEntity<>(
+        log.info("recipientEmailAddress in request  for /email endpoint {}",request.getRecipientEmailAddress());
+        log.info("reference in request  for /email endpoint {}",request.getReference());
+        notificationService.sendEmailNotification(request, headers);
+            return new ResponseEntity<>(
                     "Notification sent successfully via email", HttpStatus.CREATED);
     }
 
@@ -70,6 +71,8 @@ public class NotificationController {
         @RequestHeader(required = false) MultiValueMap<String, String> headers,
         @Valid @RequestBody RefundNotificationLetterRequest request) {
         log.info("Inside /notifications/letter {}",request);
+        log.info("recipientPostalAddress in request  for /letter endpoint {}",request.getRecipientPostalAddress());
+        log.info("reference in request  for /letter endpoint {}",request.getReference());
             notificationService.sendLetterNotification(request, headers );
         return new ResponseEntity<>(
             "Notification sent successfully via letter", HttpStatus.CREATED);
