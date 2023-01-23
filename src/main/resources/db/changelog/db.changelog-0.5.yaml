@@ -99,7 +99,7 @@ databaseChangeLog:
                 from_mail_address = NULL
                 WHERE service_name = 'Civil';
               UPDATE service_contact SET
-                from_email_address = 'family@justice.gov.uk',
+                from_email_address = 'privatefamilylawproject@justice.gov.uk',
                 from_mail_address = NULL
                 WHERE service_name = 'Family Private Law';
               UPDATE service_contact SET
@@ -149,7 +149,7 @@ databaseChangeLog:
                 service_mailbox = 'civil@justice.gov.uk'
                 WHERE service_name = 'Civil';
               UPDATE service_contact SET
-                service_mailbox = 'family@justice.gov.uk'
+                service_mailbox = 'privatefamilylawproject@justice.gov.uk'
                 WHERE service_name = 'Family Private Law';
               UPDATE service_contact SET
                 service_mailbox = 'contactprobate@justice.gov.uk'
