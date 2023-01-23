@@ -85,7 +85,7 @@ security:
 trusted:
   s2s:
     service:
-      names: refunds_api,ccpay_bubble,xui_webapp
+      names: refunds_api,ccpay_bubble,api_gw,ccd_gw,xui_webapp
 auth:
   idam:
     client:
