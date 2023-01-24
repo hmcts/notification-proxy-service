@@ -105,7 +105,7 @@ public class NotificationController {
         @ApiResponse(code = 403, message = "AuthError"),
         @ApiResponse(code = 500, message = "Internal Server Error")
     })
-    @PostMapping("/doc-preview")
+    @PostMapping("/notifications/doc-preview")
     public ResponseEntity<NotificationTemplatePreviewResponse> previewNotification(
         @RequestHeader("Authorization") String authorization,
         @RequestHeader(required = false) MultiValueMap<String, String> headers,
