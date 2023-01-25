@@ -48,7 +48,7 @@ withPipeline(type, product, component) {
   syncBranchesWithMaster(branchesToSync)
 
 
-  after('functionalTest:preview') {
+  afterAlways('functionalTest:preview') {
 
     publishHTML target: [
       reportDir            : "build/reports/tests/functional",
@@ -74,7 +74,7 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
   }
 
-  after('functionalTest:aat') {
+  afterAlways('functionalTest:aat') {
     publishHTML target: [
       reportDir            : "target/site/serenity/",
       reportFiles          : "index.html",
