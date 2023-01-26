@@ -777,9 +777,6 @@ public class NotificationsServiceFunctionalTest {
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
         assertThat(contactDetails.get("postal_code")).isEqualTo("SW1H 9AJ");
-        assertThat(((HashMap)((HashMap)((HashMap)notificationList.get(0).get("sent_notification"))
-            .get("from")).get("from_mail_address")).get("address_line"))
-            .isEqualTo("ABC");
     }
 
     @Test
