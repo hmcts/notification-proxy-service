@@ -710,7 +710,7 @@ public class NotificationsServiceFunctionalTest {
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
         assertThat(contactDetails.get("email")).isEqualTo("vat12@mailinator.com");
         assertThat(((HashMap)((HashMap)notificationList.get(0).get("sent_notification")).get("from")).get("from_email_address"))
-            .isEqualTo("probate@justice.gov.uk");
+            .isEqualTo("contactprobate@justice.gov.uk");
     }
 
     @Test
