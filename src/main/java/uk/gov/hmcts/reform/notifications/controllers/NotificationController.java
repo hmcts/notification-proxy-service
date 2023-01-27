@@ -127,14 +127,14 @@ public class NotificationController {
 
     })
 
-    @GetMapping("/notifications/postcodelookup{postcode}")
+    @GetMapping("/notifications/postcode-lookup{postcode}")
     public ResponseEntity<PostCodeResponse> gePostLookUp(
         @RequestHeader("Authorization") String authorization,
         @RequestHeader(required = false) MultiValueMap<String, String> headers,
-        @PathVariable("reference") String postcode) {
-        log.info("Notification reference in GET endpoint /notifications/postcodelookup {}", postcode);
+        @PathVariable("postcode") String postCode) {
+        log.info("Notification reference in GET endpoint /notifications/postcodelookup {}", postCode);
         return new ResponseEntity<PostCodeResponse>(
-             notificationService.getAddress(postcode),
+             notificationService.getAddress(postCode),
             HttpStatus.OK
         );
     }
