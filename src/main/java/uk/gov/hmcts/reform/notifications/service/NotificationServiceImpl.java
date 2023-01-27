@@ -462,9 +462,9 @@ public class NotificationServiceImpl implements NotificationService {
           return refundRef;
     }
     @Override
-    public PostLookUpResponse getAddress(String postCode){
+    public PostCodeResponse getAddress(String postCode){
 
-        PostLookUpResponse results = null;
+        PostCodeResponse results = null;
         try {
             ConcurrentHashMap<String, String> params = new ConcurrentHashMap<>();
             params.put("postcode", StringUtils.deleteWhitespace(postCode));
@@ -498,7 +498,7 @@ public class NotificationServiceImpl implements NotificationService {
             HttpStatus responseStatus = ((ResponseEntity) response).getStatusCode();
 
             if (responseStatus.value() == org.apache.http.HttpStatus.SC_OK) {
-                results = objectMapper.readValue(response.getBody(), PostLookUpResponse.class);
+                results = objectMapper.readValue(response.getBody(), PostCodeResponse.class);
 
                 return results;
             } else if (responseStatus.value() == org.apache.http.HttpStatus.SC_NOT_FOUND) {

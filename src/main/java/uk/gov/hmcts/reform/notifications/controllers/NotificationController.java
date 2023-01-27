@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailReq
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
-import uk.gov.hmcts.reform.notifications.dtos.response.PostLookUpResponse;
+import uk.gov.hmcts.reform.notifications.dtos.response.PostCodeResponse;
 import uk.gov.hmcts.reform.notifications.service.NotificationService;
 
 
@@ -128,12 +128,12 @@ public class NotificationController {
     })
 
     @GetMapping("/notifications/postcode-lookup{postcode}")
-    public ResponseEntity<PostLookUpResponse> gePostLookUp(
+    public ResponseEntity<PostCodeResponse> gePostLookUp(
         @RequestHeader("Authorization") String authorization,
         @RequestHeader(required = false) MultiValueMap<String, String> headers,
         @PathVariable("postcode") String postCode) {
         log.info("Notification reference in GET endpoint /notifications/postcodelookup {}", postCode);
-        return new ResponseEntity<PostLookUpResponse>(
+        return new ResponseEntity<PostCodeResponse>(
              notificationService.getAddress(postCode),
             HttpStatus.OK
         );
