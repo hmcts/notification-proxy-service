@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Header {
+public class HeaderInfo {
     @JsonProperty("header")
     private HeaderDetails header;
 }
