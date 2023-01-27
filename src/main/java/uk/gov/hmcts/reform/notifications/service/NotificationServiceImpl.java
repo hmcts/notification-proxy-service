@@ -473,6 +473,9 @@ public class NotificationServiceImpl implements NotificationService {
             params.put("postcode", StringUtils.deleteWhitespace(postCode));
             String url = configuration.getUrl();
             String key = configuration.getAccessKey();
+
+            LOG.info("url {} ",url);
+            LOG.info("key {} ",key);
             params.put("key", key);
             if (null == url) {
                 throw new PostCodeValidationException("Postcode URL is null");
