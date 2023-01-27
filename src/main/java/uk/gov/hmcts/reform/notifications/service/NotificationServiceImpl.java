@@ -22,10 +22,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.notifications.config.PostcodeLookupConfiguration;
 import uk.gov.hmcts.reform.notifications.config.security.idam.IdamService;
 import uk.gov.hmcts.reform.notifications.dtos.request.*;
-import uk.gov.hmcts.reform.notifications.dtos.response.IdamUserIdResponse;
-import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
-import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
-import uk.gov.hmcts.reform.notifications.dtos.response.PostCodeResponse;
+import uk.gov.hmcts.reform.notifications.dtos.response.*;
 import uk.gov.hmcts.reform.notifications.exceptions.NotificationListEmptyException;
 import uk.gov.hmcts.reform.notifications.exceptions.PostCodeValidationException;
 import uk.gov.hmcts.reform.notifications.exceptions.RefundReasonNotFoundException;
@@ -465,9 +462,9 @@ public class NotificationServiceImpl implements NotificationService {
           return refundRef;
     }
     @Override
-    public PostCodeResponse getAddress(String postCode){
+    public PostLookUpResponse getAddress(String postCode){
 
-        PostCodeResponse results = null;
+        PostLookUpResponse results = null;
         try {
             ConcurrentHashMap<String, String> params = new ConcurrentHashMap<>();
             params.put("postcode", StringUtils.deleteWhitespace(postCode));
@@ -501,7 +498,7 @@ public class NotificationServiceImpl implements NotificationService {
             HttpStatus responseStatus = ((ResponseEntity) response).getStatusCode();
 
             if (responseStatus.value() == org.apache.http.HttpStatus.SC_OK) {
-                results = objectMapper.readValue(response.getBody(), PostCodeResponse.class);
+                results = objectMapper.readValue(response.getBody(), PostLookUpResponse.class);
 
                 return results;
             } else if (responseStatus.value() == org.apache.http.HttpStatus.SC_NOT_FOUND) {

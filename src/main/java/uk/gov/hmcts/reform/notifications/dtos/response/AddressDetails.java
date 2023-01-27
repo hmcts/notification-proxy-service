@@ -38,4 +38,7 @@ public class AddressDetails {
 
     @JsonProperty("POSTAL_ADDRESS_CODE")
     private String postalAddressCode;
+
+    @JsonProperty("LOCAL_CUSTODIAN_CODE_DESCRIPTION")
+    private String localCustomerCodeDescription;
 }
