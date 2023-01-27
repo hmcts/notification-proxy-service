@@ -19,4 +19,22 @@ public class HeaderDetails {
 
     @JsonProperty("totalresults")
     private int totalresults;
+
+    @JsonProperty("uri")
+    private String uri;
+    @JsonProperty("offset")
+    private String offset;
+    @JsonProperty("format")
+    private String format;
+    @JsonProperty("dataset")
+    private String dataset;
+    @JsonProperty("lr")
+    private String lr;
+
+    @JsonProperty("epoch")
+    private String epoch;
+    @JsonProperty("lastupdate")
+    private String lastupdate;
+    @JsonProperty("output_srs")
+    private String outputSrs;
 }
