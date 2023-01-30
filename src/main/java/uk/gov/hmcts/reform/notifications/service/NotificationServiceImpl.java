@@ -24,7 +24,8 @@ import uk.gov.hmcts.reform.notifications.config.security.idam.IdamService;
 import uk.gov.hmcts.reform.notifications.dtos.request.*;
 import uk.gov.hmcts.reform.notifications.dtos.response.*;
 import uk.gov.hmcts.reform.notifications.exceptions.NotificationListEmptyException;
-import uk.gov.hmcts.reform.notifications.exceptions.PostCodeValidationException;
+import uk.gov.hmcts.reform.notifications.exceptions.PostCodeLookUpNotFoundException;
+import uk.gov.hmcts.reform.notifications.exceptions.PostCodeLookUpException;
 import uk.gov.hmcts.reform.notifications.exceptions.RefundReasonNotFoundException;
 import uk.gov.hmcts.reform.notifications.mapper.EmailNotificationMapper;
 import uk.gov.hmcts.reform.notifications.mapper.LetterNotificationMapper;
@@ -470,15 +471,12 @@ public class NotificationServiceImpl implements NotificationService {
             params.put("postcode", StringUtils.deleteWhitespace(postCode));
             String url = configuration.getUrl();
             String key = configuration.getAccessKey();
-
-            LOG.info("url {} ",url);
-            LOG.info("key {} ",key);
             params.put("key", key);
             if (null == url) {
-                throw new PostCodeValidationException("Postcode URL is null");
+                throw new PostCodeLookUpException("Postcode URL is null");
             }
             if (null == key || StringUtils.isEmpty(key)) {
-                throw new PostCodeValidationException("Postcode API Key is null");
+                throw new PostCodeLookUpException("Postcode API Key is null");
             }
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url + "/postcode");
             for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -502,14 +500,11 @@ public class NotificationServiceImpl implements NotificationService {
 
                 return results;
             } else if (responseStatus.value() == org.apache.http.HttpStatus.SC_NOT_FOUND) {
-                LOG.info("Postcode " + postCode + " not found");
-            } else {
-                LOG.info("Postcode lookup failed with status {}", responseStatus.value());
+                throw new PostCodeLookUpNotFoundException("Postcode " + postCode + " not found");
             }
-
         } catch (Exception e) {
             LOG.error("Postcode Lookup Failed - ", e.getMessage());
-            throw new PostCodeValidationException(e.getMessage(), e);
+            throw new PostCodeLookUpException(e.getMessage(), e);
         }
 
         return results;

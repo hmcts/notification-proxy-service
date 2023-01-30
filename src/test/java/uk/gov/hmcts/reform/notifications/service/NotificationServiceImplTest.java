@@ -9,9 +9,14 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 
 import java.math.BigDecimal;
-import java.util.UUID;
+import java.util.*;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -27,20 +32,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import uk.gov.hmcts.reform.notifications.config.PostcodeLookupConfiguration;
 import uk.gov.hmcts.reform.notifications.config.security.idam.IdamServiceImpl;
 import uk.gov.hmcts.reform.notifications.dtos.enums.NotificationType;
 import uk.gov.hmcts.reform.notifications.dtos.request.Personalisation;
 import uk.gov.hmcts.reform.notifications.dtos.request.RecipientPostalAddress;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
-import uk.gov.hmcts.reform.notifications.dtos.response.FromTemplateContact;
-import uk.gov.hmcts.reform.notifications.dtos.response.IdamUserIdResponse;
-import uk.gov.hmcts.reform.notifications.dtos.response.MailAddress;
-import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
-import uk.gov.hmcts.reform.notifications.exceptions.InvalidAddressException;
-import uk.gov.hmcts.reform.notifications.exceptions.InvalidApiKeyException;
-import uk.gov.hmcts.reform.notifications.exceptions.InvalidTemplateId;
-import uk.gov.hmcts.reform.notifications.exceptions.NotificationListEmptyException;
+import uk.gov.hmcts.reform.notifications.dtos.response.*;
+import uk.gov.hmcts.reform.notifications.exceptions.*;
 import uk.gov.hmcts.reform.notifications.mapper.EmailNotificationMapper;
 import uk.gov.hmcts.reform.notifications.mapper.LetterNotificationMapper;
 import uk.gov.hmcts.reform.notifications.mapper.NotificationResponseMapper;
@@ -53,9 +53,6 @@ import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
 import uk.gov.hmcts.reform.notifications.repository.NotificationRefundReasonRepository;
 import uk.gov.hmcts.reform.notifications.repository.NotificationRepository;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 import uk.gov.hmcts.reform.notifications.repository.ServiceContactRepository;
 import uk.gov.service.notify.*;
@@ -137,6 +134,16 @@ public class NotificationServiceImplTest {
     @Mock
     private NotificationTemplateResponseMapper notificationTemplateResponseMapper;
 
+    @Mock
+    private ObjectMapper objectMapper;
+
+    @Mock
+    @Qualifier("restTemplatePostCodeLookUp")
+    private RestTemplate restTemplatePostCodeLookUp;
+
+    @Mock
+    private PostcodeLookupConfiguration postcodeLookupConfiguration;
+
     public static final String GET_REFUND_LIST_CCD_CASE_USER_ID1 = "1f2b7025-0f91-4737-92c6-b7a9baef14c6";
 
     private static ContactDetails getContactLetter() {
@@ -209,6 +216,11 @@ public class NotificationServiceImplTest {
         .uid(GET_REFUND_LIST_CCD_CASE_USER_ID1)
         .build();
 
+    @BeforeEach
+    private void setup() {
+        when(postcodeLookupConfiguration.getUrl()).thenReturn("https://api.os.uk/search/places/v1");
+        when(postcodeLookupConfiguration.getAccessKey()).thenReturn("dummy");
+    }
 
     @Test
   public   void throwNotificationListEmptyExceptionWhenNotificationListIsEmpty() {
@@ -607,4 +619,52 @@ public class NotificationServiceImplTest {
         assertThrows(InvalidApiKeyException.class, () -> notificationServiceImpl.sendEmailNotification(request, any()
         ));
     }
+
+    @Test
+    public void shouldReturnAddressWhenGivenPostCodeIsValid()
+        throws JsonProcessingException {
+
+        PostCodeResult result =
+            PostCodeResult.builder()
+                .dpa(
+                    AddressDetails.builder()
+                        .address("Flat 100 ABC Regent Road")
+                        .buildingNumber("FLAT 100")
+                        .countryCode("UK")
+                        .build())
+                .build();
+        ObjectMapper mapper = new ObjectMapper();
+
+        PostCodeResponse res = PostCodeResponse.builder().results(Arrays.asList(result)).build();
+        String resultJson = mapper.writeValueAsString(res);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(resultJson);
+
+        when(objectMapper.readValue(anyString(), eq(PostCodeResponse.class))).thenReturn(res);
+        when(restTemplatePostCodeLookUp.exchange(
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.any(HttpMethod.class),
+            ArgumentMatchers.any(),
+            ArgumentMatchers.<Class<String>>any()))
+            .thenReturn(responseEntity);
+
+        PostCodeResponse postCodeResponse = notificationServiceImpl.getAddress("TW5 1BC");
+        assertEquals("FLAT 100",postCodeResponse.getResults().get(0).getDpa().getBuildingNumber());
+    }
+
+    @Test
+    public void shouldReturnExceptionWhenUrlIsEmpty() {
+        when(postcodeLookupConfiguration.getUrl()).thenReturn(null);
+        assertThrows(
+            PostCodeLookUpException.class,
+            () -> notificationServiceImpl.getAddress("TW5 1BC"));
+    }
+
+    @Test
+    public void shouldReturnExceptionWhenKeyIsEmpty() {
+        when(postcodeLookupConfiguration.getAccessKey()).thenReturn("");
+        assertThrows(
+            PostCodeLookUpException.class,
+            () -> notificationServiceImpl.getAddress("TW5 1BC"));
+    }
+
 }
