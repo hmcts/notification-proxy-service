@@ -67,6 +67,6 @@ public class NotificationsTestService {
             .body(request)
             .baseUri(baseUri)
             .when()
-            .post("/doc-preview");
+            .post("/notifications/doc-preview");
     }
 }
