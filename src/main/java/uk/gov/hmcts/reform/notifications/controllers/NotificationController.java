@@ -118,7 +118,7 @@ public class NotificationController {
         );
     }
 
-    @ApiOperation(value = "GET /notifications ", notes = "Get Notification by passing reference")
+    @ApiOperation(value = "GET /notifications ", notes = "Get Address by passing post code")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success"),
         @ApiResponse(code = 404, message = "Postcode not found"),
