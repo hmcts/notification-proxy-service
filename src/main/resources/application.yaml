@@ -118,3 +118,8 @@ idam:
     url: ${AUTH_PROVIDER_SERVICE_CLIENT_BASEURL}
     totp_secret: ${OIDC_S2S_SECRET}
     microservice: ${OIDC_S2S_MICROSERVICE_NAME}
+
+postcodelookup:
+  api:
+    url: https://api.os.uk/search/places/v1
+    key: ${POSTCODE_ADDRESS_LOOKUP_ID:REPLACE_ME}
