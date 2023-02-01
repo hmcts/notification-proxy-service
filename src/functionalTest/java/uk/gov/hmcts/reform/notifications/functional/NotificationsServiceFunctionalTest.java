@@ -954,4 +954,25 @@ public class NotificationsServiceFunctionalTest {
         String bodyString = sendNotification.get("html").toString();
         assertThat(bodyString.contains("A duplicate fee was processed and has now been refunded"));
     }
+    @Test
+    public void returnAddressWhenValidPostCodeProvided() {
+
+        String postCode ="SW1H 9AJ";
+        final Response responsePostCodeLookUp = notificationsTestServicel.getPostCodeLookup(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            postCode
+        );
+
+        assertThat(responsePostCodeLookUp.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Map> addressList =  responsePostCodeLookUp.getBody().jsonPath().getList("results");
+        Map results = (Map) addressList.get(0).get("DPA");
+        assertThat(results.get("ADDRESS")).isEqualTo("MINISTRY OF JUSTICE, SEVENTH FLOOR, 102, PETTY FRANCE, LONDON, SW1H 9AJ");
+        assertThat(results.get("POSTCODE")).isEqualTo("SW1H 9AJ");
+        assertThat(results.get("POST_TOWN")).isEqualTo("LONDON");
+
+    }
+
 }
