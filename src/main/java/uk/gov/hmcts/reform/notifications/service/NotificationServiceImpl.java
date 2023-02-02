@@ -355,7 +355,7 @@ public class NotificationServiceImpl implements NotificationService {
          String html = null;
 
         Optional<String> subjectOptional = templatePreview.getSubject();
-        if(subjectOptional.isPresent() && !subjectOptional.isEmpty()){
+        if(subjectOptional.isPresent() && !subjectOptional.isEmpty()) {
             subject = subjectOptional.get();
         }
 
