@@ -125,3 +125,8 @@ mock:
   callback:
     url:
       endpoint : ${TEST_URL:http://payment-api-aat-staging.service.core-compute-aat.internal}/mock-api/serviceCallback
+
+postcodelookup:
+  api:
+    url: https://api.os.uk/search/places/v1
+    key: ${POSTCODE_ADDRESS_LOOKUP_ID:REPLACE_ME}

@@ -2,23 +2,30 @@ package uk.gov.hmcts.reform.notifications.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+import uk.gov.hmcts.reform.notifications.config.PostcodeLookupConfiguration;
 import uk.gov.hmcts.reform.notifications.config.security.idam.IdamService;
 import uk.gov.hmcts.reform.notifications.dtos.request.*;
-import uk.gov.hmcts.reform.notifications.dtos.response.IdamUserIdResponse;
-import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
-import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
+import uk.gov.hmcts.reform.notifications.dtos.response.*;
 import uk.gov.hmcts.reform.notifications.exceptions.NotificationListEmptyException;
+import uk.gov.hmcts.reform.notifications.exceptions.PostCodeLookUpNotFoundException;
+import uk.gov.hmcts.reform.notifications.exceptions.PostCodeLookUpException;
 import uk.gov.hmcts.reform.notifications.exceptions.RefundReasonNotFoundException;
 import uk.gov.hmcts.reform.notifications.mapper.EmailNotificationMapper;
 import uk.gov.hmcts.reform.notifications.mapper.LetterNotificationMapper;
@@ -70,6 +77,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired
     private NotificationTemplateResponseMapper notificationTemplateResponseMapper;
 
+    @Autowired
+    private PostcodeLookupConfiguration configuration;
+
     private NotificationResponseDto notificationResponseDto;
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationServiceImpl.class);
@@ -102,6 +112,12 @@ public class NotificationServiceImpl implements NotificationService {
     @Value("${notify.template.card-pba.email}")
     private String cardPbaEmailTemplateId;
 
+    @Autowired()
+    @Qualifier("restTemplatePostCodeLookUp")
+    private RestTemplate restTemplatePostCodeLookUp;
+
+    @Autowired
+    ObjectMapper objectMapper;
     @Override
     public SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest, MultiValueMap<String, String> headers) {
         try {
@@ -240,10 +256,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationResponseDto getNotification(String reference) {
-
         Optional<List<Notification>> notificationList;
         notificationList = notificationRepository.findByReferenceOrderByDateUpdatedDesc(reference);
-
+        LOG.info("Notification List retrieved in getNotification {}",notificationList);
         if (notificationList.isPresent() && !notificationList.get().isEmpty()) {
 
             notificationResponseDto = NotificationResponseDto
@@ -251,6 +266,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .notifications(notificationList.get().stream().map(notificationResponseMapper::notificationResponse)
                                    .collect(Collectors.toList()))
                 .build();
+            LOG.info("Notification Response prepared from getNotification {}",notificationResponseDto);
         }else {
             throw new NotificationListEmptyException("Notification has not been sent for this refund");
         }
@@ -264,7 +280,9 @@ public class NotificationServiceImpl implements NotificationService {
         NotificationTemplatePreviewResponse notificationTemplatePreviewResponse;
         String instructionType ;
         String refundRef = getRefundReference(docPreviewRequest);
+        LOG.info("Refund reference in previewNotification {}", refundRef);
         String refundReason = getRefundReason(docPreviewRequest.getPersonalisation().getRefundReason());
+        LOG.info("Refund reason in previewNotification {}", refundReason);
         String ccdCaseNumber;
         instructionType = getInstructionType(docPreviewRequest.getPaymentChannel(),docPreviewRequest.getPaymentMethod());
 
@@ -292,6 +310,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .generateTemplatePreview(templateId,
                                              createLetterPersonalisation(docPreviewRequest.getRecipientPostalAddress(),docPreviewRequest.getPersonalisation(), serviceContact.getServiceMailbox(),
                                                                          refundRef, ccdCaseNumber, refundReason));
+                LOG.info("LETTER templatePreview {}", templatePreview);
             }
 
          notificationTemplatePreviewResponse = notificationTemplateResponseMapper.notificationPreviewResponse(templatePreview,
@@ -389,5 +408,52 @@ public class NotificationServiceImpl implements NotificationService {
             refundRef = docPreviewRequest.getPersonalisation().getRefundReference();
         }
           return refundRef;
+    }
+    @Override
+    public PostCodeResponse getAddress(String postCode){
+
+        PostCodeResponse results = null;
+        try {
+            ConcurrentHashMap<String, String> params = new ConcurrentHashMap<>();
+            params.put("postcode", StringUtils.deleteWhitespace(postCode));
+            String url = configuration.getUrl();
+            String key = configuration.getAccessKey();
+            params.put("key", key);
+            if (null == url) {
+                throw new PostCodeLookUpException("Postcode URL is null");
+            }
+            if (null == key || StringUtils.isEmpty(key)) {
+                throw new PostCodeLookUpException("Postcode API Key is null");
+            }
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url + "/postcode");
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                builder.queryParam(entry.getKey(), entry.getValue());
+            }
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Accept", "application/json");
+
+            HttpEntity<String> response =
+                restTemplatePostCodeLookUp.exchange(
+                    builder.toUriString(),
+                    HttpMethod.GET,
+                    new HttpEntity<>(headers),
+                    String.class);
+
+            HttpStatus responseStatus = ((ResponseEntity) response).getStatusCode();
+
+            if (responseStatus.value() == org.apache.http.HttpStatus.SC_OK) {
+                results = objectMapper.readValue(response.getBody(), PostCodeResponse.class);
+
+                return results;
+            } else if (responseStatus.value() == org.apache.http.HttpStatus.SC_NOT_FOUND) {
+                throw new PostCodeLookUpNotFoundException("Postcode " + postCode + " not found");
+            }
+        } catch (Exception e) {
+            LOG.error("Postcode Lookup Failed - ", e.getMessage());
+            throw new PostCodeLookUpException(e.getMessage(), e);
+        }
+
+        return results;
     }
 }

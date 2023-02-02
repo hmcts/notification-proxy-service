@@ -31,7 +31,9 @@ def secrets = [
     secret('notifications-letter-cheque-po-cash-template-id','NOTIFICATIONS_LETTER_CHEQUE_PO_CASH_TEMPLATE_ID'),
     secret('notifications-email-cheque-po-cash-template-id','NOTIFICATIONS_EMAIL_CHEQUE_PO_CASH_TEMPLATE_ID'),
     secret('notifications-letter-refund-when-contacted-template-id','NOTIFICATION_LETTER_REFUND_WHEN_CONTACTED_TEMPLATE_ID'),
-    secret('notifications-email-refund-when-contacted-template-id','NOTIFICATION_EMAIL_REFUND_WHEN_CONTACTED_TEMPLATE_ID')
+    secret('notifications-email-refund-when-contacted-template-id','NOTIFICATION_EMAIL_REFUND_WHEN_CONTACTED_TEMPLATE_ID'),
+    secret('postcode-address-lookup-id','POSTCODE_ADDRESS_LOOKUP_ID')
+
   ]
 ]
 
@@ -51,7 +53,7 @@ withPipeline(type, product, component) {
   enableDbMigration('ccpay')
   enableAksStagingDeployment()
 
-  after('test') {
+  afterAlways('test') {
 
     publishHTML target: [
       allowMissing         : true,
@@ -64,7 +66,7 @@ withPipeline(type, product, component) {
 
   }
 
-  after('functionalTest:preview') {
+  afterAlways('functionalTest:preview') {
 
     publishHTML target: [
       reportDir            : "build/reports/tests/functional",
@@ -85,7 +87,7 @@ withPipeline(type, product, component) {
     ]
   }
 
-  after('functionalTest:aat') {
+  afterAlways('functionalTest:aat') {
     publishHTML target: [
       allowMissing         : true,
       alwaysLinkToLastBuild: true,

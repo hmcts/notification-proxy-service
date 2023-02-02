@@ -67,6 +67,17 @@ public class NotificationsTestService {
             .body(request)
             .baseUri(baseUri)
             .when()
-            .post("/doc-preview");
+            .post("/notifications/doc-preview");
+    }
+
+    public Response getPostCodeLookup(final String userToken,
+                                    final String serviceToken,
+                                    final String baseUri,
+                                    final String postCode) {
+        return givenWithAuthHeaders(userToken, serviceToken)
+            .baseUri(baseUri)
+            .contentType(ContentType.JSON)
+            .when()
+            .get("/notifications/postcode-lookup/{postcode}", postCode);
     }
 }
