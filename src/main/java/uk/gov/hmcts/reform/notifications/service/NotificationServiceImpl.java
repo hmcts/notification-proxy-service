@@ -354,12 +354,14 @@ public class NotificationServiceImpl implements NotificationService {
          String subject = null;
          String html = null;
 
-        if(templatePreview.getSubject().isPresent() && !templatePreview.getHtml().isEmpty()){
-            subject = templatePreview.getSubject().get();
+        Optional<String> subjectOptional = templatePreview.getSubject();
+        if(subjectOptional.isPresent() && !subjectOptional.isEmpty()){
+            subject = subjectOptional.get();
         }
 
-        if(templatePreview.getHtml().isPresent() && !templatePreview.getHtml().isEmpty()) {
-            html = templatePreview.getHtml().get();
+        Optional<String> htmlOptional = templatePreview.getSubject();
+        if(htmlOptional.isPresent() && !htmlOptional.isEmpty()) {
+            html = htmlOptional.get();
         }
 
         return TemplatePreviewDto.templatePreviewDtoWith()
