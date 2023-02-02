@@ -13,4 +13,9 @@ public class RestTemplateConfiguration {
         return  new RestTemplate(new HttpComponentsClientHttpRequestFactory());
     }
 
+    @Bean("restTemplatePostCodeLookUp")
+    public RestTemplate restTemplatePostCodeLookUp() {
+        return  new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+    }
+
 }

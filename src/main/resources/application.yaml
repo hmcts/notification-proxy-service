@@ -136,3 +136,8 @@ idam:
 payments:
   api:
     url: ${PAYMENT_API_URL:http://localhost:8095}
+
+postcodelookup:
+  api:
+    url: https://api.os.uk/search/places/v1
+    key: ${POSTCODE_ADDRESS_LOOKUP_ID:REPLACE_ME}

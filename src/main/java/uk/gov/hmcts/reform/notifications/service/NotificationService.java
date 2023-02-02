@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailReq
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationLetterRequest;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationResponseDto;
 import uk.gov.hmcts.reform.notifications.dtos.response.NotificationTemplatePreviewResponse;
+import uk.gov.hmcts.reform.notifications.dtos.response.PostCodeResponse;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
@@ -18,4 +19,6 @@ public interface NotificationService {
     NotificationResponseDto getNotification(String reference);
 
     NotificationTemplatePreviewResponse previewNotification(DocPreviewRequest docPreviewRequest, MultiValueMap<String, String> headers);
+
+    PostCodeResponse getAddress(String postCode);
 }

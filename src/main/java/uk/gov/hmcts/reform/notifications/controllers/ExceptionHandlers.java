@@ -51,7 +51,7 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
     }
 
-    @ExceptionHandler({NotificationListEmptyException.class,PaymentReferenceNotFoundException.class})
+    @ExceptionHandler({NotificationListEmptyException.class, PostCodeLookUpNotFoundException.class})
     public ResponseEntity return404(Exception ex) {
         LOG.error(ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
