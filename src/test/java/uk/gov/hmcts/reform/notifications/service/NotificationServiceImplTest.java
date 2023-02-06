@@ -652,6 +652,53 @@ public class NotificationServiceImplTest {
     }
 
     @Test
+    public void shouldReturnFullAddressWhenGivenPostCodeIsValid()
+        throws JsonProcessingException {
+
+        PostCodeResult result =
+            PostCodeResult.builder()
+                .dpa(
+                    AddressDetails.builder()
+                        .address("Flat 100 ABC Regent Road")
+                        .buildingNumber("FLAT 100")
+                        .countryCode("UK")
+                        .thoroughfareName("thoroughname")
+                        .postTown("Nor")
+                        .postcode("TW5 1BC")
+                        .status("Active")
+                        .countryCodeDescription("description")
+                        .postalAddressCode("code")
+                        .localCustomerCodeDescription("local")
+                        .build())
+                .build();
+        ObjectMapper mapper = new ObjectMapper();
+
+        PostCodeResponse res = PostCodeResponse.builder().results(Arrays.asList(result)).build();
+        String resultJson = mapper.writeValueAsString(res);
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(resultJson);
+
+        when(objectMapper.readValue(anyString(), eq(PostCodeResponse.class))).thenReturn(res);
+        when(restTemplatePostCodeLookUp.exchange(
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.any(HttpMethod.class),
+            ArgumentMatchers.any(),
+            ArgumentMatchers.<Class<String>>any()))
+            .thenReturn(responseEntity);
+
+        PostCodeResponse postCodeResponse = notificationServiceImpl.getAddress("TW5 1BC");
+        assertEquals("FLAT 100",postCodeResponse.getResults().get(0).getDpa().getBuildingNumber());
+        assertEquals("Flat 100 ABC Regent Road",postCodeResponse.getResults().get(0).getDpa().getAddress());
+        assertEquals("UK",postCodeResponse.getResults().get(0).getDpa().getCountryCode());
+        assertEquals("thoroughname",postCodeResponse.getResults().get(0).getDpa().getThoroughfareName());
+        assertEquals("Nor",postCodeResponse.getResults().get(0).getDpa().getPostTown());
+        assertEquals("TW5 1BC",postCodeResponse.getResults().get(0).getDpa().getPostcode());
+        assertEquals("Active",postCodeResponse.getResults().get(0).getDpa().getStatus());
+        assertEquals("description",postCodeResponse.getResults().get(0).getDpa().getCountryCodeDescription());
+        assertEquals("code",postCodeResponse.getResults().get(0).getDpa().getPostalAddressCode());
+        assertEquals("local",postCodeResponse.getResults().get(0).getDpa().getLocalCustomerCodeDescription());
+    }
+
+    @Test
     public void shouldReturnExceptionWhenUrlIsEmpty() {
         when(postcodeLookupConfiguration.getUrl()).thenReturn(null);
         assertThrows(
@@ -667,4 +714,98 @@ public class NotificationServiceImplTest {
             () -> notificationServiceImpl.getAddress("TW5 1BC"));
     }
 
+    @Test
+    public void testGetRefundReasonSuccessWithSendEmailNotification() throws NotificationClientException {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
+        RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .templateId("test")
+            .reference("REF-123")
+            .recipientEmailAddress("test@test.com")
+            .personalisation(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("1600162727220633").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test-code").build())
+            .build();
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+        when(notificationRefundReasonRepository.findByRefundReasonCode(any()))
+            .thenReturn(Optional.of(NotificationRefundReasons.notificationRefundReasonWith()
+                                        .refundReasonNotification("There has been an amendment to your claim").build()));
+        SendEmailResponse response = new SendEmailResponse("{\"content\":{\"body\":\"Hello Unknown, your reference is string\\r\\n\\r\\nRefund Approved\\" +
+                                                               "r\\n\\r\\nThanks\",\"from_email\":\"test@gov.uk\",\"subject\":" +
+                                                               "\"Refund Notification Approval\"},\"id\":\"10f101e0-6ab8-4a83-8ebd-124d648dd282\"," +
+                                                               "\"reference\":\"string\",\"scheduled_for\":null,\"template\":" +
+                                                               "{\"id\":\"10f101e0-6ab8-4a83-8ebd-124d648dd282\",\"uri\":" +
+                                                               "\"https://api.notifications.service.gov.uk/services\"" +
+                                                               ",\"version\":1},\"uri\":\"https://api.notifications.service.gov.uk\"}\n");
+        Notification notification = Notification.builder().build();
+
+        TemplatePreview templatePreview = new TemplatePreview("{                                                             "+
+                                                                  "\"id\": \"1222960c-4ffa-42db-806c-451a68c56e09\","+
+                                                                  "\"type\": \"email\","+
+                                                                  "\"version\": 11,"+
+                                                                  "\"body\": \"Dear Sir/Madam\","+
+                                                                  "\"subject\": \"HMCTS refund request approved\","+
+                                                                  "\"html\": \"Dear Sir/Madam\","+
+                                                                  "}");
+        when(notificationEmailClient.generateTemplatePreview(any(), anyMap())).thenReturn(templatePreview);
+        when(notificationTemplateResponseMapper.toFromMapper(any(), any())).thenReturn(FromTemplateContact
+                                                                                           .buildFromTemplateContactWith()
+                                                                                           .fromEmailAddress("test@test.com")
+                                                                                           .build());
+        when(notificationEmailClient.sendEmail(any(), any(), any(), any())).thenReturn(response);
+        when(emailNotificationMapper.emailResponseMapper(any(),any())).thenReturn(notification);
+        when(notificationRepository.save(notification)).thenReturn(notification);
+
+        response = notificationServiceImpl.sendEmailNotification(request,any());
+
+        assertEquals("Refund Notification Approval", response.getSubject());
+        assertEquals("test@gov.uk", response.getFromEmail().get());
+
+    }
+
+    @Test
+    public void testGetRefundReasonThrowExceptionWithSendEmailNotification() throws NotificationClientException {
+        mockUserinfoCall(idamUserIDResponseSupplier.get());
+        RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
+            .notificationType(NotificationType.EMAIL)
+            .templateId("test")
+            .reference("REF-123")
+            .recipientEmailAddress("test@test.com")
+            .personalisation(
+                Personalisation.personalisationRequestWith().ccdCaseNumber("1600162727220633").refundReference("RF-1234-1234-1234-1234").refundAmount(
+                    BigDecimal.valueOf(10)).refundReason("test-code").build())
+            .build();
+        when(serviceContactRepository.findByServiceName(any())).thenReturn(Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
+
+        when(notificationRefundReasonRepository.findByRefundReasonCode(any()))
+            .thenReturn(Optional.empty());
+        SendEmailResponse response = new SendEmailResponse("{\"content\":{\"body\":\"Hello Unknown, your reference is string\\r\\n\\r\\nRefund Approved\\" +
+                                                               "r\\n\\r\\nThanks\",\"from_email\":\"test@gov.uk\",\"subject\":" +
+                                                               "\"Refund Notification Approval\"},\"id\":\"10f101e0-6ab8-4a83-8ebd-124d648dd282\"," +
+                                                               "\"reference\":\"string\",\"scheduled_for\":null,\"template\":" +
+                                                               "{\"id\":\"10f101e0-6ab8-4a83-8ebd-124d648dd282\",\"uri\":" +
+                                                               "\"https://api.notifications.service.gov.uk/services\"" +
+                                                               ",\"version\":1},\"uri\":\"https://api.notifications.service.gov.uk\"}\n");
+        Notification notification = Notification.builder().build();
+
+        TemplatePreview templatePreview = new TemplatePreview("{                                                             "+
+                                                                  "\"id\": \"1222960c-4ffa-42db-806c-451a68c56e09\","+
+                                                                  "\"type\": \"email\","+
+                                                                  "\"version\": 11,"+
+                                                                  "\"body\": \"Dear Sir/Madam\","+
+                                                                  "\"subject\": \"HMCTS refund request approved\","+
+                                                                  "\"html\": \"Dear Sir/Madam\","+
+                                                                  "}");
+        when(notificationEmailClient.generateTemplatePreview(any(), anyMap())).thenReturn(templatePreview);
+        when(notificationTemplateResponseMapper.toFromMapper(any(), any())).thenReturn(FromTemplateContact
+                                                                                           .buildFromTemplateContactWith()
+                                                                                           .fromEmailAddress("test@test.com")
+                                                                                           .build());
+        when(notificationEmailClient.sendEmail(any(), any(), any(), any())).thenReturn(response);
+        when(emailNotificationMapper.emailResponseMapper(any(),any())).thenReturn(notification);
+        when(notificationRepository.save(notification)).thenReturn(notification);
+
+        assertThrows(RefundReasonNotFoundException.class, () -> notificationServiceImpl.sendEmailNotification(request, any()
+        ));
+    }
 }
