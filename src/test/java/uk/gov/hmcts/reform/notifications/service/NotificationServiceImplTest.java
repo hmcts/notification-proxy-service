@@ -715,6 +715,22 @@ public class NotificationServiceImplTest {
     }
 
     @Test
+    public void testGetAddressError400ForPostCodeLookupNotFoundException() {
+
+        ResponseEntity<String> responseEntity = new ResponseEntity<String>("res", HttpStatus.valueOf(404));
+
+        when(restTemplatePostCodeLookUp.exchange(
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.any(HttpMethod.class),
+            ArgumentMatchers.any(),
+            ArgumentMatchers.<Class<String>>any()))
+            .thenReturn(responseEntity);
+
+        assertThrows(PostCodeLookUpException.class, () -> notificationServiceImpl.getAddress("ABC 1BC"));
+
+    }
+
+    @Test
     public void testGetRefundReasonSuccessWithSendEmailNotification() throws NotificationClientException {
         mockUserinfoCall(idamUserIDResponseSupplier.get());
         RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
