@@ -12,14 +12,14 @@ public class GovNotifyExceptionWrapper {
     private static final Logger LOG = LoggerFactory.getLogger(ExceptionHandlers.class);
 
 
-    final static String INVALID_TEMPLATE_ID_RESPONSE = "template_id is not a valid UUID";
-    final static String INVALID_POSTCODE_RESPONSE_ONE = "Must be a real UK postcode";
-    final static String INVALID_POSTCODE_RESPONSE_TWO = "Last line of address must be a real UK postcode or another country";
+    static final String INVALID_TEMPLATE_ID_RESPONSE = "template_id is not a valid UUID";
+    static final String INVALID_POSTCODE_RESPONSE_ONE = "Must be a real UK postcode";
+    static final String INVALID_POSTCODE_RESPONSE_TWO = "Last line of address must be a real UK postcode or another country";
 
-    final static String NO_RESULT_FOUND = "No result found";
-    final static String MISSING_PERSONALISATION = "Missing personalisation: [PERSONALISATION FIELD]";
-    final static String SYSTEM_CLOCK_ERROR = "Error: Your system clock must be accurate to within 30 seconds";
-    final static String INVALID_TOKEN = "Invalid token: API key not found";
+    static final String NO_RESULT_FOUND = "No result found";
+    static final String MISSING_PERSONALISATION = "Missing personalisation: [PERSONALISATION FIELD]";
+    static final String SYSTEM_CLOCK_ERROR = "Error: Your system clock must be accurate to within 30 seconds";
+    static final String INVALID_TOKEN = "Invalid token: API key not found";
 
     public GovNotifyException mapGovNotifyEmailException(NotificationClientException exception){
         int httpResult = exception.getHttpResult();
