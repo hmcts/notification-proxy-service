@@ -621,8 +621,7 @@ public class NotificationServiceImplTest {
     }
 
     @Test
-    public void shouldReturnAddressWhenGivenPostCodeIsValid()
-        throws JsonProcessingException {
+    void shouldReturnAddressWhenGivenPostCodeIsValid() throws JsonProcessingException {
 
         PostCodeResult result =
             PostCodeResult.builder()
@@ -652,8 +651,7 @@ public class NotificationServiceImplTest {
     }
 
     @Test
-    public void shouldReturnFullAddressWhenGivenPostCodeIsValid()
-        throws JsonProcessingException {
+    void shouldReturnFullAddressWhenGivenPostCodeIsValid() throws JsonProcessingException {
 
         PostCodeResult result =
             PostCodeResult.builder()
@@ -699,7 +697,7 @@ public class NotificationServiceImplTest {
     }
 
     @Test
-    public void shouldReturnExceptionWhenUrlIsEmpty() {
+    void shouldReturnExceptionWhenUrlIsEmpty() {
         when(postcodeLookupConfiguration.getUrl()).thenReturn(null);
         assertThrows(
             PostCodeLookUpException.class,
@@ -707,7 +705,7 @@ public class NotificationServiceImplTest {
     }
 
     @Test
-    public void shouldReturnExceptionWhenKeyIsEmpty() {
+    void shouldReturnExceptionWhenKeyIsEmpty() {
         when(postcodeLookupConfiguration.getAccessKey()).thenReturn("");
         assertThrows(
             PostCodeLookUpException.class,
@@ -715,7 +713,7 @@ public class NotificationServiceImplTest {
     }
 
     @Test
-    public void testGetAddressError400ForPostCodeLookupNotFoundException() {
+    void testGetAddressError400ForPostCodeLookupNotFoundException() {
 
         ResponseEntity<String> responseEntity = new ResponseEntity<String>("res", HttpStatus.valueOf(404));
 
@@ -731,7 +729,7 @@ public class NotificationServiceImplTest {
     }
 
     @Test
-    public void testGetRefundReasonSuccessWithSendEmailNotification() throws NotificationClientException {
+    void testGetRefundReasonSuccessWithSendEmailNotification() throws NotificationClientException {
         mockUserinfoCall(idamUserIDResponseSupplier.get());
         RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .notificationType(NotificationType.EMAIL)
@@ -780,7 +778,7 @@ public class NotificationServiceImplTest {
     }
 
     @Test
-    public void testGetRefundReasonThrowExceptionWithSendEmailNotification() throws NotificationClientException {
+    void testGetRefundReasonThrowExceptionWithSendEmailNotification() throws NotificationClientException {
         mockUserinfoCall(idamUserIDResponseSupplier.get());
         RefundNotificationEmailRequest request = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .notificationType(NotificationType.EMAIL)

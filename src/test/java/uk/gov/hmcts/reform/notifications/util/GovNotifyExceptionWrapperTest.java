@@ -99,7 +99,7 @@ public class GovNotifyExceptionWrapperTest {
     }
 
     @Test
-    public void testMapGovNotifyPreviewExceptionfor400ErrorValidPostCodemessage() {
+    void testMapGovNotifyPreviewExceptionfor400ErrorValidPostCodemessage() {
 
         NotificationClientException exception = new NotificationClientException("Status code: 400 message : Missing personalisation: [PERSONALISATION FIELD]");
         GovNotifyException govNotifyException= govNotifyExceptionWrapper.mapGovNotifyPreviewException(exception);
@@ -107,7 +107,7 @@ public class GovNotifyExceptionWrapperTest {
     }
 
     @Test
-    public void testMapGovNotifyPreviewExceptionfor400ErrorInvalidTemplateId() {
+    void testMapGovNotifyPreviewExceptionfor400ErrorInvalidTemplateId() {
 
         NotificationClientException exception = new NotificationClientException("Status code: 400 message : template_id is not a valid UUID");
         GovNotifyException govNotifyException= govNotifyExceptionWrapper.mapGovNotifyPreviewException(exception);
@@ -115,7 +115,7 @@ public class GovNotifyExceptionWrapperTest {
     }
 
     @Test
-    public void testMapGovNotifyPreviewExceptionfor403ErrorInvalidClock() {
+    void testMapGovNotifyPreviewExceptionfor403ErrorInvalidClock() {
 
         NotificationClientException exception = new NotificationClientException("Status code: 403 message : Error: Your system clock must be accurate to within 30 seconds");
         GovNotifyException govNotifyException= govNotifyExceptionWrapper.mapGovNotifyPreviewException(exception);
@@ -123,7 +123,7 @@ public class GovNotifyExceptionWrapperTest {
     }
 
     @Test
-    public void testMapGovNotifyPreviewExceptionfor403ErrorInvalidToken() {
+    void testMapGovNotifyPreviewExceptionfor403ErrorInvalidToken() {
 
         NotificationClientException exception = new NotificationClientException("Status code: 403 message : Invalid token: API key not found");
         GovNotifyException govNotifyException= govNotifyExceptionWrapper.mapGovNotifyPreviewException(exception);
@@ -131,7 +131,7 @@ public class GovNotifyExceptionWrapperTest {
     }
 
     @Test
-    public void testMapGovNotifyPreviewExceptionfor500ErrorDefault() {
+    void testMapGovNotifyPreviewExceptionfor500ErrorDefault() {
 
         NotificationClientException exception = new NotificationClientException("Status code: 500 message : Internal Server Error");
         GovNotifyException govNotifyException= govNotifyExceptionWrapper.mapGovNotifyPreviewException(exception);
