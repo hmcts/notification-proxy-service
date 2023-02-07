@@ -33,7 +33,7 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({ExceededRequestLimitException.class, InvalidApiKeyException.class, RestrictedApiKeyException.class,
-        GovNotifyUnmappedException.class, UserNotFoundException.class, PaymentServerException.class})
+        GovNotifyUnmappedException.class, UserNotFoundException.class})
     public ResponseEntity return500(Exception ex) {
         LOG.error(ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

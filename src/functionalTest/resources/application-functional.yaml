@@ -49,7 +49,7 @@ auth:
       baseUrl: https://idam-api.aat.platform.hmcts.net
 test:
   url :
-    notification : https://ccpay-notifications-service-pr-100.service.core-compute-preview.internal
+    notification : https://ccpay-notifications-service-pr-133.service.core-compute-preview.internal
     refunds : ${TEST_URL_REFUND:http://ccpay-refunds-api-pr-211.service.core-compute-preview.internal}
     payments : ${TEST_URL_PAYMENT:http://payment-api-pr-1089.service.core-compute-preview.internal}
   user:
