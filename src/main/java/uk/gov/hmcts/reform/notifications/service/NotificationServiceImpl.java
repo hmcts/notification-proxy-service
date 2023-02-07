@@ -122,7 +122,7 @@ public class NotificationServiceImpl implements NotificationService {
     public SendEmailResponse sendEmailNotification(RefundNotificationEmailRequest emailNotificationRequest, MultiValueMap<String, String> headers) {
         try {
             LOG.info("sendEmailNotification -->" +emailNotificationRequest.toString());
-           // validateRecipientEmailAddress(emailNotificationRequest);
+
             Optional<ServiceContact> serviceContactOptional = serviceContactRepository.findByServiceName(emailNotificationRequest.getServiceName());
             ServiceContact serviceContact = new ServiceContact();
 
@@ -178,7 +178,6 @@ public class NotificationServiceImpl implements NotificationService {
     public SendLetterResponse sendLetterNotification(RefundNotificationLetterRequest letterNotificationRequest, MultiValueMap<String, String> headers) {
 
         try {
-           // validateRecipientPostalAddress(letterNotificationRequest);
             Optional<ServiceContact> serviceContactOptional = serviceContactRepository.findByServiceName(letterNotificationRequest.getServiceName());
 
             ServiceContact serviceContact = new ServiceContact();

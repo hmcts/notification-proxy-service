@@ -10,8 +10,4 @@ public class PostCodeLookUpNotFoundException extends RuntimeException implements
         super(message);
     }
 
-    public PostCodeLookUpNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
 }

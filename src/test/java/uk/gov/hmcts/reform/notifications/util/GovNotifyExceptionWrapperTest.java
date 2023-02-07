@@ -97,4 +97,44 @@ public class GovNotifyExceptionWrapperTest {
         assertEquals("Internal Server Error", govNotifyException.getMessage());
 
     }
+
+    @Test
+    void testMapGovNotifyPreviewExceptionfor400ErrorValidPostCodemessage() {
+
+        NotificationClientException exception = new NotificationClientException("Status code: 400 message : Missing personalisation: [PERSONALISATION FIELD]");
+        GovNotifyException govNotifyException= govNotifyExceptionWrapper.mapGovNotifyPreviewException(exception);
+        assertEquals("Please enter a valid/real postcode", govNotifyException.getMessage());
+    }
+
+    @Test
+    void testMapGovNotifyPreviewExceptionfor400ErrorInvalidTemplateId() {
+
+        NotificationClientException exception = new NotificationClientException("Status code: 400 message : template_id is not a valid UUID");
+        GovNotifyException govNotifyException= govNotifyExceptionWrapper.mapGovNotifyPreviewException(exception);
+        assertEquals("Invalid Template ID", govNotifyException.getMessage());
+    }
+
+    @Test
+    void testMapGovNotifyPreviewExceptionfor403ErrorInvalidClock() {
+
+        NotificationClientException exception = new NotificationClientException("Status code: 403 message : Error: Your system clock must be accurate to within 30 seconds");
+        GovNotifyException govNotifyException= govNotifyExceptionWrapper.mapGovNotifyPreviewException(exception);
+        assertEquals("Check your system clock", govNotifyException.getMessage());
+    }
+
+    @Test
+    void testMapGovNotifyPreviewExceptionfor403ErrorInvalidToken() {
+
+        NotificationClientException exception = new NotificationClientException("Status code: 403 message : Invalid token: API key not found");
+        GovNotifyException govNotifyException= govNotifyExceptionWrapper.mapGovNotifyPreviewException(exception);
+        assertEquals("Internal Server Error, invalid API key", govNotifyException.getMessage());
+    }
+
+    @Test
+    void testMapGovNotifyPreviewExceptionfor500ErrorDefault() {
+
+        NotificationClientException exception = new NotificationClientException("Status code: 500 message : Internal Server Error");
+        GovNotifyException govNotifyException= govNotifyExceptionWrapper.mapGovNotifyPreviewException(exception);
+        assertEquals("Internal Server Error", govNotifyException.getMessage());
+    }
 }
