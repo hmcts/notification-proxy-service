@@ -28,7 +28,7 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         for (ObjectError error : ex.getBindingResult().getAllErrors()) {
             details.add(error.getDefaultMessage());
         }
-        LOG.debug("NotificationValidation error", ex);
+        LOG.error("NotificationValidation error", ex);
         return new ResponseEntity<>(details.get(0), HttpStatus.BAD_REQUEST);
     }
 
