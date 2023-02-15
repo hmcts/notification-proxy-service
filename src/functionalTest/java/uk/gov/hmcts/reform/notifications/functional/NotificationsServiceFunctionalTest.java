@@ -283,7 +283,7 @@ public class NotificationsServiceFunctionalTest {
         );
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
-        deleteNotifications(reference);
+        //deleteNotifications(reference);
     }
 
     @Test
@@ -315,7 +315,7 @@ public class NotificationsServiceFunctionalTest {
         );
 
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
-        deleteNotifications(reference);
+        //deleteNotifications(reference);
     }
 
     @Test
