@@ -326,7 +326,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public void deleteNotification(String reference) {
         long records = notificationRepository.deleteByReference(reference);
-        System.out.println("records After deletion "+records);
+        LOG.info("records After deletion {}",records);
         if (records == 0) {
             throw new NotificationNotFoundException("No records found for given refund reference");
         }
