@@ -205,8 +205,9 @@ public class NotificationControllerTest {
             .reference("REF-123")
             .personalisation(
                 Personalisation.personalisationRequestWith().ccdCaseNumber("123").refundReference("RF-1234-1234-1234-1234").refundAmount(
-                    BigDecimal.valueOf(10)).refundReason("Unable to apply refund to Card").build())
+                    BigDecimal.valueOf(10)).refundReason("RR012").build())
             .serviceName("Probate")
+            .recipientEmailAddress("abc@gmail.com")
             .build();
         when(serviceContactRepository.findByServiceName(any())).thenReturn(
             Optional.of(ServiceContact.serviceContactWith().id(1).serviceName("Probate").serviceMailbox("probate@gov.uk").build()));
@@ -1119,7 +1120,7 @@ public class NotificationControllerTest {
         when(notificationEmailClient.generateTemplatePreview(any(), anyMap())).thenReturn(response);
         when(notificationRefundReasonRepository.findByRefundReasonCode(any())).thenReturn(Optional.of(NotificationRefundReasons.notificationRefundReasonWith().refundReasonNotification("There has been an amendment to your claim").build()
         ));
-        MvcResult result = mockMvc.perform(post("/doc-preview")
+        MvcResult result = mockMvc.perform(post("/notifications/doc-preview")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -1161,7 +1162,7 @@ public class NotificationControllerTest {
                                                            "}");
         when(notificationEmailClient.generateTemplatePreview(any(), anyMap())).thenReturn(response);
 
-        MvcResult result = mockMvc.perform(post("/doc-preview")
+        MvcResult result = mockMvc.perform(post("/notifications/doc-preview")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -1205,7 +1206,7 @@ public class NotificationControllerTest {
                                                            "}");
         when(notificationLetterClient.generateTemplatePreview(any(), anyMap())).thenReturn(response);
 
-        MvcResult result = mockMvc.perform(post("/doc-preview")
+        MvcResult result = mockMvc.perform(post("/notifications/doc-preview")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")
@@ -1252,7 +1253,7 @@ public class NotificationControllerTest {
             NotificationRefundReasons.notificationRefundReasonWith()
                 .refundReasonNotification("There has been an amendment to your claim").build()
         ));
-        MvcResult result = mockMvc.perform(post("/doc-preview")
+        MvcResult result = mockMvc.perform(post("/notifications/doc-preview")
                                                .content(asJsonString(request))
                                                .header("Authorization", "user")
                                                .header("ServiceAuthorization", "Services")

@@ -49,11 +49,11 @@ auth:
       baseUrl: https://idam-api.aat.platform.hmcts.net
 test:
   url :
-    notification : ${TEST_URL:http://localhost:8080}
+    notification : https://ccpay-notifications-service-pr-100.service.core-compute-preview.internal
     refunds : ${TEST_URL_REFUND:http://ccpay-refunds-api-pr-211.service.core-compute-preview.internal}
     payments : ${TEST_URL_PAYMENT:http://payment-api-pr-1089.service.core-compute-preview.internal}
   user:
-    password: ${TEST_USER_PASSWORD:password123Notif}
+    password: ${TEST_USER_PASSWORD}
 
 idam:
   api:
@@ -67,7 +67,7 @@ idam:
   paybubble:
     client:
       id: ${IDAM_PAYBUBBLE_CLIENT_ID:paybubble}
-      secret: ${IDAM_PAYBUBBLE_CLIENT_SECRET:NVYEC2X7XFSRENTU}
+      secret: ${IDAM_PAYBUBBLE_CLIENT_SECRET}
 oauth2:
   redirect:
     uri: ${OAUTH2_REDIRECT_URI:https://moneyclaims.aat.platform.hmcts.net}
@@ -78,7 +78,7 @@ s2s:
   url: ${S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
   service :
     refunds:
-      name: ${S2S_SERVICE_NAME_REFUNDS_API:refunds_api}
+      name: ${S2S_SERVICE_NAME_PAYBUBBLE:ccpay_bubble}
       secret: ${OIDC_S2S_SECRET}
     paymentapp :
       name : ${S2S_SERVICE_NAME_PAYMENT_APP:payment_app}
@@ -125,3 +125,8 @@ mock:
   callback:
     url:
       endpoint : ${TEST_URL:http://payment-api-aat-staging.service.core-compute-aat.internal}/mock-api/serviceCallback
+
+postcodelookup:
+  api:
+    url: https://api.os.uk/search/places/v1
+    key: ${POSTCODE_ADDRESS_LOOKUP_ID:REPLACE_ME}

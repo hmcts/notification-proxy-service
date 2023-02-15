@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class S2sTokenService {
 
+
     private final OneTimePasswordFactory oneTimePasswordFactory;
     private final S2sApi s2sApi;
     private static final Logger LOG = LoggerFactory.getLogger(S2sTokenService.class);
@@ -25,14 +26,6 @@ public class S2sTokenService {
 
     public String getS2sToken(String microservice, String secret) {
         String otp = oneTimePasswordFactory.validOneTimePassword(secret);
-        LOG.info("s2sApi : " + s2sApi.toString());
-        LOG.info("microservice : " + microservice);
-        LOG.info("secret : " + secret);
-        try {
-            return s2sApi.serviceToken(microservice, otp);
-        } catch (Exception ex) {
-            LOG.info(ex.getMessage());
-        }
-        return null;
+        return s2sApi.serviceToken(microservice, otp);
     }
 }

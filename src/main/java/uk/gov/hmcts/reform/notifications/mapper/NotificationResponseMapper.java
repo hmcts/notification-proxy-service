@@ -110,7 +110,7 @@ public class NotificationResponseMapper {
     private MailAddress toFromMailMapper(Notification notification) {
 
         MailAddress fromMailAddress = null;
-        if(LETTER.equalsIgnoreCase(notification.getNotificationType())) {
+        if(null !=notification.getTemplatePreview().getFrom().getFromMailAddress() && LETTER.equalsIgnoreCase(notification.getNotificationType())) {
 
             fromMailAddress = MailAddress.buildRecipientMailAddressWith()
                 .addressLine(notification.getTemplatePreview().getFrom().getFromMailAddress().getAddressLine())

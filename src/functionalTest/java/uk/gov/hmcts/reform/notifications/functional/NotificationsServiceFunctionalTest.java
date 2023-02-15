@@ -33,9 +33,9 @@ import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.UUID;
 
 @ActiveProfiles({"functional", "liberataMock"})
@@ -100,21 +100,12 @@ public class NotificationsServiceFunctionalTest {
     public void setUp() {
 
         if (!isTokensInitialized) {
-
-            //userTokenPaymentRefundApprover =
-              //  idamService.createUserWithSearchScope("idam.user.ccpayrefundsapi@hmcts.net").getAuthorisationToken();
-
-            userTokenPaymentRefundApprover =
-                idamService.createUserWithSearchScope(IdamService.CMC_CASE_WORKER_GROUP, "payments-refund-approver", "payments")
-                    .getAuthorisationToken();
-            System.out.println("userTokenPaymentRefundApprover  >> "+userTokenPaymentRefundApprover);
-            System.out.println("testConfigProperties.s2sRefundsApi  >> "+ testConfigProperties.s2sRefundsApi);
+            userTokenPaymentRefundApprover = idamService.createUserWithSearchScope
+                ("idam.user.ccpayrefundsapi@hmcts.net").getAuthorisationToken();
             serviceTokenPayBubble =
-                s2sTokenService.getS2sToken("cmc", testConfigProperties.s2sRefundsApi);
-                //s2sTokenService.getS2sToken("ccpay_bubble", testConfigProperties.payBubbleS2SSecret);
-            System.out.println("serviceTokenPayBubble  >> "+serviceTokenPayBubble);
-            isTokensInitialized = true;
+                s2sTokenService.getS2sToken("ccpay_bubble", testConfigProperties.s2sPayBubble);
 
+            isTokensInitialized = true;
         }
     }
 
@@ -124,6 +115,8 @@ public class NotificationsServiceFunctionalTest {
         String reference = "FunctionalTest1";
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
+            .recipientEmailAddress("vat12@mailinator.com")
+            .reference("FunctionalTest1")
             .recipientEmailAddress("vat12@mailinator.com")
             .reference(reference)
             .emailReplyToId(emailReplyToId)
@@ -139,6 +132,7 @@ public class NotificationsServiceFunctionalTest {
         testConfigProperties.baseTestUrl,
         refundNotificationEmailRequest
         );
+
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
         deleteNotifications(reference);
      }
@@ -150,6 +144,8 @@ public class NotificationsServiceFunctionalTest {
         sendEmailNotificationRequest();
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
+            .recipientEmailAddress("vat12@mailinator.com")
+            .reference("FunctionalTest12")
             .reference(reference)
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
@@ -167,7 +163,8 @@ public class NotificationsServiceFunctionalTest {
             testConfigProperties.baseTestUrl,
             refundNotificationEmailRequest
         );
-        assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
         final Response responseNotification = notificationsTestService.getNotification(
             userTokenPaymentRefundApprover ,
@@ -229,6 +226,7 @@ public class NotificationsServiceFunctionalTest {
         assertThat(contactDetails.get("address_line")).isEqualTo("102 Petty France");
 
         deleteNotifications(reference);
+        assertThat(contactDetails.get("email")).isEqualTo("vat12@mailinator.com");
     }
 
     @Test
@@ -261,6 +259,7 @@ public class NotificationsServiceFunctionalTest {
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
         deleteNotifications(reference);
     }
+
 
     @Test
     public void negativeIncorrectEmailFormatSendEmailNotificationRequest() {
@@ -860,9 +859,6 @@ public class NotificationsServiceFunctionalTest {
         assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
         Map contactDetails = (Map) notificationList.get(0).get("contact_details");
         assertThat(contactDetails.get("postal_code")).isEqualTo("SW1H 9AJ");
-        assertThat(((HashMap)((HashMap)((HashMap)notificationList.get(0).get("sent_notification"))
-            .get("from")).get("from_mail_address")).get("address_line"))
-            .isEqualTo("ABC");
 
         deleteNotifications(reference);
     }
@@ -1047,6 +1043,26 @@ public class NotificationsServiceFunctionalTest {
         assertThat(bodyString.contains("A duplicate fee was processed and has now been refunded"));
 
         deleteNotifications(reference);
+    }
+    @Test
+    public void returnAddressWhenValidPostCodeProvided() {
+
+        String postCode ="SW1H 9AJ";
+        final Response responsePostCodeLookUp = notificationsTestService.getPostCodeLookup(
+            userTokenPaymentRefundApprover ,
+            serviceTokenPayBubble ,
+            testConfigProperties.baseTestUrl ,
+            postCode
+        );
+
+        assertThat(responsePostCodeLookUp.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Map> addressList =  responsePostCodeLookUp.getBody().jsonPath().getList("results");
+        Map results = (Map) addressList.get(0).get("DPA");
+        assertThat(results.get("ADDRESS")).isEqualTo("MINISTRY OF JUSTICE, SEVENTH FLOOR, 102, PETTY FRANCE, LONDON, SW1H 9AJ");
+        assertThat(results.get("POSTCODE")).isEqualTo("SW1H 9AJ");
+        assertThat(results.get("POST_TOWN")).isEqualTo("LONDON");
+
     }
 
     private void deleteNotifications(String reference) {

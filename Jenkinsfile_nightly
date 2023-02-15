@@ -45,14 +45,14 @@ withNightlyPipeline(type, product, component) {
   loadVaultSecrets(secrets)
   enableSecurityScan()
   enableMutationTest()
-  //enableFortifyScan()
+  enableFortifyScan('ccpay-aat')
   enableFullFunctionalTest()
 
-  //after('fortify-scan') {
-  //  steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-  //}
+  afterAlways('fortify-scan') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+  }
 
-  after('fullFunctionalTest') {
+  afterAlways('fullFunctionalTest') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     publishHTML target: [
       reportDir            : "target/site/serenity/",

@@ -23,6 +23,7 @@ import static java.util.stream.Collectors.toList;
 public class IdamService {
     public static final String CMC_CITIZEN_GROUP = "cmc-private-beta";
     public static final String CMC_CASE_WORKER_GROUP = "caseworker";
+    public static final String REFUNDS_USER = "caseworker";
 
     public static final String BEARER = "Bearer ";
     public static final String AUTHORIZATION_CODE = "authorization_code";
@@ -44,12 +45,9 @@ public class IdamService {
             .target(IdamApi.class, testConfig.getIdamApiUrl());
     }
 
-
     public ValidUser createUserWith(String userGroup, String... roles) {
         String email = nextUserEmail();
         CreateUserRequest userRequest = userRequest(email, userGroup, roles);
-        LOG.info("idamApi : " + idamApi.toString());
-        LOG.info("userRequest : " + userRequest);
         try {
             idamApi.createUser(userRequest);
         } catch (Exception ex) {
@@ -63,10 +61,7 @@ public class IdamService {
 
     public ValidUser createUserWithSearchScope(String userGroup, String... roles) {
         String email = nextUserEmail();
-        LOG.info("email : " + email);
         CreateUserRequest userRequest = userRequest(email, userGroup, roles);
-        LOG.info("idamApi : " + idamApi.toString());
-        LOG.info("userRequest : " + userRequest);
         try {
             idamApi.createUser(userRequest);
         } catch (Exception ex) {
@@ -75,20 +70,11 @@ public class IdamService {
         }
 
         String accessToken = authenticateUserWithSearchScope(email, testConfig.getTestUserPassword());
-        LOG.info("accessToken Before creating Valid User {}", accessToken);
         return new ValidUser(email, accessToken);
     }
 
     public String authenticateUser(String username, String password) {
         String authorisation = username + ":" + password;
-        String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
-
-        LOG.info("username : " + username);
-        LOG.info("password : " + password);
-        LOG.info("base64Authorisation : " + base64Authorisation);
-        LOG.info("testConfig.getOauth2().getClientId() : " + testConfig.getOauth2().getClientId());
-        LOG.info("testConfig.getOauth2().getRedirectUrl() : " + testConfig.getOauth2().getRedirectUrl());
-
         try {
             TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeCode(username,
                                                                                password,
@@ -107,15 +93,6 @@ public class IdamService {
 
     public String authenticateUserWithSearchScope(String username, String password) {
         String authorisation = username + ":" + password;
-        String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
-
-        LOG.info("username : " + username);
-        LOG.info("password : " + password);
-        LOG.info("base64Authorisation : " + base64Authorisation);
-        LOG.info("testConfig.getIdamPayBubbleClientID() : " + testConfig.getIdamPayBubbleClientID());
-        LOG.info("testConfig.getIdamPayBubbleClientSecret() : " + testConfig.getIdamPayBubbleClientSecret());
-        LOG.info("testConfig.getOauth2().getRedirectUrl() : " + testConfig.getOauth2().getRedirectUrl());
-
         try {
             TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeCode(username,
                                                                                password,

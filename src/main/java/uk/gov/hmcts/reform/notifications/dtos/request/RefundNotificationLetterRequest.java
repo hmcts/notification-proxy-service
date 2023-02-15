@@ -40,6 +40,7 @@ public class RefundNotificationLetterRequest {
     @Valid
     private Personalisation personalisation;
 
+    @NotNull
     @Valid
     private RecipientPostalAddress recipientPostalAddress;
 

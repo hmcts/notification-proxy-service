@@ -2,6 +2,7 @@ buildscript {
   repositories {
     mavenLocal()
     mavenCentral()
+    jcenter()
   }
   dependencies {
     classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.83")
@@ -16,7 +17,7 @@ plugins {
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
   id 'org.springframework.boot' version '2.4.3'
-  id 'org.owasp.dependencycheck' version '6.5.3'
+  id 'org.owasp.dependencycheck' version '8.0.2'
   id 'com.github.ben-manes.versions' version '0.39.0'
   id 'org.sonarqube' version '3.3'
   id 'uk.gov.hmcts.java' version '0.12.18'
@@ -92,6 +93,7 @@ task functional(type: Test) {
   scanForTestClasses = true
 }
 
+// Serenity Reporting
 functional.finalizedBy(aggregate)
 
 task integration(type: Test) {
@@ -140,6 +142,7 @@ project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 def sonarExclusions = [
   '**/model/**',
+  '**/response/**',
   '**/controllers/**',
   '**/mapper/**',
   '**/config/**'
@@ -206,6 +209,7 @@ dependencyManagement {
 repositories {
   mavenLocal()
   mavenCentral()
+  jcenter()
   maven { url 'https://jitpack.io' }
 }
 
@@ -231,6 +235,13 @@ def versions = [
   sonarPitest    : '0.5'
 ]
 
+
+task fortifyScan(type: JavaExec)  {
+  mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  classpath += sourceSets.test.runtimeClasspath
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
+}
+
 configurations {
   compileOnly {
     extendsFrom annotationProcessor
@@ -240,6 +251,7 @@ configurations {
 dependencies {
 
   compileOnly 'com.sun.xml.bind:jaxb-osgi:2.3.1'
+  implementation 'com.github.hmcts:fortify-client:1.2.1:all'
   implementation 'junit:junit:4.13.1'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
@@ -350,4 +362,7 @@ wrapper {
   distributionType = Wrapper.DistributionType.ALL
 }
 
+serenity {
+  reports = ["single-page-html"]
+}
 

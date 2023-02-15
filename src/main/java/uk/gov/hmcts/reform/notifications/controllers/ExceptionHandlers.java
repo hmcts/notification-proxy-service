@@ -28,12 +28,12 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         for (ObjectError error : ex.getBindingResult().getAllErrors()) {
             details.add(error.getDefaultMessage());
         }
-        LOG.debug("NotificationValidation error", ex);
+        LOG.error("NotificationValidation error", ex);
         return new ResponseEntity<>(details.get(0), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({ExceededRequestLimitException.class, InvalidApiKeyException.class, RestrictedApiKeyException.class,
-        GovNotifyUnmappedException.class, UserNotFoundException.class, PaymentServerException.class})
+        GovNotifyUnmappedException.class, UserNotFoundException.class})
     public ResponseEntity return500(Exception ex) {
         LOG.error(ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -51,7 +51,7 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
     }
 
-    @ExceptionHandler({NotificationListEmptyException.class,PaymentReferenceNotFoundException.class})
+    @ExceptionHandler({NotificationListEmptyException.class, PostCodeLookUpNotFoundException.class})
     public ResponseEntity return404(Exception ex) {
         LOG.error(ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
