@@ -52,8 +52,9 @@ public class NotificationsTestService {
     }
 
     public Response deleteNotification(final String userToken, final String serviceToken,
+                                       final String baseUri,
                                  final String reference) {
-        return givenWithAuthHeaders(userToken, serviceToken)
+        return givenWithAuthHeaders(userToken, serviceToken).baseUri(baseUri).when()
             .delete("/notifications/{reference}", reference);
     }
 

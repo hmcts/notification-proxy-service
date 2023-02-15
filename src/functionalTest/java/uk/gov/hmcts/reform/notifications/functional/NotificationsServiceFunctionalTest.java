@@ -1067,7 +1067,8 @@ public class NotificationsServiceFunctionalTest {
 
     private void deleteNotifications(String reference) {
         // delete notification record
-        notificationsTestService.deleteNotification(userTokenPaymentRefundApprover, serviceTokenPayBubble, reference)
+        notificationsTestService.deleteNotification(userTokenPaymentRefundApprover, serviceTokenPayBubble,
+                                                    testConfigProperties.baseTestUrl, reference)
             .then().statusCode(NO_CONTENT.value());
     }
 }
