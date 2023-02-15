@@ -144,6 +144,7 @@ public class NotificationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteNotification(@RequestHeader("Authorization") String authorization, @PathVariable String reference) {
         notificationService.deleteNotification(reference);
+        System.out.println("Deleted records >>  "+reference);
     }
 
 }
