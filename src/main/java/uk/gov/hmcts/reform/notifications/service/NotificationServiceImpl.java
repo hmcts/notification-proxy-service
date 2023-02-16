@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -23,10 +24,7 @@ import uk.gov.hmcts.reform.notifications.config.PostcodeLookupConfiguration;
 import uk.gov.hmcts.reform.notifications.config.security.idam.IdamService;
 import uk.gov.hmcts.reform.notifications.dtos.request.*;
 import uk.gov.hmcts.reform.notifications.dtos.response.*;
-import uk.gov.hmcts.reform.notifications.exceptions.NotificationListEmptyException;
-import uk.gov.hmcts.reform.notifications.exceptions.PostCodeLookUpNotFoundException;
-import uk.gov.hmcts.reform.notifications.exceptions.PostCodeLookUpException;
-import uk.gov.hmcts.reform.notifications.exceptions.RefundReasonNotFoundException;
+import uk.gov.hmcts.reform.notifications.exceptions.*;
 import uk.gov.hmcts.reform.notifications.mapper.EmailNotificationMapper;
 import uk.gov.hmcts.reform.notifications.mapper.LetterNotificationMapper;
 import uk.gov.hmcts.reform.notifications.mapper.NotificationResponseMapper;
@@ -322,6 +320,16 @@ public class NotificationServiceImpl implements NotificationService {
             throw exceptionWrapper.mapGovNotifyPreviewException(exception);
         }
         return notificationTemplatePreviewResponse;
+    }
+
+    @Override
+    @Transactional
+    public void deleteNotification(String reference) {
+        long records = notificationRepository.deleteByReference(reference);
+        LOG.info("records After deletion {}",records);
+        if (records == 0) {
+            throw new NotificationNotFoundException("No records found for given refund reference");
+        }
     }
 
     private  String getTemplate(DocPreviewRequest docPreviewRequest, String instructionType) {

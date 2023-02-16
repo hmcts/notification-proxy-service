@@ -21,4 +21,6 @@ public interface NotificationService {
     NotificationTemplatePreviewResponse previewNotification(DocPreviewRequest docPreviewRequest, MultiValueMap<String, String> headers);
 
     PostCodeResponse getAddress(String postCode);
+
+    void deleteNotification(String reference);
 }

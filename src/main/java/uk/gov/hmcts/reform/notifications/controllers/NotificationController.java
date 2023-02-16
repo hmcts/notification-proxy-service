@@ -139,5 +139,13 @@ public class NotificationController {
         );
     }
 
+
+    @DeleteMapping("/notifications/{reference}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteNotification(@RequestHeader("Authorization") String authorization, @PathVariable String reference) {
+        notificationService.deleteNotification(reference);
+        log.info("Deleted records >>  {}",reference);
+    }
+
 }
 

@@ -51,6 +51,13 @@ public class NotificationsTestService {
             .get("/notifications/{reference}", reference);
     }
 
+    public Response deleteNotification(final String userToken, final String serviceToken,
+                                       final String baseUri,
+                                 final String reference) {
+        return givenWithAuthHeaders(userToken, serviceToken).baseUri(baseUri).when()
+            .delete("/notifications/{reference}", reference);
+    }
+
     public RequestSpecification givenWithAuthHeaders(final String userToken, final String serviceToken) {
         return SerenityRest.given()
             .header(AUTHORIZATION, userToken)
