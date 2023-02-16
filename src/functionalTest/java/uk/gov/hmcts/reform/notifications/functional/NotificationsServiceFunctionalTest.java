@@ -116,8 +116,6 @@ public class NotificationsServiceFunctionalTest {
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
             .recipientEmailAddress("vat12@mailinator.com")
-            .reference("FunctionalTest1")
-            .recipientEmailAddress("vat12@mailinator.com")
             .reference(reference)
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
@@ -141,11 +139,10 @@ public class NotificationsServiceFunctionalTest {
     public void sendEmailNotificationRequestWithReasonUnableToApplyRefundToCard() {
 
         String reference = "FunctionalTest1";
-        sendEmailNotificationRequest();
+     //   sendEmailNotificationRequest();
         RefundNotificationEmailRequest refundNotificationEmailRequest = RefundNotificationEmailRequest.refundNotificationEmailRequestWith()
             .templateId(emailTemplateId)
             .recipientEmailAddress("vat12@mailinator.com")
-            .reference(reference)
             .reference(reference)
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
