@@ -9,8 +9,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/notification-service1
-    username: notifications
-    password: notifications
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
     properties:
       charSet: UTF-8
 

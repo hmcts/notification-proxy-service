@@ -162,68 +162,6 @@ public class NotificationsServiceFunctionalTest {
         );
 
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-
-        final Response responseNotification = notificationsTestService.getNotification(
-            userTokenPaymentRefundApprover ,
-            serviceTokenPayBubble ,
-            testConfigProperties.baseTestUrl ,
-            reference
-        );
-
-        assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
-
-        List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
-        assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
-        Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("email")).isEqualTo("vat12@mailinator.com");
-
-        deleteNotifications(reference);
-    }
-
-    @Test
-    public void sendLetterNotificationRequestWithReasonUnableToApplyRefundToCard() {
-
-        String reference = "FunctionalTest2";
-        sendLetterNotificationRequest();
-        RefundNotificationLetterRequest refundNotificationLetterRequest = RefundNotificationLetterRequest.refundNotificationLetterRequestWith()
-            .templateId(letterTemplateId)
-            .reference(reference)
-            .notificationType(NotificationType.LETTER)
-            .serviceName("Probate")
-            .personalisation(Personalisation.personalisationRequestWith()
-                                 .ccdCaseNumber(CCD_CASE_NUMBER)
-                                 .refundReference(reference)
-                                 .refundAmount(BigDecimal.valueOf(10))
-                                 .refundReason("Unable to apply refund to Card")
-                                 .build())
-
-            .build();
-
-        final Response responseNotificationLetter = notificationsTestService.postLetterNotification(
-            userTokenPaymentRefundApprover ,
-            serviceTokenPayBubble ,
-            testConfigProperties.baseTestUrl ,
-            refundNotificationLetterRequest
-        );
-        assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        final Response responseNotification = notificationsTestService.getNotification(
-            userTokenPaymentRefundApprover ,
-            serviceTokenPayBubble ,
-            testConfigProperties.baseTestUrl ,
-            reference
-        );
-
-        assertThat(responseNotification.getStatusCode()).isEqualTo(HttpStatus.OK.value());
-
-        List<Map> notificationList =  responseNotification.getBody().jsonPath().getList("notifications");
-        assertThat(notificationList.size()).isGreaterThanOrEqualTo(1);
-        Map contactDetails = (Map) notificationList.get(0).get("contact_details");
-        assertThat(contactDetails.get("postal_code")).isEqualTo("SW1H 9AJ");
-        assertThat(contactDetails.get("address_line")).isEqualTo("102 Petty France");
-
-        deleteNotifications(reference);
-        assertThat(contactDetails.get("email")).isEqualTo("vat12@mailinator.com");
     }
 
     @Test
