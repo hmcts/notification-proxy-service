@@ -217,8 +217,6 @@ public class NotificationsServiceFunctionalTest {
             refundNotificationEmailRequest
         );
         assertThat(responseNotificationEmail.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-        //deleteNotifications(reference);
     }
 
     @Test
@@ -250,7 +248,6 @@ public class NotificationsServiceFunctionalTest {
         );
 
         assertThat(responseNotificationLetter.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
-        //deleteNotifications(reference);
     }
 
     @Test
@@ -264,7 +261,7 @@ public class NotificationsServiceFunctionalTest {
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
-            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference(reference).refundAmount(
                 BigDecimal.valueOf(10)).refundReason("RR001").build())
 
             .build();
@@ -423,7 +420,7 @@ public class NotificationsServiceFunctionalTest {
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
-            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference(reference).refundAmount(
                 BigDecimal.valueOf(10)).refundReason("RR001").build())
             .templatePreview(TemplatePreviewDto.templatePreviewDtoWith().id(UUID.randomUUID())
                                  .templateType("email")
@@ -465,7 +462,7 @@ public class NotificationsServiceFunctionalTest {
             .reference(reference)
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
-            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference(reference).refundAmount(
                 BigDecimal.valueOf(10)).refundReason("RR001").build())
             .templatePreview(TemplatePreviewDto.templatePreviewDtoWith().id(UUID.randomUUID())
                                  .templateType("email")
@@ -514,7 +511,7 @@ public class NotificationsServiceFunctionalTest {
             .recipientEmailAddress("vat12@mailinator.com")
             .personalisation(Personalisation.personalisationRequestWith()
                                  .ccdCaseNumber(CCD_CASE_NUMBER)
-                                 .refundReference("RF-1234-1234-1234-1234")
+                                 .refundReference(reference)
                                  .refundAmount(BigDecimal.valueOf(10))
                                  .refundReason("RR001")
                                  .build())
@@ -560,7 +557,7 @@ public class NotificationsServiceFunctionalTest {
             .recipientEmailAddress("vat12@mailinator.com")
             .personalisation(Personalisation.personalisationRequestWith()
                                  .ccdCaseNumber(CCD_CASE_NUMBER)
-                                 .refundReference("RF-1234-1234-1234-1234")
+                                 .refundReference(reference)
                                  .refundAmount(BigDecimal.valueOf(10))
                                  .refundReason("RR001")
                                  .build())
@@ -608,7 +605,7 @@ public class NotificationsServiceFunctionalTest {
             .reference(reference)
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
-            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference(reference).refundAmount(
                 BigDecimal.valueOf(10)).refundReason("RR001").build())
 
             .build();
@@ -653,7 +650,7 @@ public class NotificationsServiceFunctionalTest {
             .reference(reference)
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
-            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference(reference).refundAmount(
                 BigDecimal.valueOf(10)).refundReason("RR001").build())
 
             .build();
@@ -694,7 +691,7 @@ public class NotificationsServiceFunctionalTest {
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
             .serviceName("Probate")
-            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference(reference).refundAmount(
                 BigDecimal.valueOf(10)).refundReason("RR001").build())
             .build();
 
@@ -736,7 +733,7 @@ public class NotificationsServiceFunctionalTest {
             .emailReplyToId(emailReplyToId)
             .notificationType(NotificationType.EMAIL)
             .serviceName("Wrong Service")
-            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference(reference).refundAmount(
                 BigDecimal.valueOf(10)).refundReason("RR001").build())
             .build();
 
@@ -747,8 +744,6 @@ public class NotificationsServiceFunctionalTest {
             refundNotificationEmailRequest
         );
         assertThat(500).isEqualTo(responseNotificationEmail.getStatusCode());
-
-        //deleteNotifications(reference);
     }
 
     @Test
@@ -767,7 +762,7 @@ public class NotificationsServiceFunctionalTest {
             .reference(reference)
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
-            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference("RF-1234-1234-1234-1234").refundAmount(
+            .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER).refundReference(reference).refundAmount(
                 BigDecimal.valueOf(10)).refundReason("RR001").build())
 
             .build();
@@ -868,7 +863,7 @@ public class NotificationsServiceFunctionalTest {
             .notificationType(NotificationType.LETTER)
             .serviceName("Probate")
             .personalisation(Personalisation.personalisationRequestWith().ccdCaseNumber(CCD_CASE_NUMBER)
-                                 .refundReference("RF-1234-1234-1234-1234").refundAmount(
+                                 .refundReference(reference).refundAmount(
                     BigDecimal.valueOf(10)).refundReason("RR007").build())
 
             .build();
@@ -913,7 +908,7 @@ public class NotificationsServiceFunctionalTest {
             .recipientEmailAddress("vat12@mailinator.com")
             .personalisation(Personalisation.personalisationRequestWith()
                                  .ccdCaseNumber(CCD_CASE_NUMBER)
-                                 .refundReference("RF-1234-1234-1234-1234")
+                                 .refundReference(reference)
                                  .refundAmount(BigDecimal.valueOf(10))
                                  .refundReason("RR009")
                                  .build())
@@ -997,7 +992,6 @@ public class NotificationsServiceFunctionalTest {
         );
 
         assertThat(500).isEqualTo(responseNotificationLetter.getStatusCode());
-        //deleteNotifications(reference);
     }
 
     private void deleteNotifications(String reference) {
