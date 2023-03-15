@@ -173,6 +173,6 @@ databaseChangeLog:
             splitStatements: true
             sql: >
               UPDATE service_contact SET
-              service_mailbox = 'damagesclaims@justice.gov.uk'
-              from_email_address = 'damagesclaims@justice.gov.uk'
-              WHERE service_name = 'Civil';
+                service_mailbox = 'damagesclaims@justice.gov.uk',
+                from_email_address = 'damagesclaims@justice.gov.uk'
+                WHERE service_name = 'Civil';
