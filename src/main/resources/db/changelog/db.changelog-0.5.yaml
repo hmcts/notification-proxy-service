@@ -164,3 +164,15 @@ databaseChangeLog:
               INSERT INTO service_contact (service_name, service_mailbox, from_email_address,from_mail_address)
               VALUES
               ('Damages', 'damagesclaims@justice.gov.uk', 'damagesclaims@justice.gov.uk',NULL);
+
+  - changeSet:
+      id: 100012-5
+      author: ranjeet
+      changes:
+        - sql:
+            splitStatements: true
+            sql: >
+              UPDATE service_contact SET
+              service_mailbox = 'damagesclaims@justice.gov.uk'
+              from_email_address = 'damagesclaims@justice.gov.uk'
+              WHERE service_name = 'Civil';
