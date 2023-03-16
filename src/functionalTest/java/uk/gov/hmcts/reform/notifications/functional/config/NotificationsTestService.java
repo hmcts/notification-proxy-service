@@ -31,7 +31,6 @@ public class NotificationsTestService {
                                            final String serviceToken,
                                            final String baseUri,
                                            final RefundNotificationLetterRequest request) {
-        System.out.println("baseUri in NotificationsTestService >>   "+baseUri);
         return givenWithAuthHeaders(userToken, serviceToken)
             .contentType(ContentType.JSON)
             .body(request)
