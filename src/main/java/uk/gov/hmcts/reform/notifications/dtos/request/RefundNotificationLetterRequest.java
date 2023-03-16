@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.notifications.dtos.enums.NotificationType;
+import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Setter
@@ -44,4 +44,9 @@ public class RefundNotificationLetterRequest {
     @Valid
     private RecipientPostalAddress recipientPostalAddress;
 
+    @NotNull(message = "Service Name cannot be null")
+    @NotEmpty(message = "Service name cannot be blank")
+    private String serviceName;
+
+    private TemplatePreviewDto templatePreview;
 }

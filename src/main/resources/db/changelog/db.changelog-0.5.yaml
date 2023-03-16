@@ -1,0 +1,178 @@
+databaseChangeLog:
+  - changeSet:
+      id: 100012
+      author: Pragnesh
+      changes:
+        - sql:
+            splitStatements: true
+            sql: >
+              UPDATE service_contact SET
+                from_email_address = 'digital@justice.gov.uk',
+                from_mail_address = '{"address_line":"ABC","city":"london","country":"UK","postal_code":"123 436","county":"london"}'
+                WHERE service_name = 'Digital Bar';
+              UPDATE service_contact SET
+                from_email_address = 'family@justice.gov.uk',
+                from_mail_address = '{"address_line":"ABC","city":"london","country":"UK","postal_code":"123 436","county":"london"}'
+                WHERE service_name = 'Family Public Law';
+              UPDATE service_contact SET
+                from_email_address = 'specified@justice.gov.uk',
+                from_mail_address = '{"address_line":"ABC","city":"london","country":"UK","postal_code":"123 436","county":"london"}'
+                WHERE service_name = 'Specified Money Claims';
+              UPDATE service_contact SET
+                from_email_address = 'adoption@justice.gov.uk',
+                from_mail_address = '{"address_line":"ABC","city":"london","country":"UK","postal_code":"123 436","county":"london"}'
+                WHERE service_name = 'Adoption';
+              UPDATE service_contact SET
+                from_email_address = 'immigration@justice.gov.uk',
+                from_mail_address = '{"address_line":"ABC","city":"london","country":"UK","postal_code":"123 436","county":"london"}'
+                WHERE service_name = 'Immigration and Asylum Appeals';
+              UPDATE service_contact SET
+                from_email_address = 'cmc@justice.gov.uk',
+                from_mail_address = '{"address_line":"ABC","city":"london","country":"UK","postal_code":"123 436","county":"london"}'
+                WHERE service_name = 'Civil Money Claims';
+              UPDATE service_contact SET
+                from_email_address = 'finrem@justice.gov.uk',
+                from_mail_address = '{"address_line":"ABC","city":"london","country":"UK","postal_code":"123 436","county":"london"}'
+                WHERE service_name = 'Finrem';
+              UPDATE service_contact SET
+                from_email_address = 'divorce@justice.gov.uk',
+                from_mail_address = '{"address_line":"ABC","city":"london","country":"UK","postal_code":"123 436","county":"london"}'
+                WHERE service_name = 'Divorce';
+              UPDATE service_contact SET
+                from_email_address = 'financial@justice.gov.uk',
+                from_mail_address = '{"address_line":"ABC","city":"london","country":"UK","postal_code":"123 436","county":"london"}'
+                WHERE service_name = 'Financial Remedy';
+              UPDATE service_contact SET
+                from_email_address = 'civil@justice.gov.uk',
+                from_mail_address = '{"address_line":"ABC","city":"london","country":"UK","postal_code":"123 436","county":"london"}'
+                WHERE service_name = 'Civil';
+              UPDATE service_contact SET
+                from_email_address = 'family@justice.gov.uk',
+                from_mail_address = '{"address_line":"ABC","city":"london","country":"UK","postal_code":"123 436","county":"london"}'
+                WHERE service_name = 'Family Private Law';
+              UPDATE service_contact SET
+                from_email_address = 'probate@justice.gov.uk',
+                from_mail_address = '{"address_line":"ABC","city":"london","country":"UK","postal_code":"123 436","county":"london"}'
+                WHERE service_name = 'Probate';
+
+  - changeSet:
+      id: 100012-1
+      author: Ranjeet
+      changes:
+        - sql:
+            splitStatements: true
+            sql: >
+              UPDATE service_contact SET
+                from_email_address = 'contactfpl@justice.gov.uk',
+                from_mail_address = NULL
+                WHERE service_name = 'Family Public Law';
+              UPDATE service_contact SET
+                from_email_address = 'contactocmc@justice.gov.uk',
+                from_mail_address = NULL
+                WHERE service_name = 'Specified Money Claims';
+              UPDATE service_contact SET
+                from_email_address = 'adoption@justice.gov.uk',
+                from_mail_address = NULL
+                WHERE service_name = 'Adoption';
+              UPDATE service_contact SET
+                from_email_address = 'contactia@justice.gov.uk',
+                from_mail_address = NULL
+                WHERE service_name = 'Immigration and Asylum Appeals';
+              UPDATE service_contact SET
+                from_email_address = 'contactocmc@justice.gov.uk',
+                from_mail_address = NULL
+                WHERE service_name = 'Civil Money Claims';
+              UPDATE service_contact SET
+                from_email_address = 'contactfinancialremedy@justice.gov.uk',
+                from_mail_address = NULL
+                WHERE service_name = 'Finrem';
+              UPDATE service_contact SET
+                from_email_address = 'divorcecase@justice.gov.uk',
+                from_mail_address = NULL
+                WHERE service_name = 'Divorce';
+              UPDATE service_contact SET
+                from_email_address = 'contactfinancialremedy@justice.gov.uk',
+                from_mail_address = NULL
+                WHERE service_name = 'Financial Remedy';
+              UPDATE service_contact SET
+                from_email_address = 'civil@justice.gov.uk',
+                from_mail_address = NULL
+                WHERE service_name = 'Civil';
+              UPDATE service_contact SET
+                from_email_address = 'privatefamilylawproject@justice.gov.uk',
+                from_mail_address = NULL
+                WHERE service_name = 'Family Private Law';
+              UPDATE service_contact SET
+                from_email_address = 'contactprobate@justice.gov.uk',
+                from_mail_address = NULL
+                WHERE service_name = 'Probate';
+  - changeSet:
+      id: 100012-2
+      author: Ranjeet
+      changes:
+        - sql:
+            splitStatements: true
+            sql: >
+              DELETE FROM service_contact WHERE service_name = 'Digital Bar';
+  - changeSet:
+      id: 100012-3
+      author: Ranjeet
+      changes:
+        - sql:
+            splitStatements: true
+            sql: >
+              UPDATE service_contact SET
+                service_mailbox = 'contactfpl@justice.gov.uk'
+                WHERE service_name = 'Family Public Law';
+              UPDATE service_contact SET
+                service_mailbox = 'contactocmc@justice.gov.uk'
+                WHERE service_name = 'Specified Money Claims';
+              UPDATE service_contact SET
+                service_mailbox = 'adoption@justice.gov.uk'
+                WHERE service_name = 'Adoption';
+              UPDATE service_contact SET
+                service_mailbox = 'contactia@justice.gov.uk'
+                WHERE service_name = 'Immigration and Asylum Appeals';
+              UPDATE service_contact SET
+                service_mailbox = 'contactocmc@justice.gov.uk'
+                WHERE service_name = 'Civil Money Claims';
+              UPDATE service_contact SET
+                service_mailbox = 'contactfinancialremedy@justice.gov.uk'
+                WHERE service_name = 'Finrem';
+              UPDATE service_contact SET
+                service_mailbox = 'divorcecase@justice.gov.uk'
+                WHERE service_name = 'Divorce';
+              UPDATE service_contact SET
+                service_mailbox = 'contactfinancialremedy@justice.gov.uk'
+                WHERE service_name = 'Financial Remedy';
+              UPDATE service_contact SET
+                service_mailbox = 'civil@justice.gov.uk'
+                WHERE service_name = 'Civil';
+              UPDATE service_contact SET
+                service_mailbox = 'privatefamilylawproject@justice.gov.uk'
+                WHERE service_name = 'Family Private Law';
+              UPDATE service_contact SET
+                service_mailbox = 'contactprobate@justice.gov.uk'
+                WHERE service_name = 'Probate';
+  - changeSet:
+      id: 100012-4
+      author: ranjeet
+      changes:
+        - sql:
+            splitStatements: true
+            sql: >
+              INSERT INTO service_contact (service_name, service_mailbox, from_email_address,from_mail_address)
+              VALUES
+              ('Damages', 'damagesclaims@justice.gov.uk', 'damagesclaims@justice.gov.uk',NULL);
+
+  - changeSet:
+      id: 100012-5
+      author: ranjeet
+      changes:
+        - sql:
+            splitStatements: true
+            sql: >
+              UPDATE service_contact SET
+                service_mailbox = 'damagesclaims@justice.gov.uk',
+                from_email_address = 'damagesclaims@justice.gov.uk'
+                WHERE service_name = 'Civil';

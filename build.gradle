@@ -2,6 +2,7 @@ buildscript {
   repositories {
     mavenLocal()
     mavenCentral()
+    jcenter()
   }
   dependencies {
     classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.83")
@@ -92,6 +93,7 @@ task functional(type: Test) {
   scanForTestClasses = true
 }
 
+// Serenity Reporting
 functional.finalizedBy(aggregate)
 
 task integration(type: Test) {
@@ -140,6 +142,7 @@ project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 def sonarExclusions = [
   '**/model/**',
+  '**/response/**',
   '**/controllers/**',
   '**/mapper/**',
   '**/config/**'
@@ -206,6 +209,7 @@ dependencyManagement {
 repositories {
   mavenLocal()
   mavenCentral()
+  jcenter()
   maven { url 'https://jitpack.io' }
 }
 
@@ -231,6 +235,13 @@ def versions = [
   sonarPitest    : '0.5'
 ]
 
+
+task fortifyScan(type: JavaExec)  {
+  mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  classpath += sourceSets.test.runtimeClasspath
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
+}
+
 configurations {
   compileOnly {
     extendsFrom annotationProcessor
@@ -240,6 +251,7 @@ configurations {
 dependencies {
 
   compileOnly 'com.sun.xml.bind:jaxb-osgi:2.3.1'
+  implementation 'com.github.hmcts:fortify-client:1.2.1:all'
   implementation 'junit:junit:4.13.1'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
@@ -250,6 +262,7 @@ dependencies {
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
 
+  implementation group: 'com.vladmihalcea', name: 'hibernate-types-55', version: '2.14.0'
   implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.6.2'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.1'
   implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
@@ -349,4 +362,7 @@ wrapper {
   distributionType = Wrapper.DistributionType.ALL
 }
 
+serenity {
+  reports = ["single-page-html"]
+}
 

@@ -1,28 +1,27 @@
 package uk.gov.hmcts.reform.notifications.model;
 
-import lombok.Getter;
-import lombok.Builder;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.UpdateTimestamp;
+import com.vladmihalcea.hibernate.type.json.JsonType;
 
 import java.util.Date;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-
 @Entity
 @Getter
 @Setter
-@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Table(name = "notification")
+@TypeDef(name = "json", typeClass = JsonType.class)
+@ToString
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,5 +56,7 @@ public class Notification {
     @OneToOne(fetch = FetchType.EAGER, mappedBy = "notification", cascade = CascadeType.ALL)
     private ContactDetails contactDetails;
 
-
+    @Type(type = "json")
+    @Column(columnDefinition = "json", name = "template_preview")
+    private TemplatePreviewDto templatePreview;
 }

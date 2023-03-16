@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.notifications.dtos.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.annotations.ApiModelProperty;
@@ -10,13 +11,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.notifications.dtos.enums.NotificationType;
+import uk.gov.hmcts.reform.notifications.model.TemplatePreviewDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonInclude(NON_NULL)
 @Setter
 @Getter
 @AllArgsConstructor
@@ -47,4 +52,9 @@ public class RefundNotificationEmailRequest {
     @Valid
     private Personalisation personalisation;
 
+    @NotNull(message = "service Name cannot be null")
+    @NotEmpty(message = "Service cannot be blank")
+    private String serviceName;
+
+    private TemplatePreviewDto templatePreview;
 }

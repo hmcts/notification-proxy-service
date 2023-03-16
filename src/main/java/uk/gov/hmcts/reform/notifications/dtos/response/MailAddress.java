@@ -2,29 +2,25 @@ package uk.gov.hmcts.reform.notifications.dtos.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Builder(builderMethodName = "buildNotificationWith")
+@Builder(builderMethodName = "buildRecipientMailAddressWith")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class NotificationDto {
+public class MailAddress {
 
-    private String reference;
-    private String notificationType;
-    private Date dateCreated;
+    private String addressLine;
+    private String city;
+    private String country;
+    private String postalCode;
+    private String county;
 
-    private Date dateUpdated;
-    private ContactDetailsDto contactDetails;
-
-    private NotificationTemplatePreviewResponse sentNotification;
 
 }
-
