@@ -4,7 +4,7 @@ properties([
   // H allow predefined but random minute see https://en.wikipedia.org/wiki/Cron#Non-standard_characters
   pipelineTriggers([cron('H 22 * * *')]),
   parameters([
-    string(name: 'URL_TO_TEST', defaultValue: 'http://refund-api-aat.service.core-compute-aat.internal', description: 'The URL you want to run these tests against'),
+    string(name: 'URL_TO_TEST', defaultValue: 'http://ccpay-notifications-service-aat.service.core-compute-aat.internal', description: 'The URL you want to run these tests against'),
     string(name: 'SecurityRules',
       defaultValue: 'http://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
       description: 'SecurityUrl against which rules will be executed'),
@@ -14,19 +14,27 @@ properties([
 @Library("Infrastructure")
 
 def type = "java"
-def product = "rpe"
-def component = "spring-boot-template"
+def product = "ccpay"
+def component = "notifications-service"
 
 def secrets = [
   'ccpay-${env}': [
     secret('refunds-api-client-secret', 'REFUND_SERVICE_ACCOUNT_CLIENT_SECRET'),
     secret('refunds-api-user-password', 'REFUND_SERVICE_ACCOUNT_PASSWORD'),
-    secret('refunds-s2s-secret', 'OIDC_S2S_SECRET'),
+    secret('notifications-s2s-secret', 'OIDC_S2S_SECRET'),
+    secret('paybubble-s2s-secret', 'S2S_SERVICE_SECRET_PAYBUBBLE'),
     secret('freg-idam-generated-user-email-pattern', 'GENERATED_USER_EMAIL_PATTERN'),
+    secret('freg-idam-test-user-password', 'TEST_USER_PASSWORD'),
     secret('notifications-letter-template-id', 'NOTIFICATION_LETTER_TEMPLATE_ID'),
     secret('notifications-email-template-id', 'NOTIFICATION_EMAIL_TEMPLATE_ID'),
-    secret('paybubble-idam-client-secret','IDAM_PAYBUBBLE_CLIENT_SECRET')
-
+    secret('paybubble-idam-client-secret','IDAM_PAYBUBBLE_CLIENT_SECRET'),
+    secret('notifications-letter-card-pba-template-id','NOTIFICATION_LETTER_CARD_PBA_TEMPLATE_ID'),
+    secret('notifications-email-card-pba-template-id','NOTIFICATION_EMAIL_CARD_PBA_TEMPLATE_ID'),
+    secret('notifications-letter-cheque-po-cash-template-id','NOTIFICATIONS_LETTER_CHEQUE_PO_CASH_TEMPLATE_ID'),
+    secret('notifications-email-cheque-po-cash-template-id','NOTIFICATIONS_EMAIL_CHEQUE_PO_CASH_TEMPLATE_ID'),
+    secret('notifications-letter-refund-when-contacted-template-id','NOTIFICATION_LETTER_REFUND_WHEN_CONTACTED_TEMPLATE_ID'),
+    secret('notifications-email-refund-when-contacted-template-id','NOTIFICATION_EMAIL_REFUND_WHEN_CONTACTED_TEMPLATE_ID'),
+    secret('postcode-address-lookup-id','POSTCODE_ADDRESS_LOOKUP_ID')
   ]
 ]
 
