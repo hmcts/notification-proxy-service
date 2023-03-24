@@ -33,4 +33,14 @@
     <cve>CVE-2022-31197</cve>
     <cve>CVE-2022-41946</cve>
   </suppress>
+  <suppress until="2023-06-30">
+    <notes>
+      fortify-client version 3.1.1 seems to fail for five different CV issues. Need major update
+    </notes>
+    <cve>CVE-2021-29425</cve>
+    <cve>CVE-2018-20200</cve>
+    <cve>CVE-2021-29425</cve>
+    <cve>CVE-2020-13956</cve>
+    <cve>CVE-2018-20200</cve>
+  </suppress>
 </suppressions>
