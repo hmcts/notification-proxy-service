@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 100013
+      author: Kaushik
+      changes:
+        - sql:
+            splitStatements: true
+            sql: >
+              INSERT INTO notification_refund_reasons (refund_reason_code, refund_reason, refund_reason_notification)
+               VALUES
+              ('RR022', 'Unpaid cheque', 'Unpaid cheque'),
+              ('RR036', 'Retrospective remission', 'Retrospective remission'),
+              ('RR037', 'Overpayment', 'Refund for Overpayment');
