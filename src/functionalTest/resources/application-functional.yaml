@@ -50,8 +50,8 @@ auth:
 test:
   url :
     notification : ${TEST_URL:http://localhost:8080}
-    refunds : ${TEST_URL_REFUND:http://ccpay-refunds-api-pr-158.service.core-compute-preview.internal}
-    payments : ${TEST_URL_PAYMENT:http://payment-api-pr-1248.service.core-compute-preview.internal}
+    refunds : ${TEST_URL_REFUND:http://ccpay-refunds-api-pr-158.preview.platform.hmcts.net}
+    payments : ${TEST_URL_PAYMENT:http://payment-api-pr-1248.preview.platform.hmcts.net}
   user:
     password: ${TEST_USER_PASSWORD}
 
@@ -124,7 +124,7 @@ notify:
 mock:
   callback:
     url:
-      endpoint : ${TEST_URL:http://payment-api-aat-staging.service.core-compute-aat.internal}/mock-api/serviceCallback
+      endpoint : ${TEST_URL:http://payment-api-aat-staging.aat.platform.hmcts.net}/mock-api/serviceCallback
 
 postcodelookup:
   api:
