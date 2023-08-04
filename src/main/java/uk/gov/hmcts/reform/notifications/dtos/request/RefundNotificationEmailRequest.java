@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.notifications.dtos.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,7 +44,7 @@ public class RefundNotificationEmailRequest {
 
     private String emailReplyToId;
 
-    @ApiModelProperty(example = "EMAIL")
+    @Schema(example = "EMAIL")
     @Value("EMAIL")
     private NotificationType notificationType;
 

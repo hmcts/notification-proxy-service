@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.notifications.dtos.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,7 +32,7 @@ public class RefundNotificationLetterRequest {
     @NotEmpty(message = "Reference cannot be blank")
     private String reference;
 
-    @ApiModelProperty(example = "LETTER")
+    @Schema(example = "LETTER")
     @Value("LETTER")
     private NotificationType notificationType;
 

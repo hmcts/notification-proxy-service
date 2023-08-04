@@ -1,15 +1,16 @@
 package uk.gov.hmcts.reform.notifications.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.notifications.dtos.request.DocPreviewRequest;
 import uk.gov.hmcts.reform.notifications.dtos.request.RefundNotificationEmailRequest;
@@ -24,7 +25,8 @@ import javax.validation.Valid;
 
 
 @RestController
-@Api(tags = {"Notification Journey "})
+@Tag(name = "Refund Notifications", description = "Refund Notifications REST API")
+@Validated
 @SuppressWarnings({"PMD.AvoidUncheckedExceptionsInSignatures", "PMD.AvoidDuplicateLiterals"})
 public class NotificationController {
 
@@ -32,16 +34,15 @@ public class NotificationController {
     private NotificationService notificationService;
     private static Logger log = LoggerFactory.getLogger(NotificationController.class);
 
-
-    @ApiOperation(value = "Create a email notification for a refund", notes = "Create email notification for a refund")
+    @Operation(summary = "Create a email notification for a refund", description = "Create email notification for a refund")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = "Notification sent successfully via email"),
-        @ApiResponse(code = 400, message = "Bad request. Notification creation failed"),
-        @ApiResponse(code = 403, message = "AuthError"),
-        @ApiResponse(code = 422, message = "Invalid Template ID"),
-        @ApiResponse(code = 429, message = "Too Many Requests Error"),
-        @ApiResponse(code = 500, message = "Internal Server Error"),
-        @ApiResponse(code = 504, message = "Unable to connect to notification provider, please try again late")
+        @ApiResponse(responseCode = "201", description = "Notification sent successfully via email"),
+        @ApiResponse(responseCode = "400", description = "Bad request. Notification creation failed"),
+        @ApiResponse(responseCode = "403", description = "AuthError"),
+        @ApiResponse(responseCode = "422", description = "Invalid Template ID"),
+        @ApiResponse(responseCode = "429", description = "Too Many Requests Error"),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error"),
+        @ApiResponse(responseCode = "504", description = "Unable to connect to notification provider, please try again late")
     })
     @PostMapping("/notifications/email")
     public ResponseEntity emailNotification(
@@ -55,16 +56,16 @@ public class NotificationController {
                     "Notification sent successfully via email", HttpStatus.CREATED);
     }
 
-    @ApiOperation(value = "Create a letter notification for a refund", notes = "Create letter notification for a refund")
+    @Operation(summary = "Create a letter notification for a refund", description = "Create letter notification for a refund")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = "Notification sent successfully via letter"),
-        @ApiResponse(code = 400, message = "Bad request. Notification creation failed"),
-        @ApiResponse(code = 403, message = "AuthError"),
-        @ApiResponse(code = 422, message = "Invalid Template ID"),
-        @ApiResponse(code = 422, message = "Please enter a valid/real postcode"),
-        @ApiResponse(code = 429, message = "Too Many Requests Error"),
-        @ApiResponse(code = 500, message = "Internal Server Error"),
-        @ApiResponse(code = 504, message = "Unable to connect to notification provider, please try again late")
+        @ApiResponse(responseCode = "201", description = "Notification sent successfully via letter"),
+        @ApiResponse(responseCode = "400", description = "Bad request. Notification creation failed"),
+        @ApiResponse(responseCode = "403", description = "AuthError"),
+        @ApiResponse(responseCode = "422", description = "Invalid Template ID"),
+        @ApiResponse(responseCode = "422", description = "Please enter a valid/real postcode"),
+        @ApiResponse(responseCode = "429", description = "Too Many Requests Error"),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error"),
+        @ApiResponse(responseCode = "504", description = "Unable to connect to notification provider, please try again late")
     })
     @PostMapping("/notifications/letter")
     public ResponseEntity letterNotification(
@@ -79,12 +80,12 @@ public class NotificationController {
             "Notification sent successfully via letter", HttpStatus.CREATED);
     }
 
-    @ApiOperation(value = "GET /notifications ", notes = "Get Notification by passing reference")
+    @Operation(summary = "GET /notifications ", description = "Get Notification by passing reference")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success"),
-        @ApiResponse(code = 404, message = "Notification has not been sent for this refund"),
-        @ApiResponse(code = 403, message = "AuthError"),
-        @ApiResponse(code = 500, message = "Internal Server Error")
+        @ApiResponse(responseCode = "200", description = "Success"),
+        @ApiResponse(responseCode = "404", description = "Notification has not been sent for this refund"),
+        @ApiResponse(responseCode = "403", description = "AuthError"),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error")
 
     })
 
@@ -100,11 +101,11 @@ public class NotificationController {
         );
     }
 
-    @ApiOperation(value = "POST /doc-preview ", notes = "Preview Notification by passing personalisation")
+    @Operation(summary = "POST /doc-preview ", description = "Preview Notification by passing personalisation")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success"),
-        @ApiResponse(code = 403, message = "AuthError"),
-        @ApiResponse(code = 500, message = "Internal Server Error")
+        @ApiResponse(responseCode = "200", description = "Success"),
+        @ApiResponse(responseCode = "403", description = "AuthError"),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
     @PostMapping("/notifications/doc-preview")
     public ResponseEntity<NotificationTemplatePreviewResponse> previewNotification(
@@ -118,12 +119,12 @@ public class NotificationController {
         );
     }
 
-    @ApiOperation(value = "GET /notifications ", notes = "Get Address by passing post code")
+    @Operation(summary = "GET /notifications ", description = "Get Address by passing post code")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success"),
-        @ApiResponse(code = 404, message = "Postcode not found"),
-        @ApiResponse(code = 403, message = "AuthError"),
-        @ApiResponse(code = 500, message = "Internal Server Error")
+        @ApiResponse(responseCode = "200", description = "Success"),
+        @ApiResponse(responseCode = "404", description = "Postcode not found"),
+        @ApiResponse(responseCode = "403", description = "AuthError"),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error")
 
     })
 
