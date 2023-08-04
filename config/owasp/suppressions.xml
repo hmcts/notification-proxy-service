@@ -92,5 +92,11 @@
     <notes>CVE-2023-2976 Use of Java's default temporary directory for file creation in `FileBackedOutputStream` in Google Guava versions 1.0 to 31.1 on Unix systems </notes>
     <cve>CVE-2023-2976</cve>
   </suppress>
-
+  <suppress>
+    <notes>
+      Using "**" as a pattern in Spring Security configuration for WebFlux creates a mismatch in pattern matching between Spring Security and Spring WebFlux, and the potential for a security bypass.
+    </notes>
+    <cve>CVE-2023-34034</cve>
+  </suppress>
 </suppressions>
+
