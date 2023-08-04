@@ -234,7 +234,7 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   jacocoVersion   : '0.8.5',
   restAssured     : '4.5.1',
-  serenity                : '2.2.12',
+  serenity                : '2.6.0',
   serenityreporter        : '2.1.4',
   serenityCucumber        : '1.9.51',
   pitest          : '1.9.0',
@@ -336,8 +336,8 @@ dependencies {
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-screenplay', version: versions.serenity
-  functionalTestImplementation group: 'io.rest-assured', name: 'xml-path', version: versions.restAssured
-  functionalTestImplementation group: 'io.rest-assured', name: 'json-path', version: versions.restAssured
+//  functionalTestImplementation group: 'io.rest-assured', name: 'xml-path', version: versions.restAssured
+//  functionalTestImplementation group: 'io.rest-assured', name: 'json-path', version: versions.restAssured
   functionalTestImplementation group: 'org.jboss.aerogear', name: 'aerogear-otp-java', version:'1.0.0'
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
@@ -361,7 +361,7 @@ rootProject.tasks.named("processSmokeTestResources") {
 }
 
 rootProject.tasks.named("processFunctionalTestResources") {
-  duplicatesStrategy = 'include'
+  duplicatesStrategy = 'exclude'
 }
 
 wrapper {
