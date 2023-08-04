@@ -71,7 +71,6 @@
     </notes>
     <cve>CVE-2021-46877</cve>
   </suppress>
-
   <suppress>
     <notes>
       Apache Tomcat 11.0.0-M2 to 11.0.0-M4, 10.1.5 to 10.1.7, 9.0.71 to 9.0.73 and 8.5.85 to 8.5.87.
@@ -80,7 +79,6 @@
     </notes>
     <cve>CVE-2023-28709</cve>
   </suppress>
-
   <suppress>
     <notes>CVE-2023-20883: Spring Boot Welcome Page DoS Vulnerability</notes>
     <cve>CVE-2023-20883</cve>
@@ -93,6 +91,7 @@
   <suppress>
     <notes>CVE-2023-2976 Use of Java's default temporary directory for file creation in `FileBackedOutputStream` in Google Guava versions 1.0 to 31.1 on Unix systems </notes>
     <cve>CVE-2023-2976</cve>
+    <cve>CVE-2020-8908</cve>
   </suppress>
   <suppress>
     <notes>
@@ -108,8 +107,13 @@
     </notes>
     <cve>CVE-2023-20873</cve>
   </suppress>
-
-
+  <suppress>
+    <notes>
+      GzipSource does not handle an exception that might be raised when parsing a malformed gzip buffer. This may lead to denial of service
+      of the Okio client when handling a crafted GZIP archive, by using the GzipSource class.
+    </notes>
+    <cve>CVE-2023-3635</cve>
+  </suppress>
 
 </suppressions>
 
