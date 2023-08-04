@@ -291,7 +291,7 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-config'
   implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.14'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
-  implementation group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.5.0.RELEASE'
+  implementation group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.5.2.RELEASE'
   implementation group: 'org.springframework.boot', name:'spring-boot-starter-oauth2-client'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
   implementation 'com.github.hmcts:service-auth-provider-java-client:4.0.2'
