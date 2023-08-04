@@ -232,13 +232,13 @@ def versions = [
   junitPlatform   : '1.10.0',
   reformLogging   : '5.1.7',
   springBoot      : springBoot.class.package.implementationVersion,
-  jacocoVersion: '0.8.5',
-  restAssured : '4.2.0',
+  jacocoVersion   : '0.8.5',
+  restAssured     : '4.5.1',
   serenity                : '2.2.12',
   serenityreporter        : '2.1.4',
   serenityCucumber        : '1.9.51',
-  pitest         : '1.9.0',
-  sonarPitest    : '0.5'
+  pitest          : '1.9.0',
+  sonarPitest     : '0.5'
 ]
 
 
@@ -322,7 +322,7 @@ dependencies {
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
 
-  smokeTestImplementation group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
+  smokeTestImplementation group: 'io.rest-assured', name: 'rest-assured', version: '4.5.1'
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation sourceSets.test.runtimeClasspath
   smokeTestImplementation group :'org.projectlombok', name:'lombok', version:'1.18.22'
