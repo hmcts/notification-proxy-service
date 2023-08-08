@@ -21,7 +21,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.notifications.config.PostcodeLookupConfiguration;
-import uk.gov.hmcts.reform.notifications.config.security.idam.IdamService;
+//import uk.gov.hmcts.reform.notifications.config.security.idam.IdamService;
 import uk.gov.hmcts.reform.notifications.dtos.request.*;
 import uk.gov.hmcts.reform.notifications.dtos.response.*;
 import uk.gov.hmcts.reform.notifications.exceptions.*;
@@ -62,9 +62,11 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     NotificationResponseMapper notificationResponseMapper;
+/*
 
     @Autowired
     private IdamService idamService;
+*/
 
     @Autowired
     private ServiceContactRepository serviceContactRepository;
@@ -128,7 +130,7 @@ public class NotificationServiceImpl implements NotificationService {
                 serviceContact = serviceContactOptional.get();
             }
 
-            IdamUserIdResponse uid = idamService.getUserId(headers);
+            //IdamUserIdResponse uid = idamService.getUserId(headers);
             LOG.info("Refund reason in sendEmailNotification {}", emailNotificationRequest.getPersonalisation().getRefundReason());
             String refundReason = getRefundReason(emailNotificationRequest.getPersonalisation().getRefundReason());
             TemplatePreviewDto templatePreviewDto = emailNotificationRequest.getTemplatePreview();
@@ -143,6 +145,7 @@ public class NotificationServiceImpl implements NotificationService {
                                                    refundReason)
                     );
                 templatePreviewDto = buildTemplatePreviewDTO(templatePreview, EMAIL, serviceContact);
+                LOG.info(".... Test {}", templatePreviewDto);
             }
             LOG.info("Before sending mail to Notification Client ");
             SendEmailResponse sendEmailResponse = notificationEmailClient
@@ -156,12 +159,12 @@ public class NotificationServiceImpl implements NotificationService {
                     emailNotificationRequest.getReference()
                 );
             LOG.info(" Notification Email sent to Client ");
-            Notification notification = emailNotificationMapper.emailResponseMapper(
+            /*Notification notification = emailNotificationMapper.emailResponseMapper(
                 emailNotificationRequest, uid
             );
 
             notification.setTemplatePreview(templatePreviewDto);
-            notificationRepository.save(notification);
+            notificationRepository.save(notification);*/
             LOG.info("email notification saved successfully.");
 
             return sendEmailResponse;
@@ -184,7 +187,7 @@ public class NotificationServiceImpl implements NotificationService {
                 serviceContact = serviceContactOptional.get();
             }
 
-            IdamUserIdResponse uid = idamService.getUserId(headers);
+            //IdamUserIdResponse uid = idamService.getUserId(headers);
 
             TemplatePreviewDto templatePreviewDto = letterNotificationRequest.getTemplatePreview();
             String refundReason = getRefundReason(letterNotificationRequest.getPersonalisation().getRefundReason());
@@ -209,14 +212,14 @@ public class NotificationServiceImpl implements NotificationService {
                 letterNotificationRequest.getReference()
             );
             LOG.info("sendLetterResponse {}",sendLetterResponse.getBody());
-            Notification notification = letterNotificationMapper.letterResponseMapper(
+            /*Notification notification = letterNotificationMapper.letterResponseMapper(
                 sendLetterResponse,
                 letterNotificationRequest,
                 uid
             );
             LOG.info("notification {}",notification.getReference());
             notification.setTemplatePreview(templatePreviewDto);
-            notificationRepository.save(notification);
+            notificationRepository.save(notification);*/
             LOG.info("Letter notification saved successfully.");
             return sendLetterResponse;
         }catch (NotificationClientException exception){

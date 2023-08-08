@@ -37,7 +37,7 @@ java {
   }
 }
 
-apply from: 'liquibase.gradle'
+//apply from: 'liquibase.gradle'
 apply plugin: 'net.serenity-bdd.aggregator'
 
 
@@ -277,7 +277,7 @@ dependencies {
   implementation group: 'org.springdoc', name: 'springdoc-openapi-webmvc-core', version: '1.7.0'
 
   implementation group: 'com.vladmihalcea', name: 'hibernate-types-55', version: '2.21.1'
-  implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.6.2'
+  //implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.6.2'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
   implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
 
@@ -297,8 +297,8 @@ dependencies {
   implementation group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.5.2.RELEASE'
   implementation group: 'org.springframework.boot', name:'spring-boot-starter-oauth2-client'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
-  implementation 'com.github.hmcts:service-auth-provider-java-client:4.0.2'
-  implementation 'com.github.hmcts:idam-java-client:2.0.1'
+  //implementation 'com.github.hmcts:service-auth-provider-java-client:4.0.2'
+  //implementation 'com.github.hmcts:idam-java-client:2.0.1'
   implementation 'javax.inject:javax.inject:1'
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.3'
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.4'

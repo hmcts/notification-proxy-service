@@ -33,6 +33,9 @@ services:
       - POSTGRES_PASSWORD=notifications
       - POSTGRES_DB=notifications
     ports:
-      - 5182:5432
+      - 5432:5432
     volumes:
       - ccpay-notifications-service-db-data:/var/lib/postgresql/data
+
+volumes:
+  ccpay-notifications-service-db-data:
