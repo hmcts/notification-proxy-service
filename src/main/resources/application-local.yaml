@@ -8,9 +8,9 @@ spring:
     allow-bean-definition-overriding: true
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/notification-service1
-    username: ${POSTGRES_USERNAME}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://localhost:5182/notifications
+    username: notifications
+    password: notifications
     properties:
       charSet: UTF-8
 
@@ -29,7 +29,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: http://localhost:5000/o
+            issuer-uri: http://localhost:23443/o
         # Dummy OIDC client required even we are not going to use
         registration:
           oidc:
@@ -44,10 +44,10 @@ auth:
   provider:
     service:
       client:
-        baseUrl: http://localhost:8489
+        baseUrl: http://localhost:23443
   idam:
     client:
-      baseUrl: http://localhost:8082
+      baseUrl: http://localhost:23443
 
 azure:
   application-insights:
