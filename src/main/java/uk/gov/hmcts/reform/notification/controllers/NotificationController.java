@@ -63,7 +63,7 @@ public class NotificationController {
         @RequestHeader(required = false) MultiValueMap<String, String> headers,
         @RequestBody SchedulerRequest schedulerRequest) {
         log.info("Inside runScheduler for referenceId {}",schedulerRequest.getReference());
-        notificationService.sendEmailNotification(schedulerRequest);
+        notificationService.sendEmailNotification(schedulerRequest, authorization);
         return new ResponseEntity<>(
             "Notification sent successfully via email", HttpStatus.CREATED);
     }

@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import uk.gov.hmcts.reform.notification.client.CaseApiClient;
 import uk.gov.hmcts.reform.notification.config.PostcodeLookupConfiguration;
 import uk.gov.hmcts.reform.notification.config.security.idam.IdamService;
 import uk.gov.hmcts.reform.notification.dtos.request.*;
@@ -119,9 +120,12 @@ public class NotificationServiceImpl implements NotificationService {
     private RestTemplate restTemplatePostCodeLookUp;
 
     @Autowired
+    private CaseApiClient caseApiClient;
+
+    @Autowired
     ObjectMapper objectMapper;
     @Override
-    public SendEmailResponse saveNotificationRequest(NotificationRequest emailNotificationRequest, MultiValueMap<String, String> headers) {
+    public boolean saveNotificationRequest(NotificationRequest emailNotificationRequest, MultiValueMap<String, String> headers) {
         try {
             LOG.info("sendEmailNotification -->" +emailNotificationRequest.toString());
 /*
@@ -154,7 +158,7 @@ public class NotificationServiceImpl implements NotificationService {
             notificationRequestRepository.save(emailNotificationRequest);
 
             LOG.info("Before sending mail to Notification Client ");
-            SendEmailResponse sendEmailResponse = notificationEmailClient
+/*            SendEmailResponse sendEmailResponse = notificationEmailClient
                 .sendEmail(
                     emailNotificationRequest.getTemplateId(),
                     emailNotificationRequest.getDestinationAddress(),
@@ -162,7 +166,7 @@ public class NotificationServiceImpl implements NotificationService {
                     emailNotificationRequest.getReference()
                 );
             LOG.info(" Notification Email sent to Client ");
-/*
+
             Notification notification = emailNotificationMapper.emailResponseMapper(
                 emailNotificationRequest, uid
             );
@@ -173,16 +177,17 @@ public class NotificationServiceImpl implements NotificationService {
 */
             LOG.info("email notification saved successfully.");
 
-            return sendEmailResponse;
-        }catch (NotificationClientException exception){
+            return true;
+        }catch (Exception exception){
             GovNotifyExceptionWrapper exceptionWrapper = new GovNotifyExceptionWrapper();
             LOG.error(exception.getMessage());
-            throw exceptionWrapper.mapGovNotifyEmailException(exception);
+            //throw exceptionWrapper.mapGovNotifyEmailException(exception);
+            throw exception;
         }
     }
 
     @Override
-    public void sendEmailNotification(SchedulerRequest schedulerRequest){
+    public void sendEmailNotification(SchedulerRequest schedulerRequest, String authorization){
         try {
             LOG.info("sendEmailNotification -->" +schedulerRequest.toString());
             Optional<List<NotificationRequest>> notificationRequestList;
@@ -200,8 +205,16 @@ public class NotificationServiceImpl implements NotificationService {
                         );
                     LOG.info(" Notification Email sent to Client ");
 
+                    NotificationResponse notificationResponse = NotificationResponse.builder()
+                        .reference(notificationRequest.getReference())
+                        .templateId(notificationRequest.getTemplateId())
+                        .build();
+
                     notificationRequestRepository.updateNotificationSent(notificationRequest.getId());
+                    caseApiClient.updateNotificationDetails(notificationRequest.getCaseId(),authorization, notificationResponse);
                 }
+
+
 
 
                 LOG.info("Notification Response prepared from getNotification {}",notificationResponseDto);

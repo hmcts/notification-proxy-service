@@ -60,4 +60,7 @@ public class NotificationRequest {
 
     @Column(name = "notification_sent")
     private boolean notificationSent;
+
+    @Column(name = "case_id")
+    private long caseId;
 }

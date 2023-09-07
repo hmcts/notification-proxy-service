@@ -13,7 +13,7 @@ import uk.gov.service.notify.SendLetterResponse;
 
 public interface NotificationService {
 
-    SendEmailResponse saveNotificationRequest(NotificationRequest emailNotificationRequest, MultiValueMap<String, String> headers);
+    boolean saveNotificationRequest(NotificationRequest emailNotificationRequest, MultiValueMap<String, String> headers);
 
     SendLetterResponse sendLetterNotification(RefundNotificationLetterRequest letterNotificationRequest, MultiValueMap<String, String> headers);
 
@@ -25,5 +25,5 @@ public interface NotificationService {
 
     void deleteNotification(String reference);
 
-    void sendEmailNotification(SchedulerRequest schedulerRequest);
+    void sendEmailNotification(SchedulerRequest schedulerRequest, String authorization);
 }

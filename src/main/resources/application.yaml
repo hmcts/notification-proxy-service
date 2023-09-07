@@ -138,3 +138,6 @@ postcodelookup:
   api:
     url: https://api.os.uk/search/places/v1
     key: ${POSTCODE_ADDRESS_LOOKUP_ID:REPLACE_ME}
+
+case_api:
+  url: http://localhost:3000
